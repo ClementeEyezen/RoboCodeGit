@@ -11,10 +11,10 @@ public class VirtualBot
 {
 	//a virtual robot to model a robot currently visible on the playing field
 	//contains an arraylist of points last seen
-	ArrayList<Point3D> location;
-	ArrayList<Double> energy;
-	ArrayList<Double> heading;
-	ArrayList<Double> velocity;
+	ArrayList<Point3D> location; //represented by lines
+	ArrayList<Double> energy; //represented by color
+	ArrayList<Double> heading; //represented by lines
+	ArrayList<Double> velocity; //represented by box size
 	String name; //the name of the robot that is being tracked
 	Robot image; //the robot that the virtual robot represents
 	public VirtualBot(Robot r)
@@ -84,11 +84,30 @@ public class VirtualBot
 		g.setColor(Color.GREEN);
 		for (int i = 0; i<location.size()-1; i++)
 		{
+			if (energy.get(i)>=70)
+			{
+				g.setColor(Color.GREEN);
+			}
+			else if (energy.get(i)>=50)
+			{
+				g.setColor(Color.YELLOW);
+			}
+			else if (energy.get(i)>=20)
+			{
+				g.setColor(Color.ORANGE);
+			}
+			else
+			{
+				g.setColor(Color.RED);
+			}
 			int x1 = (int) location.get(i).getPoint()[0];
 			int y1 = (int) location.get(i).getPoint()[1];
 			int x2 = (int) location.get(i+1).getPoint()[0];
 			int y2 = (int) location.get(i+1).getPoint()[1];
+			//draw a line along the robot path
 			g.drawLine(x1, y1, x2, y2);
+			//draw a block to represent location, size proportional to speed
+			g.drawRect(x1, y1, (int) (double) velocity.get(i), (int) (double) velocity.get(i));
 		}
 	}
 }

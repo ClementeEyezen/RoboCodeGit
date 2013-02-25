@@ -48,9 +48,41 @@ public class ArcBasicBot extends AdvancedRobot
 	public void moveGunTo(double theta)
 	{
 		//move the gun to the heading theta
-		double current = this.getGunHeading();
+		double current = this.getGunHeadingRadians();
 		double desire = theta;
-		this.setTurnGunLeftRadians(desire-current);
+		double delta = minimizeRotation(current, desire); 
+		this.setTurnGunLeftRadians(delta);
+	}
+	public static double minimizeRotation(double current, double desired)
+	{
+		double delta = desired-current;
+		System.out.println("raw delta : "+delta);
+		if (delta>=Math.PI*2)
+		{
+			System.out.println("delta > 360");
+			delta-=2*Math.PI;
+			System.out.println("Corrected to "+delta);
+		}
+		else if (delta<=Math.PI*-2)
+		{
+			System.out.println("delta < -360");
+			delta+=2*Math.PI;
+			System.out.println("Corrected to "+delta);
+		}
+		if (delta>=Math.PI*1)
+		{
+			System.out.println("delta > 180");
+			delta = 2*Math.PI-delta;
+			System.out.println("Corrected to "+delta);
+		}
+		if (delta<=Math.PI*-1)
+		{
+			System.out.println("delta < -180");
+			delta = 2*Math.PI+delta;
+			System.out.println("Corrected to "+delta);
+		}
+		System.out.println("G current: "+current+" G desire: "+desired+" G change: "+delta);
+		return -delta;
 	}
 	public void setGunFire(double power)
 	{
@@ -62,7 +94,7 @@ public class ArcBasicBot extends AdvancedRobot
 		//move the gun to the heading theta
 		double current = this.getRadarHeading();
 		double desire = theta;
-		this.setTurnRadarLeftRadians(desire-current);
+		this.setTurnRadarLeftRadians(minimizeRotation(current, desire));
 	}
 	public void driveRobotTo(Point p)
 	{
@@ -137,7 +169,7 @@ public class ArcBasicBot extends AdvancedRobot
 		//move the robot to the heading theta in radians
 		double current = this.getHeading();
 		double desire = theta;
-		this.setTurnLeftRadians(desire-current);
+		this.setTurnLeftRadians(minimizeRotation(current, desire));
 	}
 	public void advanceRobot(double distance)
 	{
@@ -153,8 +185,26 @@ public class ArcBasicBot extends AdvancedRobot
 	}
 	public void onPaint(Graphics2D g)
 	{
+		if (this.getEnergy()>=70)
+		{
+			g.setColor(Color.GREEN);
+		}
+		else if (this.getEnergy()>=50)
+		{
+			g.setColor(Color.YELLOW);
+		}
+		else if (this.getEnergy()>=20)
+		{
+			g.setColor(Color.ORANGE);
+		}
+		else
+		{
+			g.setColor(Color.RED);
+		}
+		g.drawRect((int) this.getX()-20, (int) this.getY()-20, 40, 40);
 		g.setColor(Color.ORANGE);
 		g.drawString("test String", 300, 300);
 		dan.drawData(g);
+		gary.drawData(g);
 	}
 }
