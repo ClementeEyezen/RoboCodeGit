@@ -6,12 +6,12 @@ import robocode.ScannedRobotEvent;
 public class DataBox 
 {
 	ScannedRobotEvent lastScan;
-	AdvancedRobot self;
-	public DataBox(AdvancedRobot r)
+	ArcBasicBot self;
+	public DataBox(ArcBasicBot r)
 	{
 		self = r;
 	}
-	public AdvancedRobot getRobot()
+	public ArcBasicBot getRobot()
 	{
 		return self;
 	}

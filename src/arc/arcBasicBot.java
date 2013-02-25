@@ -39,7 +39,7 @@ public class ArcBasicBot extends AdvancedRobot
 		double desire = theta;
 		this.setTurnGunLeftRadians(desire-current);
 	}
-	public void setGunFire(int delay)
+	public void setGunFire(double power)
 	{
 		//set the gun to fire a certain amount of steps later
 		this.setFireBullet(gary.getPower());
@@ -113,6 +113,11 @@ public class ArcBasicBot extends AdvancedRobot
 			double d = p.distance(this.selfPoint());
 			this.advanceRobot(d);
 		}
+	}
+	public void driveRobotTo(double direction, double distance)
+	{
+		turnRobotTo(direction);
+		advanceRobot(distance);
 	}
 	public void turnRobotTo(double theta)
 	{

@@ -5,13 +5,16 @@ public class GunBrain
 	DataBox store;
 	double power = 1;
 	double direction = 0;
+	ArcBasicBot r;
 	public GunBrain(DataBox data)
 	{
 		store = data;
+		r = data.getRobot();
 	}
 	public void process()
 	{
-		//do what it needs to do to calculate information about what it needs to do, should result in calling of movements
+		//do what it needs to do to calculate information about what it needs to do, should result in calling of movement and firing for the gun
+		r.setGunFire(getPower());
 	}
 	public double getPower()
 	{
