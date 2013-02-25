@@ -1,5 +1,8 @@
 package arc;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
 
@@ -20,6 +23,10 @@ public class ArcBasicBot extends AdvancedRobot
 		this.setAdjustGunForRobotTurn(true);
 		this.setAdjustRadarForGunTurn(true);
 		this.setAdjustRadarForRobotTurn(true);
+		this.setBodyColor(Color.BLUE);
+		this.setGunColor(Color.BLUE);
+		this.setRadarColor(Color.BLUE);
+		this.setBulletColor(Color.BLUE);
 		//create new brains
 		dan = new DataBox(this);
 		mary = new MoveBrain(dan);
@@ -143,5 +150,11 @@ public class ArcBasicBot extends AdvancedRobot
 		non[0] = this.getX();
 		non[1] = this.getY();
 		return new Point(non);
+	}
+	public void onPaint(Graphics2D g)
+	{
+		g.setColor(Color.ORANGE);
+		g.drawString("test String", 300, 300);
+		dan.drawData(g);
 	}
 }

@@ -15,6 +15,6 @@ public class RadarBrain
 	{
 		//do what it needs to do to calculate information about what it needs to do, should result in calling of movement for the radar
 		//default to spinning the radar at max pace
-		r.moveRadarTo(store.getRadarDirection()+Math.PI);
+		r.moveRadarTo(Double.POSITIVE_INFINITY);
 	}
 }
