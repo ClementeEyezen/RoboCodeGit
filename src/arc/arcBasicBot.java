@@ -16,10 +16,16 @@ public class ArcBasicBot extends AdvancedRobot
 	boolean polarControl;
 	public void run()
 	{
+		//make the ports move independently
+		this.setAdjustGunForRobotTurn(true);
+		this.setAdjustRadarForGunTurn(true);
+		this.setAdjustRadarForRobotTurn(true);
+		//create new brains
 		dan = new DataBox(this);
 		mary = new MoveBrain(dan);
 		gary = new GunBrain(dan);
 		rarely = new RadarBrain(dan);
+		//begin run through of calculations
 		while (true)
 		{
 			mary.process();
