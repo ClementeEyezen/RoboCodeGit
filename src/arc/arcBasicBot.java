@@ -16,10 +16,17 @@ public class ArcBasicBot extends AdvancedRobot
 	boolean polarControl;
 	public void run()
 	{
-		dan = new DataBox();
+		dan = new DataBox(this);
 		mary = new MoveBrain(dan);
 		gary = new GunBrain(dan);
 		rarely = new RadarBrain(dan);
+		while (true)
+		{
+			mary.process();
+			gary.process();
+			rarely.process();
+			execute();
+		}
 	}
 	public void onScannedRobot(ScannedRobotEvent sre)
 	{
@@ -28,14 +35,21 @@ public class ArcBasicBot extends AdvancedRobot
 	public void moveGunTo(double theta)
 	{
 		//move the gun to the heading theta
+		double current = this.getGunHeading();
+		double desire = theta;
+		this.setTurnGunLeftRadians(desire-current);
 	}
 	public void setGunFire(int delay)
 	{
 		//set the gun to fire a certain amount of steps later
+		this.setFireBullet(gary.getPower());
 	}
 	public void moveRadarTo(double theta)
 	{
 		//move the gun to the heading theta
+		double current = this.getRadarHeading();
+		double desire = theta;
+		this.setTurnRadarLeftRadians(desire-current);
 	}
 	public void driveRobotTo(Point p)
 	{
