@@ -20,13 +20,8 @@ public class ArcBasicBot extends AdvancedRobot
 	public void run()
 	{
 		//make the ports move independently
-		this.setAdjustGunForRobotTurn(true);
-		this.setAdjustRadarForGunTurn(true);
-		this.setAdjustRadarForRobotTurn(true);
-		this.setBodyColor(Color.BLUE);
-		this.setGunColor(Color.BLUE);
-		this.setRadarColor(Color.BLUE);
-		this.setBulletColor(Color.BLUE);
+		this.setRotateFree();
+		this.setColor(Color.BLUE);
 		//create new brains
 		dan = new DataBox(this);
 		mary = new MoveBrain(dan);
@@ -40,6 +35,19 @@ public class ArcBasicBot extends AdvancedRobot
 			rarely.process();
 			execute();
 		}
+	}
+	public void setRotateFree()
+	{
+		this.setAdjustGunForRobotTurn(true);
+		this.setAdjustRadarForGunTurn(true);
+		this.setAdjustRadarForRobotTurn(true);
+	}
+	public void setColor(Color c)
+	{
+		this.setBodyColor(c);
+		this.setGunColor(c);
+		this.setRadarColor(c);
+		this.setBulletColor(c);
 	}
 	public void onScannedRobot(ScannedRobotEvent sre)
 	{
