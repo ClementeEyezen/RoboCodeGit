@@ -47,7 +47,7 @@ public class VirtualBot
 	}
 	public Point3D getLocation()
 	{
-		return location.get(location.size());
+		return location.get(location.size()-1);
 	}
 	public void update(ScannedRobotEvent sre, Point myRobot, double myHeading)
 	{

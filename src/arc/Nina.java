@@ -12,6 +12,10 @@ public class Nina extends ArcBasicBot
 		//make the ports move independently
 		this.setRotateFree();
 		this.setColor(Color.BLUE);
+		roomWidth = this.getBattleFieldWidth();
+		roomHeight = this.getBattleFieldHeight();
+		System.out.println("r.roomWidth = "+roomWidth);
+		System.out.println("r.roomHeight = "+roomHeight);
 		//create new brains
 			//Nina has a NinjaMove brain, a standard DataBox
 			//Nina will have a NinjaDar and a NinjaGun

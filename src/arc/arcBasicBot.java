@@ -17,11 +17,19 @@ public class ArcBasicBot extends AdvancedRobot
 	double driveBearing;
 	double driveDistance;
 	boolean polarControl;
+
+	public double roomWidth;
+	public double roomHeight;
+
 	public void run()
 	{
 		//make the ports move independently
 		this.setRotateFree();
 		this.setColor(Color.BLUE);
+		roomWidth = this.getBattleFieldWidth();
+		roomHeight = this.getBattleFieldHeight();
+		System.out.println("r.roomWidth = "+roomWidth);
+		System.out.println("r.roomHeight = "+roomHeight);
 		//create new brains
 		dan = new DataBox(this);
 		mary = new MoveBrain(dan);
@@ -58,39 +66,54 @@ public class ArcBasicBot extends AdvancedRobot
 		//move the gun to the heading theta
 		double current = this.getGunHeadingRadians();
 		double desire = theta;
+		System.out.println("Check infinity move gun");
 		double delta = minimizeRotation(current, desire); 
 		this.setTurnGunLeftRadians(delta);
 	}
 	public static double minimizeRotation(double current, double desired)
 	{
-		double delta = desired-current;
-		System.out.println("raw delta : "+delta);
-		if (delta>=Math.PI*2)
+		if (desired != Double.POSITIVE_INFINITY)
 		{
-			System.out.println("delta > 360");
-			delta-=2*Math.PI;
-			System.out.println("Corrected to "+delta);
+			double delta = desired-current;
+			System.out.println("raw delta : "+delta);
+			if (delta>=Math.PI*2)
+			{
+				System.out.println("delta > 360");
+				delta-=2*Math.PI;
+				System.out.println("Corrected to "+delta);
+			}
+			else if (delta<=Math.PI*-2)
+			{
+				System.out.println("delta < -360");
+				delta+=2*Math.PI;
+				System.out.println("Corrected to "+delta);
+			}
+			if (delta>=Math.PI*1)
+			{
+				System.out.println("delta > 180");
+				delta = 2*Math.PI-delta;
+				System.out.println("Corrected to "+delta);
+			}
+			if (delta<=Math.PI*-1)
+			{
+				System.out.println("delta < -180");
+				delta = 2*Math.PI+delta;
+				System.out.println("Corrected to "+delta);
+			}
+			System.out.println("G current: "+current+" G desire: "+desired+" G change: "+delta);
+			return -delta;
 		}
-		else if (delta<=Math.PI*-2)
-		{
-			System.out.println("delta < -360");
-			delta+=2*Math.PI;
-			System.out.println("Corrected to "+delta);
-		}
-		if (delta>=Math.PI*1)
-		{
-			System.out.println("delta > 180");
-			delta = 2*Math.PI-delta;
-			System.out.println("Corrected to "+delta);
-		}
-		if (delta<=Math.PI*-1)
-		{
-			System.out.println("delta < -180");
-			delta = 2*Math.PI+delta;
-			System.out.println("Corrected to "+delta);
-		}
-		System.out.println("G current: "+current+" G desire: "+desired+" G change: "+delta);
-		return -delta;
+		else return desired;
+	}
+	public Point fitToRoom(Point p)
+	{
+		double x = p.getPoint()[0];
+		double y = p.getPoint()[1];
+		if (x>roomWidth-18) x = roomWidth-20;
+		if (x<18) x = 20;
+		if (y>roomHeight-18) y = roomHeight-20;
+		if (y<18) y = 20;
+		return new Point(x,y);
 	}
 	public void setGunFire(double power)
 	{
@@ -102,6 +125,7 @@ public class ArcBasicBot extends AdvancedRobot
 		//move the gun to the heading theta
 		double current = this.getRadarHeading();
 		double desire = theta;
+		System.out.println("Check infinity radar");
 		this.setTurnRadarLeftRadians(minimizeRotation(current, desire));
 	}
 	public void driveRobotTo(Point p)
@@ -177,6 +201,7 @@ public class ArcBasicBot extends AdvancedRobot
 		//move the robot to the heading theta in radians
 		double current = this.getHeading();
 		double desire = theta;
+		System.out.println("Check infinity turn robot");
 		this.setTurnLeftRadians(minimizeRotation(current, desire));
 	}
 	public void advanceRobot(double distance)
