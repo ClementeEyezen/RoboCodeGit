@@ -21,6 +21,10 @@ public class DataBox
 	{
 		return self;
 	}
+	public int getOpCount()
+	{
+		return opponents.size();
+	}
 	public void scanEvent(ScannedRobotEvent sre)
 	{
 		boolean previousBot = false;
@@ -64,5 +68,9 @@ public class DataBox
 	public double getRadarDirection()
 	{
 		return self.getRadarHeadingRadians();
+	}
+	public ArrayList<VirtualBot> getOpponents()
+	{
+		return opponents;
 	}
 }
