@@ -130,6 +130,10 @@ public class ArcBasicBot extends AdvancedRobot
 	}
 	public void driveRobotTo(Point p)
 	{
+		//draw the point on screen where it thinks  it is going
+		Graphics2D gg = this.getGraphics();
+		gg.setColor(Color.RED);
+		gg.fillRect((int) (p.getPoint()[0]), (int) (p.getPoint()[1]), 4, 4);
 		//move the robot from its current position to a point on the map, scaled from the upper left hand corner of the map
 		pointControl = true;
 		if (p.distance(this.selfPoint())<=2)
@@ -141,52 +145,54 @@ public class ArcBasicBot extends AdvancedRobot
 		{
 			double dx = p.getPoint()[0]-this.selfPoint().getPoint()[0];
 			double dy = p.getPoint()[1]-this.selfPoint().getPoint()[1];
-			if (dy == 0)
-			{
-				if (dx >= 0)
-				{
-					this.turnRobotTo(Math.PI/2);
-				}
-				else
-				{
-					this.turnRobotTo(3*Math.PI/2);
-				}
-			}
-			else if (dy>0)
-			{
-				if (dx == 0)
-				{
-					this.turnRobotTo(0.0);
-				}
-				else if (dx > 0)
-				{
-					double direction = Math.atan2(dx, dy);
-					this.turnRobotTo(direction);
-				}
-				else
-				{
-					double direction = Math.atan2(dx, dy);
-					this.turnRobotTo(direction);
-				}
-			}
-			else
-			{
-				//dy<0
-				if (dx == 0)
-				{
-					this.turnRobotTo(Math.PI);
-				}
-				else if (dx > 0)
-				{
-					double direction = Math.atan2(dx, dy);
-					this.turnRobotTo(direction);
-				}
-				else
-				{
-					double direction = Math.atan2(dx, dy);
-					this.turnRobotTo(direction);
-				}
-			}
+//			if (dy == 0)
+//			{
+//				if (dx >= 0)
+//				{
+//					this.turnRobotTo(Math.PI/2);
+//				}
+//				else
+//				{
+//					this.turnRobotTo(3*Math.PI/2);
+//				}
+//			}
+//			else if (dy>0)
+//			{
+//				if (dx == 0)
+//				{
+//					this.turnRobotTo(0.0);
+//				}
+//				else if (dx > 0)
+//				{
+//					double direction = Math.atan2(dx, dy);
+//					this.turnRobotTo(direction);
+//				}
+//				else
+//				{
+//					double direction = Math.atan2(dx, dy);
+//					this.turnRobotTo(direction);
+//				}
+//			}
+//			else
+//			{
+//				//dy<0
+//				if (dx == 0)
+//				{
+//					this.turnRobotTo(Math.PI);
+//				}
+//				else if (dx > 0)
+//				{
+//					double direction = Math.atan2(dx, dy);
+//					this.turnRobotTo(direction);
+//				}
+//				else
+//				{
+//					double direction = Math.atan2(dx, dy);
+//					this.turnRobotTo(direction);
+//				}
+//			}
+			double direction = Math.atan2(dx, dy);
+			this.turnRobotTo(direction);
 			double d = p.distance(this.selfPoint());
 			this.advanceRobot(d);
 		}
@@ -199,9 +205,9 @@ public class ArcBasicBot extends AdvancedRobot
 	public void turnRobotTo(double theta)
 	{
 		//move the robot to the heading theta in radians
-		double current = this.getHeading();
+		double current = this.getHeadingRadians();
+		System.out.println("turnRobotTo getHeading = "+current);
 		double desire = theta;
-		System.out.println("Check infinity turn robot");
 		this.setTurnLeftRadians(minimizeRotation(current, desire));
 	}
 	public void advanceRobot(double distance)
