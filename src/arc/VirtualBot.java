@@ -15,6 +15,7 @@ public class VirtualBot
 	ArrayList<Double> energy; //represented by color
 	ArrayList<Double> heading; //represented by lines
 	ArrayList<Double> velocity; //represented by box size
+	ArrayList<Double> bearing;
 	String name; //the name of the robot that is being tracked
 	Robot image; //the robot that the virtual robot represents
 	public VirtualBot(Robot r)
@@ -25,6 +26,7 @@ public class VirtualBot
 		energy = new ArrayList<Double>();
 		heading = new ArrayList<Double>();
 		velocity = new ArrayList<Double>();
+		bearing = new ArrayList<Double>();
 	}
 	public VirtualBot(String nam)
 	{
@@ -34,10 +36,11 @@ public class VirtualBot
 		energy = new ArrayList<Double>();
 		heading = new ArrayList<Double>();
 		velocity = new ArrayList<Double>();
+		bearing = new ArrayList<Double>();
 	}
 	public void addLocation(double x, double y, long turn)
 	{
-		System.out.println("x:"+x+" y:"+y+" turn:"+turn);
+		//System.out.println("x:"+x+" y:"+y+" turn:"+turn);
 		Point3D jerry = new Point3D(x,y,turn);
 		location.add(jerry);
 	}
@@ -49,20 +52,25 @@ public class VirtualBot
 	{
 		return location.get(location.size()-1);
 	}
+	public double getBearing()
+	{
+		return bearing.get(bearing.size()-1);
+	}
 	public void update(ScannedRobotEvent sre, Point myRobot, double myHeading)
 	{
 		if (sre.getName().equals(name))
 		{
 			//components of a Point3D
 			long time = sre.getTime();
-			double bearing = sre.getBearingRadians()+myHeading; //direction to the other robot
-			double rotBearing = -(bearing-Math.PI/2);
-			System.out.println("bearing "+sre.getBearing()+" rotated to "+(-sre.getBearing()+90));
+			double bearing1 = sre.getBearingRadians()+myHeading; //direction to the other robot
+			bearing.add(bearing1);
+			double rotBearing = -(bearing1-Math.PI/2);
+			//System.out.println("bearing "+sre.getBearing()+" rotated to "+(-sre.getBearing()+90));
 			double distance = sre.getDistance(); //distance to the other robot
-			System.out.println("at distance "+distance);
+			//System.out.println("at distance "+distance);
 			double xloc = myRobot.getPoint()[0];
 			double dx = distance*Math.cos(rotBearing);
-			System.out.println("myloc:"+xloc+" relative x: "+dx+" result ==> "+(xloc+dx));
+			//System.out.println("myloc:"+xloc+" relative x: "+dx+" result ==> "+(xloc+dx));
 			xloc+=dx;//add the other robot's location
 			double yloc = myRobot.getPoint()[1];
 			double dy = distance*Math.sin(rotBearing);
@@ -72,7 +80,7 @@ public class VirtualBot
 			energy.add(energy1); //add the robot's energy
 			heading.add(sre.getHeadingRadians()); //add the robot's heading
 			velocity.add(sre.getVelocity()); //add the robot's velocity
-			System.out.println("Opponent "+sre.getName()+" updated to version "+location.size());
+			//System.out.println("Opponent "+sre.getName()+" updated to version "+location.size());
 		}
 		if (location.size()>100)
 		{
@@ -84,7 +92,7 @@ public class VirtualBot
 	}
 	public void drawData(Graphics2D g)
 	{
-		System.out.println("Drawing Virtualbot data");
+		//System.out.println("Drawing Virtualbot data");
 		g.setColor(Color.GREEN);
 		for (int i = 0; i<location.size()-1; i++)
 		{

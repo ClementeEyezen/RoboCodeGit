@@ -31,7 +31,7 @@ public class DataBox
 		lastScan = sre;
 		for (VirtualBot vb : opponents)
 		{
-			System.out.println(""+vb.getName());
+			//System.out.println(""+vb.getName());
 			if (sre.getName().equals(vb.getName()))
 			{
 				previousBot = true;
@@ -52,7 +52,7 @@ public class DataBox
 	}
 	public void newOpponent(ScannedRobotEvent sre)
 	{
-		System.out.println("New opponent "+sre.getName());
+		//System.out.println("New opponent "+sre.getName());
 		VirtualBot anime = new VirtualBot(sre.getName());
 		anime.update(sre, self.selfPoint(), self.getHeadingRadians());
 		opponents.add(anime);

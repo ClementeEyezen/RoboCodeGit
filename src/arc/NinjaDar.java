@@ -19,57 +19,32 @@ public class NinjaDar extends RadarBrain
 	{
 		if (store.getOpCount()<=1 || r.getTime()<17 || store.getOpCount()>=8)
 		{
+			System.out.println("not normal @Time "+r.getTime()+" @ OpCount "+store.getOpCount());
 			r.moveRadarTo(Double.POSITIVE_INFINITY);
 		}
 		else
 		{
-			double turnHere = 0; //radians
-			boolean clockOrNot = true;
-			for (VirtualBot v: store.getOpponents())
-			{
-				double ex = v.getLocation().coords[0];
-				double ey = v.getLocation().coords[1];
-				double mx = r.getX();
-				double my = r.getY();
-				double dx = ex-mx;
-				double dy = ey-my;
-				double bearing = Math.atan2(dy, dx);
-				opBearings.add(bearing);
-			}
-			Collections.sort(opBearings);
-			for( int i = 0; i<store.getOpCount()-1; i++)
-			{
-				deltaBearing.add(opBearings.get(i+1)-opBearings.get(i));
-			}
-			double lastDelta = opBearings.get(0) - opBearings.get(store.getOpCount()-1);
-			deltaBearing.add(lastDelta);
-			int bigGapInt = store.getOpCount()-1;
-			counterLeft = opBearings.get(store.getOpCount()-1);
-			clockRight = opBearings.get(0);
-			for (int i = 0; i<store.getOpCount()-1; i++)
-			{
-				if (deltaBearing.get(i)>deltaBearing.get(bigGapInt))
-				{
-					bigGapInt = i;
-					counterLeft = opBearings.get(i);
-					counterLeft = opBearings.get(i+1);
-				}
-			}
-			double cRaHead = r.getRadarHeadingRadians();
-			if (clockOrNot)
-			{
-				turnHere = Math.min(cRaHead+(Math.PI/4),clockRight);
-			}
-			else
-			{
-				turnHere = Math.max(cRaHead-(Math.PI/4),counterLeft);
-			}
+			System.out.println("minimizing radar arc @Time"+r.getTime());
+			double turnHere = Double.POSITIVE_INFINITY;
+			
 			r.moveRadarTo(turnHere);
 		}
 	}
 	public void drawData(Graphics2D g)
 	{
+		System.out.println("drawing NinjaDar data");
 		g.setColor(Color.BLUE);
 		g.fillArc((int) (r.getX()-20), (int) (r.getY()+20), 40, 40, (int) (counterLeft), (int) (clockRight-counterLeft));
+		g.drawString("abc test String dar1", 300, 400);
+		int x1 = (int) r.getX();
+		int y1 = (int) r.getY();
+		int x2 = (int) (x1 + 100*Math.cos(clockRight));
+		int y2 = (int) (y1 + 100*Math.sin(clockRight));
+		g.setColor(Color.ORANGE);
+		g.drawLine(x1, y1, x2, y2);
+		x2 = (int) (x1 + 100*Math.cos(counterLeft));
+		y2 = (int) (y1 + 100*Math.sin(counterLeft));
+		g.setColor(Color.YELLOW);
+		g.drawLine(x1, y1, x2, y2);
 	}
 }

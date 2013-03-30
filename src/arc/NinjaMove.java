@@ -53,9 +53,9 @@ public class NinjaMove extends MoveBrain
 			Point retPoint = fitToRoom(newPoint);
 			eL1.add(e);
 			eL2.add(e);
-			System.out.println("ax1 x:"+retPoint.getPoint()[0]+" y:"+retPoint.getPoint()[1]);
+			//System.out.println("ax1 x:"+retPoint.getPoint()[0]+" y:"+retPoint.getPoint()[1]);
 			ax1.add(retPoint);
-			System.out.println("ax2 x:"+retPoint.getPoint()[0]+" y:"+retPoint.getPoint()[1]);
+			//System.out.println("ax2 x:"+retPoint.getPoint()[0]+" y:"+retPoint.getPoint()[1]);
 			ax2.add(retPoint);
 			driveMeHere = retPoint;
 		}
@@ -73,8 +73,8 @@ public class NinjaMove extends MoveBrain
 			Point axis2 = fitToRoom(new Point( e2.coords[0]+100*Math.cos(b1to2), e2.coords[1]+100*Math.sin(b1to2))); //end of the axis on e2 side
 			eL1.add(e1);
 			eL2.add(e2);
-			System.out.println("ax1 "+ax1.size()+" x:"+axis1.getPoint()[0]+" y:"+axis1.getPoint()[1]);
-			System.out.println("ax2 "+ax1.size()+" x:"+axis2.getPoint()[0]+" y:"+axis2.getPoint()[1]);
+			//System.out.println("ax1 "+ax1.size()+" x:"+axis1.getPoint()[0]+" y:"+axis1.getPoint()[1]);
+			//System.out.println("ax2 "+ax1.size()+" x:"+axis2.getPoint()[0]+" y:"+axis2.getPoint()[1]);
 			ax1.add(axis1);
 			ax2.add(axis2);
 			// the goal is to make it so that if another robot shoots at it, it uses the other robot as cover
@@ -99,7 +99,7 @@ public class NinjaMove extends MoveBrain
 	}
 	public Point fitToRoom(Point p)
 	{
-		System.out.println("Room dimensions: "+roomWidth+","+roomHeight);
+		//System.out.println("Room dimensions: "+roomWidth+","+roomHeight);
 		double x = p.getPoint()[0];
 		double y = p.getPoint()[1];
 		if (x>roomWidth-18) x = roomWidth-20;
@@ -110,7 +110,7 @@ public class NinjaMove extends MoveBrain
 	}
 	public void drawData(Graphics2D g)
 	{
-		System.out.println("Drawing NinjaMove data");
+		//System.out.println("Drawing NinjaMove data");
 		g.setColor(Color.MAGENTA);
 //		for (int i = 0; i<eL1.size()-1; i++)
 //		{

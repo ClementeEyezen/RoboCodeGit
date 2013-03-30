@@ -64,12 +64,11 @@ public class GunBrain
 			}
 		}
 		direction = Math.atan2(dx, dy);
-		System.out.println("desired gun direction: "+direction);
-		
+		//System.out.println("desired gun direction: "+direction);
 	}
 	public boolean fireQ()
 	{
-		System.out.println("Close to firing? "+(Math.abs(ArcBasicBot.minimizeRotation(store.getGunDirection(),getDirection()))));
+		//System.out.println("Close to firing? "+(Math.abs(ArcBasicBot.minimizeRotation(store.getGunDirection(),getDirection()))));
 		if (Math.abs(ArcBasicBot.minimizeRotation(store.getGunDirection(),getDirection()))<=.02)
 		{
 			return true;
