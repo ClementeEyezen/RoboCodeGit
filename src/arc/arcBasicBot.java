@@ -213,7 +213,7 @@ public class ArcBasicBot extends AdvancedRobot
 	public void advanceRobot(double distance)
 	{
 		//move the robot this far forward in pixels
-		this.setAhead(distance);
+		this.setAhead(Math.min(distance, 6));
 	}
 	public Point selfPoint()
 	{

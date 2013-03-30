@@ -8,6 +8,7 @@ public class Nina extends ArcBasicBot
 	//Nina is the compilation of Ninja brains that builds off ArcBasicBot
 	NinjaMove mary;
 	NinjaDar rarely;
+	ShoGun sammy;
 	public void run()
 	{
 		//make the ports move independently
@@ -22,13 +23,13 @@ public class Nina extends ArcBasicBot
 			//Nina will have a NinjaDar and a NinjaGun
 		dan = new DataBox(this);
 		mary = new NinjaMove(dan);
-		gary = new GunBrain(dan);
+		sammy = new ShoGun(dan);
 		rarely = new NinjaDar(dan);
 		//begin run through of calculations
 		while (true)
 		{
 			mary.process();
-			gary.process();
+			sammy.process();
 			rarely.process();
 			execute();
 		}
