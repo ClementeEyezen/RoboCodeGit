@@ -10,7 +10,7 @@ public class ArcBasicBot extends AdvancedRobot
 {
 	DataBox dan;
 	MoveBrain mary;
-	GunBrain gary;
+	ShoGun gary;
 	RadarBrain rarely;
 	Point driveTo;
 	boolean pointControl;
@@ -33,7 +33,7 @@ public class ArcBasicBot extends AdvancedRobot
 		//create new brains
 		dan = new DataBox(this);
 		mary = new MoveBrain(dan);
-		gary = new GunBrain(dan);
+		gary = new ShoGun(dan);
 		rarely = new RadarBrain(dan);
 		//begin run through of calculations
 		while (true)

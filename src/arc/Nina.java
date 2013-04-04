@@ -40,5 +40,6 @@ public class Nina extends ArcBasicBot
 		super.onPaint(g);
 		mary.drawData(g);
 		rarely.drawData(g);
+		sammy.drawData(g);
 	}
 }
