@@ -17,16 +17,22 @@ public class LifeBox
 	 *     > nameArray
 	 *       > [data]
 	 */
+	cwruBase mainRobot;
 	ArrayList<IDArray> indexOfArrays;
 	int defaultTime = 50;
-	public LifeBox()
+	public LifeBox(cwruBase robot)
 	{
-		new LifeBox(50);
+		new LifeBox(50, robot);
 	}
-	public LifeBox(int maxTimeTracked)
+	public LifeBox(int maxTimeTracked, cwruBase robot)
 	{
 		defaultTime = maxTimeTracked;
 		indexOfArrays = new ArrayList<IDArray>();
+		mainRobot = robot;
+	}
+	public cwruBase getRobot()
+	{
+		return mainRobot;
 	}
 	public boolean allocateArray(Brain origin, String name)
 	{
@@ -89,40 +95,4 @@ public class LifeBox
 		return null;
 	}
 	
-}
-
-class IDArray extends ArrayList<nameArray>
-{
-	Brain uniqueIdentifier;
-	public IDArray(Brain origin)
-	{
-		super();
-		uniqueIdentifier = origin;
-	}
-	public ArrayList<String> getDataTypes()
-	{
-		//returns the string name of every item within an IDArray
-		ArrayList<String> nameList = new ArrayList<String>();
-		for (nameArray n : this)
-		{
-			nameList.add(n.name());
-		}
-		return nameList;
-	}
-	public Brain ID()
-	{
-		return uniqueIdentifier;
-	}
-}
-class nameArray extends ArrayList<Object>
-{
-	String name;
-	public nameArray(String name)
-	{
-		this.name = name;
-	}
-	public String name()
-	{
-		return name;
-	}
 }
