@@ -27,8 +27,8 @@ public class cwruBase extends AdvancedRobot
 		{
 			//recurring actions
 			processTime = System.currentTimeMillis();
-			lcd.process(); //projection of movement
 			sally.process(); //radar movement/data add
+			lcd.process(); //projection of movement
 			biggles.process(); //gun movement/data add
 			larson.process(); //move movement/data add
 			totalTime = System.currentTimeMillis()-processTime;
