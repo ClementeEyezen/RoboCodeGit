@@ -25,7 +25,7 @@ public class cwruBase extends AdvancedRobot
 		//==========REPEATING ACTIONS==========
 		while(true)
 		{
-			//recurring actions
+			//perform calculations
 			processTime = System.currentTimeMillis();
 			sally.process(); //radar movement/data add
 			lcd.process(); //projection of movement
@@ -33,14 +33,20 @@ public class cwruBase extends AdvancedRobot
 			larson.process(); //move movement/data add
 			totalTime = System.currentTimeMillis()-processTime;
 			System.out.println("TOTAL calc time (millis):"+totalTime);
-			//end recurring actions
+			
+			//set the movement based on calculations
 			processTime = System.currentTimeMillis();
 			sally.set();
 			biggles.set();
 			larson.set();
 			totalTime = System.currentTimeMillis()-processTime;
 			System.out.println("set Action time (millis):"+totalTime);
+			
+			//execute all movement
+			processTime = System.currentTimeMillis();
 			execute();
+			totalTime = System.currentTimeMillis()-processTime;
+			System.out.println("execute Time (millis):"+totalTime);
 		}
 	}
 }

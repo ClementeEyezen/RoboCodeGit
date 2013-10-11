@@ -15,15 +15,13 @@ public class RobotBite
 	long cTime;
 	double cx;
 	double cy;
-	ArrayList<Long> pTime; //forward time tags
 	cwruBase origin;
 	double cEnergy;
 	double cBearing_radians;
 	double cDistance;
 	double cHeading_radians;
 	double cVelocity;
-	ArrayList<Double> px; //forward projections for x
-	ArrayList<Double> py; //forward projections for y
+	ArrayList<Projection> projec; //forward projections for x
 	
 	public RobotBite(long time, cwruBase self, double energy, double bearing_radians, double distance,
 			double heading_radians, double velocity)
@@ -40,7 +38,7 @@ public class RobotBite
 		double myX = self.getX();
 		double myY = self.getY();
 		double math_bearing = (-bearing_radians+Math.PI/2)%(2*Math.PI);
-		double math_heading = (-heading_radians+Math.PI/2)%(2*Math.PI);
+		//double math_heading = (-heading_radians+Math.PI/2)%(2*Math.PI);
 		/*
 		 *            0
 		 *           90
@@ -53,15 +51,8 @@ public class RobotBite
 		cx = myX+dX;
 		cy = myY+dY;
 	}
-	public void attachProjection(long start_time, ArrayList<Double> x, ArrayList<Double> y)
+	public void attachProjection(ArrayList<Projection> projList)
 	{
-		int totalSteps = Math.min(x.size(), y.size());
-		px = x;
-		py = y;
-		pTime = new ArrayList<Long>();
-		for (long i = start_time; i<totalSteps+start_time; i++)
-		{
-			pTime.add(i);
-		}
+		
 	}
 }

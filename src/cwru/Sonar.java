@@ -29,7 +29,7 @@ public class Sonar extends Brain
 		{
 			processScan(sre);
 		}
-		if (turnCounter < 4)
+		if (turnCounter < 18)
 		{
 			radarEndTheta = Double.POSITIVE_INFINITY;
 		}
@@ -51,7 +51,8 @@ public class Sonar extends Brain
 		{
 			if (rName.equals(n.name()))
 			{
-				//if the robot matches prior data
+				//if the robot matches prior data (robot name)
+				
 				//0 = time				[state]
 				//1 = x					[state]
 				//2 = y					[state]
@@ -60,10 +61,18 @@ public class Sonar extends Brain
 				//5 = distance			[relative position]
 				//6 = heading radians	[travel]
 				//7 = velocity			[travel]
-				n.add(new RobotBite(s.getTime(), source.mainRobot, s.getEnergy(), 
+				RobotBite larry = new RobotBite(s.getTime(), source.mainRobot, s.getEnergy(),	//make a robobit with current data 
 						s.getBearingRadians(), s.getDistance(), s.getHeadingRadians(), 
-						s.getVelocity()));
-				//add a new data bite
+						s.getVelocity());
+				n.add(larry);																	//add it to the list of "larry" data
+				for (Object o : n)																//update all of the projections to find accuracy
+					{
+						RobotBite robobit = (RobotBite) o;
+						for (Projection p : robobit.projec)
+						{
+							p.update(s.getTime(), larry.cx, larry.cy);
+						}
+					}
 			}
 		}
 		storageUnit.add(new nameArray(rName)); //if there is no data matching the scan robot

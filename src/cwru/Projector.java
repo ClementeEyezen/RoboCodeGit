@@ -8,6 +8,7 @@ public class Projector extends Brain
 	//saves current projection tied with projected accuracy
 	IDArray storageUnit;
 	IDArray enemyDataUnit;
+	RobotBite rb_standard;
 	public Projector(LifeBox source) 
 	{
 		super(source);
@@ -15,15 +16,15 @@ public class Projector extends Brain
 		storageUnit = source.request(this);
 		enemyDataUnit = source.request(new Sonar(source));
 				//request the IDArray that will contain as scanned enemy data (Radar)
-		
+		rb_standard = new RobotBite(0L, source.mainRobot, 0.0, 0.0, 0.0, 0.0, 0.0);
 	}
 	public void process()
 	{
 		long processTime = System.currentTimeMillis();
 		enemyDataUnit = source.request(new Sonar(source)); //up to date enemy position data
-		if (turnCounter < 4)
+		if (turnCounter < 18 || true)
 		{
-			//projections = current position + velocity (linear)
+			simple_linear_projection(18);
 		}
 		else
 		{
@@ -32,7 +33,7 @@ public class Projector extends Brain
 		long totalTime = System.currentTimeMillis()-processTime;
 		System.out.println("PRO calc time (millis):"+totalTime);
 	}
-	public Projection linearProjection(int forecastTime)
+	public Projection simple_linear_projection(int forecastTime)
 	{
 		//project using scanned velocity, heading
 		//forecast time is the time ahead of current time to project to
@@ -40,6 +41,38 @@ public class Projector extends Brain
 		int y = 0;
 		double guessAccuracy = 1.0;
 		return new Projection(x,y,turnCounter,turnCounter+forecastTime,guessAccuracy);
+		
+		/*
+		//projections = current position + velocity (linear)
+		Object robot_bite;
+		RobotBite robot_bite1;
+		for (nameArray n : enemyDataUnit)
+		{
+			for (int i = 0; i<n.size(); i++)
+			{
+				robot_bite = n.get(i);
+				if (robot_bite.getClass().equals(rb_standard.getClass()))
+				{
+					//if it's a robot bite
+					robot_bite1 = (RobotBite) robot_bite;
+					ArrayList<Double> xpos = new ArrayList<Double>();
+					ArrayList<Double> ypos = new ArrayList<Double>();
+					for (int j = 0; j<projLength; j++)
+					{
+						//attach a linear projection for 4 more turns ahead of the robot
+						double vel = robot_bite1.cVelocity;
+						double heading = robot_bite1.cHeading_radians;
+						double math_heading = (-heading+Math.PI/2)%(2*Math.PI);
+						double dx = vel*j*Math.cos(math_heading);
+						double dy = vel*j*Math.sin(math_heading);
+						xpos.add(dx+robot_bite1.cx);
+						ypos.add(dy+robot_bite1.cy);
+					}
+					robot_bite1.attachProjection(source.mainRobot.getTime(), xpos, ypos);
+				}
+			}
+		}
+		*/
 	}
 	public Projection averageVelocityProjection(int forecastTime)
 	{
@@ -59,34 +92,5 @@ public class Projector extends Brain
 		int y = 0;
 		double guessAccuracy = 1.0;
 		return new Projection(x,y,turnCounter,turnCounter+forecastTime,guessAccuracy);
-	}
-}
-
-class Projection
-{
-	int x; //projection location x
-	int y; //projection location y
-	int guessTime; //time the projection was made
-	double guessError; //estimation of accuracy at time of projection looking forward
-	int projTime; //time the projection is to be true
-	double projError; //distance from reality to guess/(delta time*8*2)
-	public Projection(int x, int y, int currentTime, int projTime, double estError)
-	{
-		this.x = x;
-		this.y = y;
-		this.guessTime = currentTime;
-		this.guessError = estError;
-		this.projTime = projTime;
-		projError = -1;
-	}
-	public void update(int currentTime, int x, int y)
-	{
-		if (currentTime == projTime)
-		{
-			//0 = perfect
-			//1 = equivalent to predicting no motion and the robot travels full speed
-			//2 = robot went opposite direction at max compared to your projection at max
-			projError = Brain.distance(this.x,this.y,x,y)/((projTime-guessTime)*8);
-		}
 	}
 }
