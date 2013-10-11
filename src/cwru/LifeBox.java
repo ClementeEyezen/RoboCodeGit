@@ -29,7 +29,7 @@ public class LifeBox
 	public LifeBox(int maxTimeTracked, cwruBase robot)
 	{
 		defaultTime = maxTimeTracked;
-		indexOfArrays = new ArrayList<IDArray>();
+		indexOfArrays = new ArrayList<IDArray>(0);
 		mainRobot = robot;
 		battlefield_height = robot.getBattleFieldHeight();
 		battlefield_width = robot.getBattleFieldWidth();
@@ -49,14 +49,17 @@ public class LifeBox
 	public boolean allocateArray(Brain origin, String name)
 	{
 		//use to check for existing array or to add a new array
-		
+
 		//returns true if new array is created
 		//returns false if the array already exists
-		for (IDArray id : indexOfArrays)
+		if (indexOfArrays.size()>0)
 		{
-			if (id.ID().equals(origin))
+			for (IDArray id : indexOfArrays)
 			{
-				return false;
+				if (id.ID().equals(origin))
+				{
+					return false;
+				}
 			}
 		}
 		IDArray temp = new IDArray(origin);
@@ -94,7 +97,7 @@ public class LifeBox
 	{
 		//search through the IDArrays by Brain type (Sonar, Gunner, etc.)
 		//if the types do not match then null is returned
-		
+
 		//used so that the movement brain can request enemy location data from radar etc.
 		for (IDArray id : indexOfArrays)
 		{
@@ -106,5 +109,5 @@ public class LifeBox
 		}
 		return null;
 	}
-	
+
 }
