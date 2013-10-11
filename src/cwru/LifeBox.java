@@ -18,6 +18,8 @@ public class LifeBox
 	 *       > [data]
 	 */
 	cwruBase mainRobot;
+	double battlefield_width;
+	double battlefield_height;
 	ArrayList<IDArray> indexOfArrays;
 	int defaultTime = 50;
 	public LifeBox(cwruBase robot)
@@ -29,10 +31,20 @@ public class LifeBox
 		defaultTime = maxTimeTracked;
 		indexOfArrays = new ArrayList<IDArray>();
 		mainRobot = robot;
+		battlefield_height = robot.getBattleFieldHeight();
+		battlefield_width = robot.getBattleFieldWidth();
 	}
 	public cwruBase getRobot()
 	{
 		return mainRobot;
+	}
+	public double bfw()
+	{
+		return battlefield_width;
+	}
+	public double bfh()
+	{
+		return battlefield_height;
 	}
 	public boolean allocateArray(Brain origin, String name)
 	{
