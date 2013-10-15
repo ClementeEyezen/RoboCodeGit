@@ -12,6 +12,7 @@ public class RobotBite
 	//5 = distance			[relative position]
 	//6 = heading radians	[travel]
 	//7 = velocity			[travel]
+	String name;
 	long cTime;
 	double cx;
 	double cy;
@@ -23,10 +24,11 @@ public class RobotBite
 	double cVelocity;
 	ArrayList<Projection> projec; //forward projections for x
 	
-	public RobotBite(long time, cwruBase self, double energy, double bearing_radians, double distance,
+	public RobotBite(String name, long time, cwruBase self, double energy, double bearing_radians, double distance,
 			double heading_radians, double velocity)
 	{
 		//convert all the above data to arraylists of data
+		this.name = name;
 		cTime = time;
 		origin = self;
 		cEnergy = energy;

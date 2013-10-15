@@ -20,8 +20,12 @@ public class LifeBox
 	cwruBase mainRobot;
 	double battlefield_width;
 	double battlefield_height;
+	//Array of Arraylists for each robot
+	ArrayList<RoboCore> ronny = new ArrayList<RoboCore>(1);
+	/*
 	ArrayList<IDArray> indexOfArrays;
-	int defaultTime = 50;
+	*/
+	int defaultTime = 500;
 	public LifeBox(cwruBase robot)
 	{
 		new LifeBox(50, robot);
@@ -29,7 +33,7 @@ public class LifeBox
 	public LifeBox(int maxTimeTracked, cwruBase robot)
 	{
 		defaultTime = maxTimeTracked;
-		indexOfArrays = new ArrayList<IDArray>(0);
+		//indexOfArrays = new ArrayList<IDArray>(0);
 		mainRobot = robot;
 		battlefield_height = robot.getBattleFieldHeight();
 		battlefield_width = robot.getBattleFieldWidth();
@@ -46,6 +50,28 @@ public class LifeBox
 	{
 		return battlefield_height;
 	}
+	public void store(RobotBite store_this)
+	{
+		if (ronny.size()>0) //make sure there are cores to scan
+		{
+			for (RoboCore rc : ronny)
+			{
+				//run through all of the existing cores and see if it matches pre-collected data
+				if (rc.name.equals(store_this.name))
+				{
+					rc.add(store_this);
+				}
+			}
+		}
+		else
+		{
+			ronny.add(new RoboCore(store_this.name)); //add a new core
+			store(store_this); //run the test again
+		}
+		
+	}
+	//Commenting out the code that uses IDArrays, moving to a more simple soluction
+	/*
 	public boolean allocateArray(Brain origin, String name)
 	{
 		//use to check for existing array or to add a new array
@@ -109,5 +135,7 @@ public class LifeBox
 		}
 		return null;
 	}
-
+*/
+	//Start new code storage system
+	
 }

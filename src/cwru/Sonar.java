@@ -8,14 +8,14 @@ public class Sonar extends Brain
 {
 	double radarEndTheta;
 	ArrayList<ScannedRobotEvent> unprocessedScans;
-	IDArray storageUnit;//this is the active data storage and access for Sonar
+	//IDArray storageUnit;//this is the active data storage and access for Sonar
 	
 	public Sonar(LifeBox source)
 	{
 		super(source);
 		unprocessedScans = new ArrayList<ScannedRobotEvent>();
-		source.allocateArray(this, "All_RadarData");
-		storageUnit = source.request(this);
+		//source.allocateArray(this, "All_RadarData");
+		//storageUnit = source.request(this);
 	}
 	
 	//Sonar is the radar brain.
@@ -46,6 +46,7 @@ public class Sonar extends Brain
 	}
 	public void processScan(ScannedRobotEvent s)
 	{
+		//TODO rephrase this to work with the new data structure
 		String rName = s.getName();
 		for (nameArray n : storageUnit)
 		{
@@ -61,7 +62,7 @@ public class Sonar extends Brain
 				//5 = distance			[relative position]
 				//6 = heading radians	[travel]
 				//7 = velocity			[travel]
-				RobotBite larry = new RobotBite(s.getTime(), source.mainRobot, s.getEnergy(),	//make a robobit with current data 
+				RobotBite larry = new RobotBite(s.getName(), s.getTime(), source.mainRobot, s.getEnergy(),	//make a robobit with current data 
 						s.getBearingRadians(), s.getDistance(), s.getHeadingRadians(), 
 						s.getVelocity());
 				n.add(larry);																	//add it to the list of "larry" data
