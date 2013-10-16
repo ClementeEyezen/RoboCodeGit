@@ -1,6 +1,7 @@
 package cwru;
 
 import robocode.AdvancedRobot;
+import robocode.ScannedRobotEvent;
 
 public class cwruBase extends AdvancedRobot
 {
@@ -48,5 +49,9 @@ public class cwruBase extends AdvancedRobot
 			totalTime = System.currentTimeMillis()-processTime;
 			System.out.println("execute Time (millis):"+totalTime);
 		}
+	}
+	public void onScannedRobotEvent(ScannedRobotEvent sre)
+	{
+		sally.inputScan(sre);
 	}
 }

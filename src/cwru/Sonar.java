@@ -25,9 +25,10 @@ public class Sonar extends Brain
 	public void process()
 	{
 		long processTime = System.currentTimeMillis();
-		for (ScannedRobotEvent sre : unprocessedScans)
+		while (unprocessedScans.size()>0)
 		{
-			processScan(sre);
+			processScan(unprocessedScans.get(0));
+			unprocessedScans.remove(0);
 		}
 		if (turnCounter < 18)
 		{
@@ -36,6 +37,8 @@ public class Sonar extends Brain
 		else
 		{
 			radarEndTheta = 0; //calculate desired theta
+			//move along the list of robots. This will guaruntee seeing every robot 
+			//at least once every few scan cycles, and will scan faster for fewer robots
 		}
 		long totalTime = System.currentTimeMillis()-processTime;
 		System.out.println("RAD calc time (millis):"+totalTime);
@@ -46,26 +49,25 @@ public class Sonar extends Brain
 	}
 	public void processScan(ScannedRobotEvent s)
 	{
-		//TODO rephrase this to work with the new data structure
-		String rName = s.getName();
-		for (nameArray n : storageUnit)
+		//String rName = s.getName();
+		/*for (nameArray n : storageUnit)
 		{
 			if (rName.equals(n.name()))
-			{
+			{*/
 				//if the robot matches prior data (robot name)
 				
-				//0 = time				[state]
-				//1 = x					[state]
-				//2 = y					[state]
-				//3 = energy			[state]
-				//4 = bearing radians 	[relative position]
-				//5 = distance			[relative position]
-				//6 = heading radians	[travel]
-				//7 = velocity			[travel]
-				RobotBite larry = new RobotBite(s.getName(), s.getTime(), source.mainRobot, s.getEnergy(),	//make a robobit with current data 
+		//0 = time				[state]
+		//1 = x					[state]
+		//2 = y					[state]
+		//3 = energy			[state]
+		//4 = bearing radians 	[relative position]
+		//5 = distance			[relative position]
+		//6 = heading radians	[travel]
+		//7 = velocity			[travel]
+		RobotBite larry = new RobotBite(s.getName(), s.getTime(), source.mainRobot, s.getEnergy(),	//make a robobit with current data 
 						s.getBearingRadians(), s.getDistance(), s.getHeadingRadians(), 
 						s.getVelocity());
-				n.add(larry);																	//add it to the list of "larry" data
+				/*n.add(larry);																	//add it to the list of "larry" data
 				for (Object o : n)																//update all of the projections to find accuracy
 					{
 						RobotBite robobit = (RobotBite) o;
@@ -80,8 +82,11 @@ public class Sonar extends Brain
 			//add a new robot to the storage and repeat
 		processScan(s);
 			//this should find the old one and add the data properly
+*/	
+		//take the new robotbite larry, add to Lifebox
+		source.store(larry);
 	}
-	public void set()
+	public final void set()
 	{
 		source.getRobot().setTurnRadarLeftRadians(radarEndTheta);
 	}

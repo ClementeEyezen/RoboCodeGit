@@ -26,7 +26,7 @@ public class Legs extends Brain
 		long totalTime = System.currentTimeMillis()-processTime;
 		System.out.println("MOV calc time (millis):"+totalTime);
 	}
-	public void set()
+	public final void set()
 	{
 		source.mainRobot.setTurnLeftRadians(moveEndTheta);
 		source.mainRobot.setAhead(moveEndDistance);

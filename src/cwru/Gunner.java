@@ -28,8 +28,9 @@ public class Gunner extends Brain
 		System.out.println("GUN calc time (millis):"+totalTime);
 	}
 	//Gunner controls the gun
-	//it controls when it fires, how hard it fires and where it fires
-	public void set()
+	//it controls when it fires, how hard it fires and where it fires\
+	//it picks a target, fires at the best projection for the target, picks the next target, etc.
+	public final void set()
 	{
 		//point the gun
 		source.getRobot().setTurnGunLeft(gunEndTheta);
