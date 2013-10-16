@@ -24,10 +24,10 @@ public class RobotBite
 	double cVelocity;
 	ArrayList<Projection> projec; //forward projections for x
 	
-	public RobotBite(String name, long time, cwruBase self, double energy, double bearing_radians, double distance,
+	public RobotBite(String name, long time, cwruBase self, 
+			double energy, double bearing_radians, double distance,
 			double heading_radians, double velocity)
 	{
-		//convert all the above data to arraylists of data
 		this.name = name;
 		cTime = time;
 		origin = self;
@@ -55,6 +55,6 @@ public class RobotBite
 	}
 	public void attachProjection(ArrayList<Projection> projList)
 	{
-		
+		projec = projList;
 	}
 }

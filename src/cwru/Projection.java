@@ -2,6 +2,7 @@ package cwru;
 
 public class Projection
 {
+	String robot_name;
 	double x; //projection location x
 	double y; //projection location y
 	long guessTime; //time the projection was made

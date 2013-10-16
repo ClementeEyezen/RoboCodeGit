@@ -6,17 +6,18 @@ public class Projector extends Brain
 {
 	//solely works on projecting where enemy robots will be based on current data
 	//saves current projection tied with projected accuracy
-	IDArray storageUnit;
-	IDArray enemyDataUnit;
+	//IDArray storageUnit;
+	//IDArray enemyDataUnit;
 	RobotBite rb_standard;
 	public Projector(LifeBox source) 
 	{
 		super(source);
-		source.allocateArray(this, "All_Projections");
+		//commenting out the code with IDArray
+		/*source.allocateArray(this, "All_Projections");
 		storageUnit = source.request(this);
 		enemyDataUnit = source.request(new Sonar(source));
 				//request the IDArray that will contain as scanned enemy data (Radar)
-		rb_standard = new RobotBite(0L, source.mainRobot, 0.0, 0.0, 0.0, 0.0, 0.0);
+		rb_standard = new RobotBite(0L, source.mainRobot, 0.0, 0.0, 0.0, 0.0, 0.0);*/
 	}
 	public void process()
 	{

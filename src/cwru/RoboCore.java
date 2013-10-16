@@ -19,4 +19,100 @@ public class RoboCore
 	{
 		data_points.add(new_data_point);
 	}
+	public ArrayList<RobotBite> rawData()
+	{
+		ArrayList<RobotBite> stata = new ArrayList<RobotBite>();
+		for (RobotBite rb : data_points)
+		{
+			stata.add(rb);
+		}
+		return stata;
+	}
+	public ArrayList<Double> extractX()
+	{
+		//return all of the x values the robot was scanned at
+		ArrayList<Double> stata = new ArrayList<Double>();
+		for (RobotBite rb : data_points)
+		{
+			stata.add(rb.cx);
+		}
+		return stata;
+	}
+	public ArrayList<Double> extractY()
+	{
+		//return all of the y values the robot was scanned at
+		ArrayList<Double> stata = new ArrayList<Double>();
+		for (RobotBite rb : data_points)
+		{
+			stata.add(rb.cy);
+		}
+		return stata;
+	}
+	public ArrayList<Long> extractTime()
+	{
+		//return all of the times the robot was scanned
+		ArrayList<Long> stata = new ArrayList<Long>();
+		for (RobotBite rb : data_points)
+		{
+			stata.add(rb.cTime);
+		}
+		return stata;
+	}
+	public ArrayList<Double> extractEnergy()
+	{
+		//return all of the energies
+		ArrayList<Double> stata = new ArrayList<Double>();
+		for (RobotBite rb : data_points)
+		{
+			stata.add(rb.cEnergy);
+		}
+		return stata;
+	}
+	public ArrayList<Double> extractDistance()
+	{
+		//return all of the distances to the other robot
+		ArrayList<Double> stata = new ArrayList<Double>();
+		for (RobotBite rb : data_points)
+		{
+			stata.add(rb.cDistance);
+		}
+		return stata;
+	}
+	public ArrayList<Double> extractHeading()
+	{
+		//return all of the headings
+		ArrayList<Double> stata = new ArrayList<Double>();
+		for (RobotBite rb : data_points)
+		{
+			stata.add(rb.cHeading_radians);
+		}
+		return stata;
+	}
+	public ArrayList<Double> extractVelocity()
+	{
+		//return all of the velocities
+		ArrayList<Double> stata = new ArrayList<Double>();
+		for (RobotBite rb : data_points)
+		{
+			stata.add(rb.cVelocity);
+		}
+		return stata;
+	}
+	public ArrayList<Projection> currentProjection(long time)
+	{
+		//get all of the projections for the current time
+		//may be less useful, it only maps the projections, it doesn't associate them
+		ArrayList<Projection> stata = new ArrayList<Projection>();
+		for (RobotBite rb : data_points)
+		{
+			for (Projection p : rb.projec)
+			{
+				if (p.projTime == time)
+				{
+					stata.add(p);
+				}
+			}
+		}
+		return stata;
+	}
 }
