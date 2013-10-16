@@ -1,14 +1,12 @@
 package cwru;
 
-import java.util.ArrayList;
-
 public class Projector extends Brain 
 {
 	//solely works on projecting where enemy robots will be based on current data
 	//saves current projection tied with projected accuracy
 	//IDArray storageUnit;
 	//IDArray enemyDataUnit;
-	RobotBite rb_standard;
+	//RobotBite rb_standard;
 	public Projector(LifeBox source) 
 	{
 		super(source);
@@ -22,19 +20,40 @@ public class Projector extends Brain
 	public void process()
 	{
 		long processTime = System.currentTimeMillis();
-		enemyDataUnit = source.request(new Sonar(source)); //up to date enemy position data
-		if (turnCounter < 18 || true)
+		//enemyDataUnit = source.request(new Sonar(source)); //up to date enemy position data
+		long core_start_time;
+		long core_end_time;
+		long core_time;
+		for (RoboCore rc : source.ronny)
 		{
-			simple_linear_projection(18);
-		}
-		else
-		{
-			//projections = projection system active
+			core_start_time = System.currentTimeMillis();
+			if (rc.data_points.size()>=1) //if there is a full swing, everyone's been scanned
+			{
+				simple_linear_projection(20, rc);
+			}
+			if (rc.data_points.size()>=2) //if there have been two full swings, 
+				//everyone scanned at least twice
+			{
+				this.averageVelocityProjection(20, rc);
+				this.accelerometerProjection(20, rc);
+			}
+			if (rc.data_points.size()>=2) //three full swings, three scans minimum
+			{
+				this.circularProjection(20, rc);
+			}
+			if (rc.data_points.size()>=16)//11 sets of 5 ngrams,12 sets of 6, 
+										//up to 8 sets of 8 ngrams for pattern matching
+			{
+				this.fancyProjection(20, rc);
+			}
+			core_end_time = System.currentTimeMillis();
+			core_time = core_end_time-core_start_time;
+			System.out.println("Run time for robot "+rc.name+" is "+core_time);
 		}
 		long totalTime = System.currentTimeMillis()-processTime;
 		System.out.println("PRO calc time (millis):"+totalTime);
 	}
-	public Projection simple_linear_projection(int forecastTime)
+	public Projection simple_linear_projection(int forecastTime, RoboCore project_this)
 	{
 		//project using scanned velocity, heading
 		//forecast time is the time ahead of current time to project to
@@ -42,7 +61,7 @@ public class Projector extends Brain
 		int y = 0;
 		double guessAccuracy = 1.0;
 		return new Projection(x,y,turnCounter,turnCounter+forecastTime,guessAccuracy);
-		
+
 		/*
 		//projections = current position + velocity (linear)
 		Object robot_bite;
@@ -73,9 +92,9 @@ public class Projector extends Brain
 				}
 			}
 		}
-		*/
+		 */
 	}
-	public Projection averageVelocityProjection(int forecastTime)
+	public Projection averageVelocityProjection(int forecastTime, RoboCore project_this)
 	{
 		//project using point to point velocity, heading
 		//forecast time is the time ahead of current time to project to
@@ -84,7 +103,7 @@ public class Projector extends Brain
 		double guessAccuracy = 1.0;
 		return new Projection(x,y,turnCounter,turnCounter+forecastTime,guessAccuracy);
 	}
-	public Projection circularProjection(int forecastTime)
+	public Projection accelerometerProjection(int forecastTime, RoboCore project_this)
 	{
 		//project using scanned velocity, change in scanned velocity,
 		//		scanned heading, change in scanned heading
@@ -93,5 +112,21 @@ public class Projector extends Brain
 		int y = 0;
 		double guessAccuracy = 1.0;
 		return new Projection(x,y,turnCounter,turnCounter+forecastTime,guessAccuracy);
+	}
+	public Projection circularProjection(int forecastTime, RoboCore project_this)
+	{
+		//project using last 3 scanned points, draw an actual circle
+		//forecast distance around the circle
+		int x = 0;
+		int y = 0;
+		double guessAccuracy = 1.0;
+		return new Projection(x,y,turnCounter, turnCounter+forecastTime, guessAccuracy);
+	}
+	public Projection fancyProjection(int forecastTime, RoboCore project_this)
+	{
+		int x = 0;
+		int y = 0;
+		double guessAccuracy = 1.0;
+		return new Projection(x,y,turnCounter, turnCounter+forecastTime, guessAccuracy);
 	}
 }
