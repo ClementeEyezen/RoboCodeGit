@@ -9,6 +9,7 @@ public class Legs extends Brain
 	public Legs(LifeBox source) 
 	{
 		super(source);
+		System.out.println("pre error source exists");
 	}
 	//Legs is the brain that controls movement of the robot
 	public void process()
@@ -18,8 +19,8 @@ public class Legs extends Brain
 		{
 			double width = source.battlefield_width;
 			double heigh = source.battlefield_height;
-			double randomW = (width/3)+Math.random()*(width/3);
-			double randomH = (heigh/3)+Math.random()*(heigh/3);
+			randomW = (width/3)+Math.random()*(width/3);
+			randomH = (heigh/3)+Math.random()*(heigh/3);
 		}
 		moveEndTheta = choose_radians_to_turn_left(); //calculate desired theta
 		moveEndDistance = choose_distance_to_move(); //calculate desired distance
@@ -96,13 +97,19 @@ public class Legs extends Brain
 	public boolean robot_near_wall()
 	{
 		boolean near_wall = false;
-		if (source.getRobot().getX()<50 ||  //if the robot is close to the right or left
-				source.getRobot().getX()>(source.battlefield_width-50))
+		System.out.println("pre error get Robot call");
+		cwruBase source_bot = source.getRobot();
+		System.out.println("pre error getX call");
+		double xCoord = source_bot.getX();
+		double yCoord = source_bot.getY();
+		System.out.println("post getX call");
+		if (xCoord<50 ||  //if the robot is close to the right or left
+				xCoord>(source.battlefield_width-50))
 		{
 			near_wall =  true;
 		}
-		if (source.getRobot().getY()<50 ||  //if the robot is close to the top or bottom
-				source.getRobot().getY()>(source.battlefield_height-50))
+		if (yCoord<50 ||  //if the robot is close to the top or bottom
+				yCoord>(source.battlefield_height-50))
 		{
 			near_wall =  true;
 		}

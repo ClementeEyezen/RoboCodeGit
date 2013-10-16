@@ -28,9 +28,13 @@ public class cwruBase extends AdvancedRobot
 		{
 			//perform calculations
 			processTime = System.currentTimeMillis();
+			System.out.println("pre error sonar");
 			sally.process(); //radar movement/data add
+			System.out.println("pre error Projector");
 			lcd.process(); //projection of movement
+			System.out.println("pre error Gunner?");
 			biggles.process(); //gun movement/data add
+			System.out.println("pre error Legs");
 			larson.process(); //move movement/data add
 			totalTime = System.currentTimeMillis()-processTime;
 			System.out.println("TOTAL calc time (millis):"+totalTime);
