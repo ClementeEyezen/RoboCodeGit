@@ -12,20 +12,26 @@ public class cwruBase extends AdvancedRobot
 	Projector lcd;
 	long processTime;
 	long totalTime;
+	double cx;
+	double cy;
 	public void run()
 	{
 		//================SETUP================
 		fileSystem = new LifeBox(this);
-		sally = new Sonar(fileSystem);
-		biggles = new Gunner(fileSystem);
-		larson = new Legs(fileSystem);
-		lcd = new Projector(fileSystem);
+		System.out.println("fileSystem mainRobot after lifebox created = "+fileSystem.mainRobot);
+		sally = new Sonar(fileSystem, this);
+		biggles = new Gunner(fileSystem, this);
+		larson = new Legs(fileSystem, this);
+		lcd = new Projector(fileSystem, this);
 		this.setAdjustGunForRobotTurn(true);
 		this.setAdjustRadarForGunTurn(true);
 		this.setAdjustRadarForRobotTurn(true);
 		//==========REPEATING ACTIONS==========
 		while(true)
 		{
+			//get X, Y coords and store
+			cx = this.getX();
+			cy = this.getY();
 			//perform calculations
 			processTime = System.currentTimeMillis();
 			System.out.println("pre error sonar");

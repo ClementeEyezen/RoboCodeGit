@@ -6,9 +6,10 @@ public class Gunner extends Brain
 	double gunEndTheta;
 	double gun_energy;
 	boolean fire;
-	public Gunner(LifeBox source) 
+	public Gunner(LifeBox source, cwruBase cwruBase) 
 	{
 		super(source);
+		System.out.println("Gunner Get robot returns "+source.getRobot());
 	}
 	public void process()
 	{

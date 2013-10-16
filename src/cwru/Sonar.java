@@ -14,7 +14,7 @@ public class Sonar extends Brain
 	
 	//IDArray storageUnit;//this is the active data storage and access for Sonar
 	
-	public Sonar(LifeBox source)
+	public Sonar(LifeBox source, cwruBase cwruBase)
 	{
 		super(source);
 		unprocessedScans = new ArrayList<ScannedRobotEvent>();

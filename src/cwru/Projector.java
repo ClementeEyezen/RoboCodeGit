@@ -7,7 +7,7 @@ public class Projector extends Brain
 	//IDArray storageUnit;
 	//IDArray enemyDataUnit;
 	//RobotBite rb_standard;
-	public Projector(LifeBox source) 
+	public Projector(LifeBox source, cwruBase cwruBase) 
 	{
 		super(source);
 		//commenting out the code with IDArray

@@ -6,7 +6,7 @@ public class Legs extends Brain
 	double moveEndDistance;
 	double randomW;
 	double randomH;
-	public Legs(LifeBox source) 
+	public Legs(LifeBox source, cwruBase cwruBase) 
 	{
 		super(source);
 		System.out.println("pre error source exists");
@@ -99,9 +99,10 @@ public class Legs extends Brain
 		boolean near_wall = false;
 		System.out.println("pre error get Robot call");
 		cwruBase source_bot = source.getRobot();
+		System.out.println("source robot = "+source_bot);
 		System.out.println("pre error getX call");
-		double xCoord = source_bot.getX();
-		double yCoord = source_bot.getY();
+		double xCoord = source_bot.cx;
+		double yCoord = source_bot.cy;
 		System.out.println("post getX call");
 		if (xCoord<50 ||  //if the robot is close to the right or left
 				xCoord>(source.battlefield_width-50))
