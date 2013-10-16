@@ -10,6 +10,8 @@ public class RoboCore
 	//container also knows how to extract data in different forms, 
 	//			i.e. return arraylist of x values
 	String name;
+	double lastX = -1;
+	double lastY = -1;
 	ArrayList<RobotBite> data_points;
 	public RoboCore(String robot_name)
 	{
@@ -18,6 +20,8 @@ public class RoboCore
 	public void add(RobotBite new_data_point)
 	{
 		data_points.add(new_data_point);
+		lastX = new_data_point.cx;
+		lastY = new_data_point.cy;
 	}
 	public ArrayList<RobotBite> rawData()
 	{

@@ -111,7 +111,8 @@ public class Legs extends Brain
 	public double direction_to_point(double px,double py, double mx, double my)
 	{
 		double radians_return = 0;
-		Math.atan2(py-my, px-mx);
+		//adjust for rotated coordinate system
+		radians_return = (-Math.atan2(py-my, px-mx)+Math.PI/2)%(2*Math.PI);
 		return radians_return;
 	}
 	public double distance_to_point(double px, double py, double mx, double my)

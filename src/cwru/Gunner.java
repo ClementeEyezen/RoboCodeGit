@@ -2,6 +2,7 @@ package cwru;
 
 public class Gunner extends Brain
 {
+	//NOTE TODO remember to be careful about switching rotated coordinate systems
 	double gunEndTheta;
 	double gun_energy;
 	boolean fire;
