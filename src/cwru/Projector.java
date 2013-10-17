@@ -7,9 +7,11 @@ public class Projector extends Brain
 	//IDArray storageUnit;
 	//IDArray enemyDataUnit;
 	//RobotBite rb_standard;
+	cwruBase robot;
 	public Projector(LifeBox source, cwruBase cwruBase) 
 	{
 		super(source);
+		robot = cwruBase;
 		//commenting out the code with IDArray
 		/*source.allocateArray(this, "All_Projections");
 		storageUnit = source.request(this);

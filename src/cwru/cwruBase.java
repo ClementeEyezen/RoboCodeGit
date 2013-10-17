@@ -14,11 +14,14 @@ public class cwruBase extends AdvancedRobot
 	long totalTime;
 	double cx;
 	double cy;
+	boolean runDelayTest = true;
+	
+	long counter;
+	
 	public void run()
 	{
 		//================SETUP================
 		fileSystem = new LifeBox(this);
-		System.out.println("fileSystem mainRobot after lifebox created = "+fileSystem.mainRobot);
 		sally = new Sonar(fileSystem, this);
 		biggles = new Gunner(fileSystem, this);
 		larson = new Legs(fileSystem, this);
@@ -26,6 +29,7 @@ public class cwruBase extends AdvancedRobot
 		this.setAdjustGunForRobotTurn(true);
 		this.setAdjustRadarForGunTurn(true);
 		this.setAdjustRadarForRobotTurn(true);
+		counter = 0;
 		//==========REPEATING ACTIONS==========
 		while(true)
 		{
@@ -34,13 +38,9 @@ public class cwruBase extends AdvancedRobot
 			cy = this.getY();
 			//perform calculations
 			processTime = System.currentTimeMillis();
-			System.out.println("pre error sonar");
 			sally.process(); //radar movement/data add
-			System.out.println("pre error Projector");
 			lcd.process(); //projection of movement
-			System.out.println("pre error Gunner?");
 			biggles.process(); //gun movement/data add
-			System.out.println("pre error Legs");
 			larson.process(); //move movement/data add
 			totalTime = System.currentTimeMillis()-processTime;
 			System.out.println("TOTAL calc time (millis):"+totalTime);
@@ -53,6 +53,8 @@ public class cwruBase extends AdvancedRobot
 			totalTime = System.currentTimeMillis()-processTime;
 			System.out.println("set Action time (millis):"+totalTime);
 			
+			testResponseTime(40,runDelayTest);
+			
 			//execute all movement
 			processTime = System.currentTimeMillis();
 			execute();
@@ -63,5 +65,31 @@ public class cwruBase extends AdvancedRobot
 	public void onScannedRobotEvent(ScannedRobotEvent sre)
 	{
 		sally.inputScan(sre);
+	}
+	public void testResponseTime(long startTime, boolean runYN)
+	{
+		System.out.println("Delay test...");
+		long displayed_time = startTime;
+		if (runYN == true)
+		{
+			System.out.println("initiated...");
+			long starter = System.currentTimeMillis();
+			System.out.println("  Start time = "+starter);
+			System.out.println("tst1:"+(System.currentTimeMillis() - starter));
+			System.out.println("tst2:"+(counter+startTime));
+			while (System.currentTimeMillis() - starter <= counter+startTime)
+			{
+				//System.out.println("tst1: "+(System.currentTimeMillis() - starter));
+				//while the time since the start time < than the desired test time
+				//do nothing, display the wait time if it's new
+				if (displayed_time<counter+startTime)
+				{
+					displayed_time = counter+startTime;
+					System.out.println("    Current delay: "+displayed_time);
+				}
+			}
+			counter+=0;
+			System.out.println("    Cycle "+counter);
+		}
 	}
 }

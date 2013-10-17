@@ -11,6 +11,7 @@ public class Sonar extends Brain
 	byte scanIterator;
 	ArrayList<Double> xlist = new ArrayList<Double>();
 	ArrayList<Double> ylist = new ArrayList<Double>();
+	cwruBase robot;
 	
 	//IDArray storageUnit;//this is the active data storage and access for Sonar
 	
@@ -19,6 +20,7 @@ public class Sonar extends Brain
 		super(source);
 		unprocessedScans = new ArrayList<ScannedRobotEvent>();
 		scanIterator = 0;
+		robot = cwruBase;
 		//source.allocateArray(this, "All_RadarData");
 		//storageUnit = source.request(this);
 	}
@@ -63,10 +65,10 @@ public class Sonar extends Brain
 		}
 		//at this point, I have a list of the scanned robots 
 		//	(all will be scanned by first two spins)
-		double math_bearing = Math.atan2(ylist.get(scanIterator)-source.getRobot().getY(),
-				xlist.get(scanIterator)-source.getRobot().getX());
+		double math_bearing = Math.atan2(ylist.get(scanIterator)-robot.getY(),
+				xlist.get(scanIterator)-robot.getX());
 		double robo_bearing = -math_bearing+(Math.PI/2);
-		danny = robo_bearing-source.getRobot().getGunHeadingRadians();
+		danny = robo_bearing-robot.getGunHeadingRadians();
 		if (danny<Math.PI/4)
 		{
 			scanIterator = (byte) ((scanIterator+1)%(Math.min(xlist.size(), ylist.size())));
@@ -94,7 +96,7 @@ public class Sonar extends Brain
 		//5 = distance			[relative position]
 		//6 = heading radians	[travel]
 		//7 = velocity			[travel]
-		RobotBite larry = new RobotBite(s.getName(), s.getTime(), source.mainRobot, s.getEnergy(),	//make a robobit with current data 
+		RobotBite larry = new RobotBite(s.getName(), s.getTime(), robot, s.getEnergy(),	//make a robobit with current data 
 						s.getBearingRadians(), s.getDistance(), s.getHeadingRadians(), 
 						s.getVelocity());
 				/*n.add(larry);																	//add it to the list of "larry" data
@@ -118,6 +120,6 @@ public class Sonar extends Brain
 	}
 	public final void set()
 	{
-		source.getRobot().setTurnRadarLeftRadians(radarEndTheta);
+		robot.setTurnRadarLeftRadians(radarEndTheta);
 	}
 }

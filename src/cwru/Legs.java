@@ -6,10 +6,11 @@ public class Legs extends Brain
 	double moveEndDistance;
 	double randomW;
 	double randomH;
+	cwruBase robot;
 	public Legs(LifeBox source, cwruBase cwruBase) 
 	{
 		super(source);
-		System.out.println("pre error source exists");
+		robot = cwruBase;
 	}
 	//Legs is the brain that controls movement of the robot
 	public void process()
@@ -29,8 +30,8 @@ public class Legs extends Brain
 	}
 	public final void set()
 	{
-		source.mainRobot.setTurnLeftRadians(moveEndTheta);
-		source.mainRobot.setAhead(moveEndDistance);
+		robot.setTurnLeftRadians(moveEndTheta);
+		robot.setAhead(moveEndDistance);
 	}
 	public double choose_radians_to_turn_left()
 	{
@@ -39,8 +40,8 @@ public class Legs extends Brain
 		if (robot_near_wall())//if the robot is near a wall
 		{
 			//move to center
-			radian_result = direction_to_point(source.mainRobot.getX(), 
-					source.mainRobot.getY(), randomW, randomH);
+			radian_result = direction_to_point(robot.getX(), 
+					robot.getY(), randomW, randomH);
 		}
 		else if (source.getRobot().getTurnRemainingRadians()>.349) //greater than one move turn
 		{
@@ -70,7 +71,7 @@ public class Legs extends Brain
 		if (robot_near_wall())//if the robot is near a wall
 		{
 			//move to center
-			distance_result = distance_to_point(source.mainRobot.getX(), source.mainRobot.getY(),
+			distance_result = distance_to_point(robot.getX(), robot.getY(),
 					randomW, randomH);
 		}
 		else if (source.getRobot().getDistanceRemaining()>8) //greater than one move turn
@@ -97,13 +98,9 @@ public class Legs extends Brain
 	public boolean robot_near_wall()
 	{
 		boolean near_wall = false;
-		System.out.println("pre error get Robot call");
-		cwruBase source_bot = source.getRobot();
-		System.out.println("source robot = "+source_bot);
-		System.out.println("pre error getX call");
+		cwruBase source_bot = robot;
 		double xCoord = source_bot.cx;
 		double yCoord = source_bot.cy;
-		System.out.println("post getX call");
 		if (xCoord<50 ||  //if the robot is close to the right or left
 				xCoord>(source.battlefield_width-50))
 		{

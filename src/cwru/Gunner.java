@@ -6,10 +6,11 @@ public class Gunner extends Brain
 	double gunEndTheta;
 	double gun_energy;
 	boolean fire;
+	cwruBase robot;
 	public Gunner(LifeBox source, cwruBase cwruBase) 
 	{
 		super(source);
-		System.out.println("Gunner Get robot returns "+source.getRobot());
+		robot = cwruBase;
 	}
 	public void process()
 	{
@@ -35,10 +36,10 @@ public class Gunner extends Brain
 	public final void set()
 	{
 		//point the gun
-		source.getRobot().setTurnGunLeft(gunEndTheta);
+		robot.setTurnGunLeft(gunEndTheta);
 		//if the gun is supposed to fire, do it
-		if (fire) source.getRobot().setFireBullet(gun_energy);
+		if (fire) robot.setFireBullet(gun_energy);
 		//otherwise, do no firing
-		else source.getRobot().setFireBullet(0.0);
+		else robot.setFireBullet(0.0);
 	}
 }

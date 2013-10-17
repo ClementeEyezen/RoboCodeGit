@@ -33,17 +33,13 @@ public class LifeBox
 	public LifeBox(int maxTimeTracked, cwruBase pass_this_robot)
 	{
 		defaultTime = maxTimeTracked;
-		System.out.println("source robot inputed as "+pass_this_robot);
 		//indexOfArrays = new ArrayList<IDArray>(0);
 		mainRobot = pass_this_robot;
-		System.out.println("main robot is now "+mainRobot);
 		battlefield_height = pass_this_robot.getBattleFieldHeight();
 		battlefield_width = pass_this_robot.getBattleFieldWidth();
-		System.out.println("at the end of the constructor of lifebox, main robot = "+mainRobot);
 	}
 	public cwruBase getRobot()
 	{
-		System.out.println("return mainRobot "+mainRobot);
 		return mainRobot;
 	}
 	public double bfw()
