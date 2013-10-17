@@ -14,7 +14,7 @@ public class cwruBase extends AdvancedRobot
 	long totalTime;
 	double cx;
 	double cy;
-	boolean runDelayTest = true;
+	boolean runDelayTest = false;
 	
 	long counter;
 	
