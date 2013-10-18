@@ -45,7 +45,12 @@ public class Sprinter extends Legs implements Paintable
 		 * 	Use a move to point function to move to the interior point 
 		 * 	with the highest rating
 		 * 
-		 * 	TODO implement this first
+		 * 	TODO implement this first. It shouldn't be to hard, create a function that takes
+		 *  a point and tests it for wave overlap
+		 *  Then create a function that generates outer points, tests and returns the 
+		 *  	optimal outer point bearing
+		 *  From there, use a different function to generate random inner points (8<=d<50),
+		 *  	choose the best one, and then output the point to move to.
 		 */
 		//TODO Improvements
 		/*
