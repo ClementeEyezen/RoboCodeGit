@@ -1,6 +1,8 @@
 package cwru;
 
-public class Legs extends Brain
+import java.awt.Graphics2D;
+
+public class Legs extends Brain implements Paintable
 {
 	double moveEndTheta;
 	double moveEndDistance;
@@ -123,5 +125,10 @@ public class Legs extends Brain
 	public double distance_to_point(double px, double py, double mx, double my)
 	{
 		return Brain.distance(px, py, mx, my);
+	}
+	@Override
+	public void onPaint(Graphics2D g) {
+		// TODO Auto-generated method stub
+		
 	}
 }

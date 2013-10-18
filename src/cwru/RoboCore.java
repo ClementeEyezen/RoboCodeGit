@@ -6,7 +6,7 @@ public class RoboCore
 {
 	//A core container for storing data over time for a specific robot
 	//essentially a storage list of robotbites
-	
+
 	//container also knows how to extract data in different forms, 
 	//			i.e. return arraylist of x values
 	String name;
@@ -16,6 +16,7 @@ public class RoboCore
 	public RoboCore(String robot_name)
 	{
 		name = robot_name;
+		data_points = new ArrayList<RobotBite>();
 	}
 	public void add(RobotBite new_data_point)
 	{
@@ -101,6 +102,18 @@ public class RoboCore
 			stata.add(rb.cVelocity);
 		}
 		return stata;
+	}
+	public ArrayList<RobotBite> captureTime(int last_x_scans)
+	{
+		ArrayList<RobotBite> return_this = new ArrayList<RobotBite>();
+		if (data_points.size()>0)
+		{
+			for (int i = 0 ; i < last_x_scans && i < data_points.size() ; i++)
+			{
+				return_this.add(data_points.get(data_points.size()-(1+i)));
+			}
+		}
+		return return_this;
 	}
 	public ArrayList<Projection> currentProjection(long time)
 	{

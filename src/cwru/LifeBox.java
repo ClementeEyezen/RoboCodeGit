@@ -1,8 +1,9 @@
 package cwru;
 
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
-public class LifeBox 
+public class LifeBox implements Paintable
 {
 	//a class that stores all data passed to it by radar or other means
 	//		LifeBox takes inputs and stores them in arrays
@@ -52,6 +53,7 @@ public class LifeBox
 	}
 	public void store(RobotBite store_this)
 	{
+		System.out.println("inputing a LARRY");
 		if (ronny.size()>0) //make sure there are cores to scan
 		{
 			for (RoboCore rc : ronny)
@@ -66,6 +68,7 @@ public class LifeBox
 		else
 		{
 			ronny.add(new RoboCore(store_this.name)); //add a new core
+			System.out.println("New total robocores =======> "+ronny.size());
 			store(store_this); //run the test again
 		}
 		
@@ -137,5 +140,10 @@ public class LifeBox
 	}
 */
 	//Start new code storage system
+	@Override
+	public void onPaint(Graphics2D g) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

@@ -1,6 +1,8 @@
 package cwru;
 
-public class Projector extends Brain 
+import java.awt.Graphics2D;
+
+public class Projector extends Brain implements Paintable
 {
 	//solely works on projecting where enemy robots will be based on current data
 	//saves current projection tied with projected accuracy
@@ -130,5 +132,9 @@ public class Projector extends Brain
 		int y = 0;
 		double guessAccuracy = 1.0;
 		return new Projection(x,y,turnCounter, turnCounter+forecastTime, guessAccuracy);
+	}
+	public void onPaint(Graphics2D g)
+	{
+		
 	}
 }

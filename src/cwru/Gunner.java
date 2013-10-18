@@ -1,6 +1,8 @@
 package cwru;
 
-public class Gunner extends Brain
+import java.awt.Graphics2D;
+
+public class Gunner extends Brain implements Paintable
 {
 	//NOTE TODO remember to be careful about switching rotated coordinate systems
 	double gunEndTheta;
@@ -41,5 +43,9 @@ public class Gunner extends Brain
 		if (fire) robot.setFireBullet(gun_energy);
 		//otherwise, do no firing
 		else robot.setFireBullet(0.0);
+	}
+	public void onPaint(Graphics2D g)
+	{
+		
 	}
 }

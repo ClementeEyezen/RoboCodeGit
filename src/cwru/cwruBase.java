@@ -62,8 +62,9 @@ public class cwruBase extends AdvancedRobot
 			System.out.println("execute Time (millis):"+totalTime);
 		}
 	}
-	public void onScannedRobotEvent(ScannedRobotEvent sre)
+	public void onScannedRobot(ScannedRobotEvent sre)
 	{
+		System.out.println("Scanned a new sre, which sounds like MRE");
 		sally.inputScan(sre);
 	}
 	public void testResponseTime(long startTime, boolean runYN)

@@ -1,10 +1,11 @@
 package cwru;
 
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import robocode.ScannedRobotEvent;
 
-public class Sonar extends Brain
+public class Sonar extends Brain implements Paintable
 {
 	double radarEndTheta;
 	ArrayList<ScannedRobotEvent> unprocessedScans;
@@ -77,7 +78,7 @@ public class Sonar extends Brain
 	}
 	public void inputScan(ScannedRobotEvent s)
 	{
-		unprocessedScans.add(s);
+		processScan(s);
 	}
 	public void processScan(ScannedRobotEvent s)
 	{
@@ -116,10 +117,15 @@ public class Sonar extends Brain
 			//this should find the old one and add the data properly
 */	
 		//take the new robotbite larry, add to Lifebox
+		System.out.println("storing a LARRY");
 		source.store(larry);
 	}
 	public final void set()
 	{
 		robot.setTurnRadarLeftRadians(radarEndTheta);
+	}
+	public void onPaint(Graphics2D g)
+	{
+		
 	}
 }
