@@ -44,6 +44,8 @@ public class Sprinter extends Legs implements Paintable
 		 *  
 		 * 	Use a move to point function to move to the interior point 
 		 * 	with the highest rating
+		 * 
+		 * 	TODO implement this first
 		 */
 		//TODO Improvements
 		/*
