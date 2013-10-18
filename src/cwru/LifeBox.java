@@ -1,5 +1,6 @@
 package cwru;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
@@ -141,9 +142,24 @@ public class LifeBox implements Paintable
 */
 	//Start new code storage system
 	@Override
-	public void onPaint(Graphics2D g) {
-		// TODO Auto-generated method stub
-		
+	public void onPaint(Graphics2D g) 
+	{
+		for (RoboCore rc : ronny)
+		{
+			ArrayList<Double> eng = rc.extractEnergy();
+			ArrayList<Double> dis = rc.extractDistance();
+			ArrayList<Double> x = rc.extractX();
+			ArrayList<Double> y = rc.extractY();
+			for (int i = 0; i<eng.size(); i++)
+			{
+				g.setColor(Color.GREEN);
+				int dx = (int) (double) x.get(i);
+				int dy = (int) (double) y.get(i);
+				int radi = (int) (double) dis.get(i);
+				int e = (int) (double) eng.get(i);
+				g.drawRect(dx, dy, 5, e);
+			}
+		}
 	}
 	
 }

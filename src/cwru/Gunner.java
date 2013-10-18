@@ -21,13 +21,13 @@ public class Gunner extends Brain implements Paintable
 		{
 			gunEndTheta = 0;
 			fire = false;
-			gun_energy = .1;
+			gun_energy = 0;
 		}
 		else
 		{
 			gunEndTheta = 0; //calculate desired theta
 			fire = true;
-			gun_energy = .5;
+			gun_energy = 0;
 		}
 		long totalTime = System.currentTimeMillis()-processTime;
 		System.out.println("GUN calc time (millis):"+totalTime);

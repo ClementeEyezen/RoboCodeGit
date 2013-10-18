@@ -14,14 +14,11 @@ public class Sprinter extends Legs implements Paintable
 	public Sprinter(LifeBox source, cwruBase cwruBase) 
 	{
 		super(source, cwruBase);
-		// TODO Auto-generated constructor stub
 		oldTime = 0;
-
 	}
 	public void process()
 	{
 		super.process();
-		System.out.println("Surf's UP");
 		//run the default process first, so that it will always generate some movement
 		//then update all of the waves to the most up to date time and location
 		check_surf();
@@ -31,6 +28,32 @@ public class Sprinter extends Legs implements Paintable
 		{
 			update(surf_bum.get(i),current_time);
 		}
+		//TODO IDEAPAD
+		/*
+		 * The robot should test 32 points at radius of 50 around itself, and evaluate
+		 * 	based on the waves washing over that point. 
+		 * 	This uses a similar function to below, with distance from current heading being good
+		 * 	divided by the number of waves washing over
+		 *  	f: (1-cos(delta angle)/2*(waves+1)
+		 *  
+		 * The bearing to that point is stored.
+		 * Then randomly generate 8 points at random that are at less than 50 units away
+		 *  , and rate them based on how close they are in bearing to the first point 
+		 *  (cos of delta bearing) and wave crossings (sum of waves washing over) for a 
+		 *  	f: cos(bearing_50-bearing_8)/(num of waves+1).
+		 *  
+		 * 	Use a move to point function to move to the interior point 
+		 * 	with the highest rating
+		 */
+		//TODO Improvements
+		/*
+		 * Filter our waves that are not from shootings (recharge time, etc)
+		 * Other sources:
+		 * 		Walls
+		 * 		Self-bullet contacts
+		 * 		Other bullet contacts
+		 * 		Ramming
+		 */
 	}
 	public double[] update(WaveModel w, long current_turn)
 	{
@@ -94,26 +117,14 @@ public class Sprinter extends Legs implements Paintable
 		for (WaveModel wave : surf_bum)
 		{
 			g.setColor(Color.BLUE);
-			g.drawOval((int)(wave.early_origin_x), 
-					(int)(wave.early_origin_y), 
+			g.drawOval((int)(wave.early_origin_x-wave.early_radius-(robot.getHeight()/2)), 
+					(int)(wave.early_origin_y-wave.early_radius-(robot.getHeight()/2)), 
 					(int) (wave.early_radius*2+robot.getHeight()),
 					(int) (wave.early_radius*2+robot.getHeight()));
-			g.drawOval((int)(wave.late_origin_x), 
-					(int)(wave.late_origin_y), 
+			g.drawOval((int)(wave.late_origin_x-wave.late_radius+(robot.getHeight()/2)), 
+					(int)(wave.late_origin_y-wave.late_radius+(robot.getHeight()/2)), 
 					(int) (wave.late_radius*2-robot.getHeight()),
 					(int) (wave.late_radius*2-robot.getHeight()));
-		}
-		for (RoboCore rc : source.ronny)
-		{
-			g.setColor(Color.RED);
-			ArrayList<Double> locXData = rc.extractX();
-			ArrayList<Double> locYData = rc.extractY();
-			for (int i = 0; i<locXData.size(); i++)
-			{
-				int x = (int) (double) locXData.get(i);
-				int y = (int) (double) locYData.get(i);
-				g.drawRect(y, x, 5, 5);
-			}
 		}
 	}
 }
@@ -136,12 +147,14 @@ class WaveModel
 	{
 		early_origin_time = early_time;
 		late_origin_time = late_time;
-		this.energy = energy;
+		this.energy = Math.abs(energy);
+		System.out.println("bullet energy = "+this.energy);
 		early_origin_x = x1;
 		early_origin_y = y1;
 		late_origin_x = x2;
 		late_origin_y = y2;
 
-		speed = 20-3*energy;
+		speed = 20+(3*energy);
+		System.out.println("bullet speed = "+speed);
 	}
 }
