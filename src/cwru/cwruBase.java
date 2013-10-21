@@ -64,7 +64,7 @@ public class cwruBase extends AdvancedRobot
 	}
 	public void onScannedRobot(ScannedRobotEvent sre)
 	{
-		System.out.println("Scanned a new sre, which sounds like MRE");
+		//System.out.println("Scanned a new sre, which sounds like MRE");
 		sally.inputScan(sre);
 	}
 	public void testResponseTime(long startTime, boolean runYN)

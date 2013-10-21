@@ -9,7 +9,7 @@ public class RoboCore
 
 	//container also knows how to extract data in different forms, 
 	//			i.e. return arraylist of x values
-	String name;
+	public String name;
 	double lastX = -1;
 	double lastY = -1;
 	ArrayList<RobotBite> data_points;

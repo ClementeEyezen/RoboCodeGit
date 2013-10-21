@@ -32,8 +32,23 @@ public class Legs extends Brain implements Paintable
 	}
 	public final void set()
 	{
+		reduceTheta();
 		robot.setTurnLeftRadians(moveEndTheta);
 		robot.setAhead(moveEndDistance);
+	}
+	public void reduceTheta()
+	{
+		moveEndTheta = moveEndTheta%(Math.PI*2);
+		if (moveEndTheta > Math.PI)
+		{
+			double delta = moveEndTheta-Math.PI;
+			moveEndTheta = delta-Math.PI;
+		}
+		if (moveEndTheta < -1*Math.PI)
+		{
+			double delta = -moveEndTheta-Math.PI;
+			moveEndTheta = delta-Math.PI;
+		}
 	}
 	public double choose_radians_to_turn_left()
 	{
