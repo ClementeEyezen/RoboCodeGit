@@ -33,7 +33,8 @@ public class Sprinter extends Legs implements Paintable
 			update(surf_bum.get(i),current_time);
 		}
 		double[] output = inner_points_test(long_points_test());
-		double desired_heading = Math.atan2(robot.getY()-output[1], robot.getX()-output[0]);
+		double desired_math_heading = Math.atan2(robot.getY()-output[1], robot.getX()-output[0]);
+		double desired_heading = (-desired_math_heading+Math.PI/2)%(2*Math.PI);
 		double current_heading = robot.getHeading();
 		moveEndTheta = desired_heading-current_heading;
 		moveEndDistance = Brain.distance(output[0], output[1], robot.getX(), robot.getY());
@@ -104,22 +105,23 @@ public class Sprinter extends Legs implements Paintable
 	{
 		for (RoboCore rc : source.ronny)
 		{
+			System.out.println("Check surfing rc for: "+rc.data_points.get(0).name);
 			ArrayList<RobotBite> testData = rc.captureTime(2);
 			int tester = testData.size();
-			System.out.println("Capturing full data"+(tester==2));
+			//System.out.println("Capturing full data"+(tester==2));
 			if (testData.size()==2)
 			{
 				RobotBite one = testData.get(testData.size()-1);
 				RobotBite two = testData.get(testData.size()-2);
-				System.out.println("  Delta energy: "+ Math.abs(one.cEnergy - two.cEnergy));
-				System.out.println("old time = "+oldTime);
-				System.out.println("new time = "+testData.get(0).cTime);
+				//System.out.println("  Delta energy: "+ Math.abs(one.cEnergy - two.cEnergy));
+				//System.out.println("old time = "+oldTime);
+				//System.out.println("new time = "+testData.get(0).cTime);
 				if(Math.max(Rules.MIN_BULLET_POWER,0.0) <= Math.abs(one.cEnergy-two.cEnergy)
 						&& Math.abs(one.cEnergy - two.cEnergy) <= Rules.MAX_BULLET_POWER
 						&& (testData.get(0).cTime > (oldTime)))
 				{
-					System.out.println("Adding wave model:");
-					System.out.println("time:"+two.cTime+" x:"+two.cx+" y:"+two.cy);
+					//System.out.println("Adding wave model:");
+					//System.out.println("time:"+two.cTime+" x:"+two.cx+" y:"+two.cy);
 					WaveModel wm = new WaveModel(two.cTime,one.cTime,two.cEnergy-one.cEnergy,
 							two.cx, two.cy, one.cx, one.cy);
 					oldTime = two.cTime;
@@ -202,7 +204,7 @@ public class Sprinter extends Legs implements Paintable
 	}
 	public void onPaint(Graphics2D g) 
 	{
-		System.out.println("spray painting prepared");
+		//System.out.println("spray painting prepared");
 		for (WaveModel wave : surf_bum)
 		{
 			g.setColor(Color.BLUE);
@@ -237,13 +239,13 @@ class WaveModel
 		early_origin_time = early_time;
 		late_origin_time = late_time;
 		this.energy = Math.abs(energy);
-		System.out.println("bullet energy = "+this.energy);
+		//System.out.println("bullet energy = "+this.energy);
 		early_origin_x = x1;
 		early_origin_y = y1;
 		late_origin_x = x2;
 		late_origin_y = y2;
 
 		speed = 20+(3*energy);
-		System.out.println("bullet speed = "+speed);
+		//System.out.println("bullet speed = "+speed);
 	}
 }
