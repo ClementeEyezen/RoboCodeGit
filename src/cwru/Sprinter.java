@@ -24,9 +24,9 @@ public class Sprinter extends Legs implements Paintable
 	int[] disp_iwave_count;
 	double[] disp_iwave_func;
 	double print_heading;
-	
+
 	double fraction = 32;
-	
+
 	public Sprinter(LifeBox source, cwruBase cwruBase) 
 	{
 		super(source, cwruBase);
@@ -44,15 +44,17 @@ public class Sprinter extends Legs implements Paintable
 		{
 			update(surf_bum.get(i),current_time);
 		}
-		double[] output = inner_points_test(long_points_test());
-		double desired_math_heading = Math.PI + Math.atan2(robot.getY()-output[1], robot.getX()-output[0]);
-		System.out.println("desired math = "+desired_math_heading);
-		double desired_heading = (-desired_math_heading+Math.PI/2);
-		print_heading = desired_math_heading;
-		double current_heading = robot.getHeadingRadians();
-		moveEndTheta = (desired_heading-current_heading)%(2*Math.PI);
-		System.out.println("move End Theta = "+moveEndTheta);
-		moveEndDistance = Brain.distance(output[0], output[1], robot.getX(), robot.getY());
+		if (robot.getTurnRemainingRadians()<=.01)
+		{
+			double[] output = inner_points_test(long_points_test());
+			double desired_math_heading = Math.atan2(robot.getY()-output[1], robot.getX()-output[0]);
+			System.out.println("desired math = "+desired_math_heading);
+			double desired_heading = (-desired_math_heading+Math.PI/2);
+			double current_heading = robot.getHeadingRadians();
+			moveEndTheta = (desired_heading-current_heading)%(2*Math.PI);
+			System.out.println("move End Theta = "+moveEndTheta);
+			moveEndDistance = Brain.distance(output[0], output[1], robot.getX(), robot.getY());
+		}
 		//TODO IDEAPAD
 		/*
 		 * The robot should test 32 points at radius of 50 around itself, and evaluate
@@ -167,7 +169,7 @@ public class Sprinter extends Legs implements Paintable
 			if (distance_early>=wave.early_radius && distance_late<=wave.late_radius)
 			{
 				current_waves++;
-				System.out.println("waves overlap "+current_waves);
+				//System.out.println("waves overlap "+current_waves);
 			}
 		}
 		return current_waves;
@@ -198,6 +200,16 @@ public class Sprinter extends Legs implements Paintable
 			disp_wave_count[i] = wave_count;
 			double delta_heading = test_bearing-this_heading;
 			double function = (Math.sin(Math.abs(delta_heading)))/((wave_count+1));
+			if (test_x >= robot.getBattleFieldWidth()-50 || test_x < 50)
+			{
+				System.out.println("broken condition");
+				function = 0;
+			}
+			if (test_y >= robot.getBattleFieldHeight()-50 || test_y < 50)
+			{
+				System.out.println("broken condition");
+				function = 0;
+			}
 			disp_wave_func[i] = function;
 			if (function > optimal_function)
 			{
@@ -212,13 +224,14 @@ public class Sprinter extends Legs implements Paintable
 	}
 	public void onPaint(Graphics2D g) 
 	{
-		/*
+		super.onPaint(g);
+
 		//draw the wave models
 		WaveModel wave;
 		for (int i = 0; i< surf_bum.size(); i++)
 		{
 			wave = surf_bum.get(i);
-			//System.out.println("Displaying Wave "+(i+1)+" of "+surf_bum.size());
+			System.out.println("Displaying Wave "+(i+1)+" of "+surf_bum.size());
 			g.setColor(Color.BLUE);
 			g.drawOval((int)(wave.early_origin_x-wave.early_radius-(robot.getHeight()/2)), 
 					(int)(wave.early_origin_y-wave.early_radius-(robot.getHeight()/2)), 
@@ -229,16 +242,16 @@ public class Sprinter extends Legs implements Paintable
 					(int) (wave.late_radius*2-robot.getHeight()),
 					(int) (wave.late_radius*2-robot.getHeight()));
 		}
-		*/
+
 		//draw the movement calculations
 		g.setColor(Color.RED);
 		for (int i = 0; i<(int) fraction; i++)
 		{
-			/*
+
 			g.setColor(Color.GREEN);
 			g.fillRect((int) (disp_x[i]), (int) (disp_y[i]), 5, 5);
 			g.fillRect((int) (disp_ix[i]), (int) (disp_iy[i]), 5, 5);
-			
+
 			if (disp_wave_func[i]<.5)
 			{
 				g.setColor(Color.RED);
@@ -259,23 +272,20 @@ public class Sprinter extends Legs implements Paintable
 				g.setColor(Color.ORANGE);
 				g.fillRect((int) (disp_ix[i]), (int) (disp_iy[i]), 5, 5);
 			}
-			if (disp_wave_count[i] >= 3)
+			if (disp_wave_count[i] >= 1)
 			{
 				g.setColor(Color.BLUE);
 				g.fillRect((int) (disp_x[i]), (int) (disp_y[i]), 5, 5);
 			}
-			if (disp_iwave_count[i] >= 3)
+			if (disp_iwave_count[i] >= 1)
 			{
 				g.setColor(Color.BLACK);
 				g.fillRect((int) disp_ix[i], (int) disp_iy[i], 5, 5);
 			}
-			*/
+
 			g.setColor(Color.PINK);
 			g.fillRect((int) last_far_x, (int) last_far_y, 5, 5);
 			g.fillRect((int) last_near_x, (int) last_near_y, 5, 5);
-			g.drawLine((int) robot.getX(), (int) robot.getY(), 
-					(int) (robot.getX()+100*Math.cos(print_heading)), 
-					(int) (robot.getY()+100*Math.sin(print_heading)));
 		}
 	}
 
@@ -293,7 +303,7 @@ public class Sprinter extends Legs implements Paintable
 		for (int i = 0; i<(int) fraction; i++)
 		{
 			double random_distance = Math.random()*(50-8)+8; //picks a random distance 8-50
-			double random_bearing = Math.random()*2*Math.PI-Math.PI; //rand bearing -pi to pi
+			double random_bearing = Math.random()*2*Math.PI; //rand bearing -pi to pi
 			double test_x = random_distance*Math.cos(random_bearing)+this_x;
 			disp_ix[i] = test_x;
 			double test_y = random_distance*Math.sin(random_bearing)+this_y;
