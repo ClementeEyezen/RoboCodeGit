@@ -9,6 +9,7 @@ public class SeaLegs extends Legs
 	ArrayList<WaveModel> surf_bum;
 	ArrayList<Double> move_here_x;
 	ArrayList<Double> move_here_y;
+	//ArrayList<ShotList> in_the_dark;
 	double close_enough = 8;
 	double[] test_x;
 	double[] test_y;
@@ -96,7 +97,7 @@ public class SeaLegs extends Legs
 			}
 			else
 			{
-				this.moveEndDistance = distance;
+				this.moveEndDistance = -distance;
 			}
 		}
 		return heading_distance;
@@ -154,6 +155,31 @@ public class SeaLegs extends Legs
 		if (x>bfw-32 || x<32) value_at_point = -1;
 		if (y>bfh-32 || y<32) value_at_point = -1;
 		return value_at_point;
+	}
+	public void makeWaves()
+	{
+		for (RoboCore rc: source.ronny)
+		{
+			if (rc.extractEnergy().size()>2)
+			{
+				double energy_last = rc.extractEnergy().get(rc.extractEnergy().size()-1);
+				double energy_not = rc.extractEnergy().get(rc.extractEnergy().size()-2);
+				double delta = energy_last-energy_not;
+				if (surf_bum.size()==0 || 
+						(surf_bum.get(surf_bum.size()-1).late_origin_time!=
+							robot.getTime()))
+				{
+					surf_bum.add(new WaveModel(
+							rc.extractTime().get(rc.extractX().size()-2),
+							rc.extractTime().get(rc.extractTime().size()-2), 
+							Math.abs(delta), 
+							rc.extractX().get(rc.extractX().size()-2),
+							rc.extractY().get(rc.extractY().size()-2),
+							rc.lastX, rc.lastY
+							));
+				}
+			}
+		}
 	}
 	@Override
 	public void process()
@@ -217,6 +243,21 @@ public class SeaLegs extends Legs
 	}
 	public void onPaint(Graphics2D g)
 	{
+		//draw the desired heading
+		if(moveEndDistance>=0)
+		{
+			g.setColor(Color.GREEN);
+		}
+		else
+		{
+			g.setColor(Color.RED);
+		}
+		g.drawLine(
+				(int) robot.getX(), 
+				(int) robot.getY(), 
+				(int) (robot.getX()+32*Math.cos(-(moveEndTheta+robot.getHeadingRadians())+Math.PI/2)), 
+				(int) (robot.getY()+32*Math.sin(-(moveEndTheta+robot.getHeadingRadians())+Math.PI/2))
+				);
 		//draw the wave models
 		WaveModel wave;
 		for (int i = 0; i< surf_bum.size(); i++)
@@ -233,7 +274,7 @@ public class SeaLegs extends Legs
 					(int) (wave.late_radius*2-robot.getHeight()),
 					(int) (wave.late_radius*2-robot.getHeight()));
 		}
-		
+
 		//draw all of the test points
 		for(int i = 0; i<fraction; i++)
 		{
@@ -253,7 +294,7 @@ public class SeaLegs extends Legs
 			g.fillRect((int) (double) test_x[i], (int) test_y[i], 4, 4);
 
 		}
-		
+
 		//draw all the points that it is moving too
 		for(int i = 0; i<move_here_x.size(); i++)
 		{
@@ -328,3 +369,16 @@ class WaveModel
 		late_radius = speed*(current_time-late_origin_time);
 	}
 }
+/*class ShotList
+{
+	//an arraylist of shots associated with a certain RoboCore
+	RoboCore source;
+	ArrayList<Double> all_energy_drops;
+	ArrayList<Long> all_drop_times;
+
+	public ShotList(RoboCore source)
+	{
+		all_energy_drops = new ArrayList<Double>();
+		all_drop_times = new ArrayList<Long>();
+	}
+}*/
