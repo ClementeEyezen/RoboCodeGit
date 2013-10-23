@@ -1,5 +1,7 @@
 package cwru;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 public class SeaLegs extends Legs
@@ -117,7 +119,7 @@ public class SeaLegs extends Legs
 		double distance = Math.min(
 				Math.min(robot.getBattleFieldWidth()-x, x),
 				Math.min(robot.getBattleFieldHeight()-y, y)
-									);
+		);
 		for (RoboCore rc : source.ronny)
 		{
 			if (distance>Brain.distance(rc.lastX, rc.lastY, x, y))
@@ -145,7 +147,7 @@ public class SeaLegs extends Legs
 		if (wave_count == 0) value_at_point*=10;
 		else if (wave_count == 1) value_at_point+=0;
 		else value_at_point *= Math.pow(2, -wave_count);
-		
+
 		double bfw = robot.getBattleFieldWidth();
 		double bfh = robot.getBattleFieldHeight();
 		if (x>bfw-32 || x<32) value_at_point = -1;
@@ -182,7 +184,7 @@ public class SeaLegs extends Legs
 			test_function[i] = function(test_x[i],test_y[i]);
 		}
 
-			//Now all of the test points have values for the function
+		//Now all of the test points have values for the function
 		double best_x = test_x[0];
 		double best_y = test_y[0];
 		double best_func = test_function[0];
@@ -196,7 +198,7 @@ public class SeaLegs extends Legs
 		}
 		move_here_x.add(best_x);
 		move_here_y.add(best_y);
-		
+
 		if (best_func<0 || Math.random()<.01)
 		{
 			//if all the points are bad or random 1:100, move to a completely new place 
@@ -205,12 +207,58 @@ public class SeaLegs extends Legs
 			move_here_x.add(Math.random()*(robot.getBattleFieldWidth()-100)+50);
 			move_here_y.add(Math.random()*(robot.getBattleFieldHeight()-100)+50);
 		}
-		
+
 		//MOVE TO THE FIRST POINT ON THE LIST
 		double c_game_heading = robot.getHeadingRadians();
 		double c_math_heading = -c_game_heading+Math.PI/2;
 		efficient_move_to_point(this.move_here_x.get(0), this.move_here_y.get(0),
 				c_math_heading);
+	}
+	public void onPaint(Graphics2D g)
+	{
+		//draw the wave models
+		WaveModel wave;
+		for (int i = 0; i< surf_bum.size(); i++)
+		{
+			wave = surf_bum.get(i);
+			System.out.println("Displaying Wave "+(i+1)+" of "+surf_bum.size());
+			g.setColor(Color.BLUE);
+			g.drawOval((int)(wave.early_origin_x-wave.early_radius-(robot.getHeight()/2)), 
+					(int)(wave.early_origin_y-wave.early_radius-(robot.getHeight()/2)), 
+					(int) (wave.early_radius*2+robot.getHeight()),
+					(int) (wave.early_radius*2+robot.getHeight()));
+			g.drawOval((int)(wave.late_origin_x-wave.late_radius+(robot.getHeight()/2)), 
+					(int)(wave.late_origin_y-wave.late_radius+(robot.getHeight()/2)), 
+					(int) (wave.late_radius*2-robot.getHeight()),
+					(int) (wave.late_radius*2-robot.getHeight()));
+		}
+		
+		//draw all of the test points
+		for(int i = 0; i<fraction; i++)
+		{
+			g.setColor(Color.GREEN);
+			if(test_function[i]<0)
+			{
+				g.setColor(Color.BLACK);
+			}
+			else if(test_function[i]<.5)
+			{
+				g.setColor(Color.RED);
+			}
+			else if(test_function[i]<1)
+			{
+				g.setColor(Color.ORANGE);
+			}
+			g.fillRect((int) (double) test_x[i], (int) test_y[i], 4, 4);
+
+		}
+		
+		//draw all the points that it is moving too
+		for(int i = 0; i<move_here_x.size(); i++)
+		{
+			g.setColor(Color.CYAN);
+			g.fillRect((int) (double) move_here_x.get(i), (int) (double) move_here_y.get(i), 4, 4);
+		}
 	}
 }
 class WaveModel
