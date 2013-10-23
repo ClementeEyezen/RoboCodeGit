@@ -1,0 +1,281 @@
+package cwru;
+
+import java.util.ArrayList;
+
+public class SeaLegs extends Legs
+{
+	ArrayList<WaveModel> surf_bum;
+	ArrayList<Double> move_here_x;
+	ArrayList<Double> move_here_y;
+	double close_enough = 8;
+	double[] test_x;
+	double[] test_y;
+	double[] test_function;
+	double fraction = 32;
+	double test_distance = 32;
+	public SeaLegs(LifeBox source, cwruBase robot)
+	{
+		super(source, robot);
+		surf_bum = new ArrayList<WaveModel>();
+	}
+	public void update_surf(long current_time)
+	{
+		for(WaveModel w : surf_bum)
+		{
+			w.update(current_time);
+		}
+		int i = 0;
+		while (i<surf_bum.size())
+		{
+			if (surf_bum.get(i).wave_off_screen())
+			{
+				surf_bum.remove(i);
+			}
+			else
+			{
+				i++;
+			}
+		}
+	}
+	public void shorten_point_queue()
+	{
+		int i = 0;
+		while (i<move_here_x.size() && i<move_here_y.size())
+		{
+			if (Brain.distance(robot.getX(), robot.getY(), move_here_x.get(i), move_here_y.get(i))
+					<= close_enough)
+			{
+				move_here_x.remove(i);
+				move_here_y.remove(i);
+			}
+			else
+			{
+				i++;
+			}
+		}
+		//if either becomes empty (both should be concurrently), reset and do a new calc
+		if(move_here_x.size()==0 || move_here_y.size()==0)
+		{
+			move_here_x = new ArrayList<Double>();
+			move_here_y = new ArrayList<Double>();
+			process();
+		}
+	}
+	public double math_radians_to_point(double x, double y)
+	{
+		return Math.atan2(x-robot.getX(), y-robot.getY());
+	}
+	public double[] efficient_move_to_point(double x, double y, double c_math_heading)
+	{
+		//outputs the desired heading and move distance. Allows for backwards move
+		double[] heading_distance = new double[2];
+		double delta = (math_radians_to_point(x,y)-c_math_heading)%(Math.PI*2);
+		double distance = Brain.distance(x, y, robot.getX(), robot.getY());
+		if(Math.abs(delta)<=Math.PI/2) //if it is in the forward range
+		{
+			this.moveEndTheta = reduce_change(delta);
+			if(distance>8)
+			{
+				this.moveEndDistance = 10; //go max forward
+			}
+			else
+			{
+				this.moveEndDistance = distance;
+			}
+		}
+		else //the point is in the back half of movement
+		{
+			double delta__ = (math_radians_to_point(x,y)+Math.PI)%(Math.PI*2)-c_math_heading;
+			moveEndTheta = reduce_change(delta__);
+			if(distance>8)
+			{
+				this.moveEndDistance = -10;
+			}
+			else
+			{
+				this.moveEndDistance = distance;
+			}
+		}
+		return heading_distance;
+	}
+	public double reduce_change(double raw_delta)
+	{
+		double refined_delta = raw_delta%(Math.PI*2);
+		if (refined_delta > Math.PI/2)
+		{
+			refined_delta = -((Math.PI*2)-refined_delta);
+		}
+		if (refined_delta < Math.PI/-2)
+		{
+			refined_delta = (Math.PI*-2)-refined_delta;
+		}
+		return refined_delta;
+	}
+	public double nearest_robot_or_wall(double x, double y)
+	{
+		//returns the distance to the nearest robot
+		double distance = Math.min(
+				Math.min(robot.getBattleFieldWidth()-x, x),
+				Math.min(robot.getBattleFieldHeight()-y, y)
+									);
+		for (RoboCore rc : source.ronny)
+		{
+			if (distance>Brain.distance(rc.lastX, rc.lastY, x, y))
+			{
+				distance = Brain.distance(rc.lastX, rc.lastY, x, y);
+			}
+		}
+		return distance;
+	}
+	public double function(double x, double y)
+	{
+		double value_at_point = 1;
+		if(nearest_robot_or_wall(x,y)>=41)//if there isn't a robot close by, give it points
+		{
+			value_at_point*=Math.log((nearest_robot_or_wall(x,y)-40));
+		}
+		int wave_count = 0;
+		for (WaveModel w : surf_bum)
+		{
+			if(w.point_in_wave(x, y))
+			{
+				wave_count++;
+			}
+		}
+		if (wave_count == 0) value_at_point*=10;
+		else if (wave_count == 1) value_at_point+=0;
+		else value_at_point *= Math.pow(2, -wave_count);
+		
+		double bfw = robot.getBattleFieldWidth();
+		double bfh = robot.getBattleFieldHeight();
+		if (x>bfw-32 || x<32) value_at_point = -1;
+		if (y>bfh-32 || y<32) value_at_point = -1;
+		return value_at_point;
+	}
+	@Override
+	public void process()
+	{
+		//process removes any nearby points, then adds a point to the queue
+		update_surf(robot.getTime()); //update wave list
+		shorten_point_queue(); //remove nearby points
+
+		//GENERATE A NEW POINT TO ADD TO THE LIST
+		//This is where wave surfing happens
+
+		//find the last point on the list to project from, if there is none, use robot loc
+		double last_x = robot.getX();
+		double last_y = robot.getY();
+		if (move_here_x.size()>0 && move_here_y.size()>0)
+		{
+			int index = Math.min(move_here_x.size()-1,move_here_y.size()-1);
+			last_x = move_here_x.get(index);
+			last_y = move_here_y.get(index);
+		}
+		test_x = new double[(int) fraction];
+		test_y = new double[(int) fraction];
+		test_function = new double[(int) fraction];
+		double div = Math.PI*2/fraction;
+		for (int i = 0; i<fraction; i++)
+		{
+			test_x[i] = test_distance*Math.cos(i*div)+last_x;
+			test_y[i] = test_distance*Math.sin(i*div)+last_y;
+			test_function[i] = function(test_x[i],test_y[i]);
+		}
+
+			//Now all of the test points have values for the function
+		double best_x = test_x[0];
+		double best_y = test_y[0];
+		double best_func = test_function[0];
+		for (int i = 1; i<fraction; i++)
+		{
+			if (test_function[i]> best_func)
+			{
+				best_x = test_x[i];
+				best_y = test_y[i];
+			}
+		}
+		move_here_x.add(best_x);
+		move_here_y.add(best_y);
+		
+		if (best_func<0 || Math.random()<.01)
+		{
+			//if all the points are bad or random 1:100, move to a completely new place 
+			move_here_x = new ArrayList<Double>();
+			move_here_y = new ArrayList<Double>();
+			move_here_x.add(Math.random()*(robot.getBattleFieldWidth()-100)+50);
+			move_here_y.add(Math.random()*(robot.getBattleFieldHeight()-100)+50);
+		}
+		
+		//MOVE TO THE FIRST POINT ON THE LIST
+		double c_game_heading = robot.getHeadingRadians();
+		double c_math_heading = -c_game_heading+Math.PI/2;
+		efficient_move_to_point(this.move_here_x.get(0), this.move_here_y.get(0),
+				c_math_heading);
+	}
+}
+class WaveModel
+{
+	long early_origin_time;
+	long late_origin_time;
+	double energy;
+	double speed;
+	double early_origin_x;
+	double early_origin_y;
+	double late_origin_x;
+	double late_origin_y;
+	double early_radius;
+	double late_radius;
+	double max_radius = 1000;
+	public WaveModel(long early_time, long late_time, double energy, 
+			double x1, double y1, double x2, double y2)
+	{
+		early_origin_time = early_time;
+		late_origin_time = late_time;
+		this.energy = Math.abs(energy);
+		//System.out.println("bullet energy = "+this.energy);
+		early_origin_x = x1;
+		early_origin_y = y1;
+		late_origin_x = x2;
+		late_origin_y = y2;
+
+		speed = 20+(3*energy);
+		//System.out.println("bullet speed = "+speed);
+		update(late_time);
+	}
+	public boolean point_in_wave(double x, double y)
+	{
+		double early_distance = Brain.distance(x, y, early_origin_x, early_origin_y);
+		double late_distance = Brain.distance(x, y, late_origin_x, late_origin_y);
+		if (late_radius<early_radius)
+		{
+			if (late_distance<early_distance)
+			{
+				return (late_distance>=late_radius && early_distance<=early_radius);
+			}
+			else
+			{
+				return (early_distance>=late_radius && late_distance<=early_radius);
+			}
+		}
+		else
+		{
+			if (late_distance<early_distance)
+			{
+				return (late_distance>=early_radius && early_distance<=late_radius);
+			}
+			else
+			{
+				return (early_distance>=early_radius && late_distance<=late_radius);
+			}
+		}
+	}
+	public boolean wave_off_screen()
+	{
+		return (late_radius>=max_radius);
+	}
+	public void update(long current_time)
+	{
+		early_radius = speed*(current_time-early_origin_time);
+		late_radius = speed*(current_time-late_origin_time);
+	}
+}
