@@ -19,6 +19,8 @@ public class SeaLegs extends Legs
 	{
 		super(source, robot);
 		surf_bum = new ArrayList<WaveModel>();
+		move_here_x = new ArrayList<Double>();
+		move_here_y = new ArrayList<Double>();
 	}
 	public void update_surf(long current_time)
 	{
@@ -60,7 +62,6 @@ public class SeaLegs extends Legs
 		{
 			move_here_x = new ArrayList<Double>();
 			move_here_y = new ArrayList<Double>();
-			process();
 		}
 	}
 	public double math_radians_to_point(double x, double y)

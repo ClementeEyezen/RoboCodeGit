@@ -12,7 +12,7 @@ public class CodeBlue extends cwruBase implements Paintable
 		fileSystem = new LifeBox(this);
 		sally = new Sonar(fileSystem, this);
 		biggles = new Gunner(fileSystem, this);
-		larson = new Sprinter(fileSystem, this);
+		larson = new SeaLegs(fileSystem, this);
 		lcd = new Projector(fileSystem, this);
 		this.setAdjustGunForRobotTurn(true);
 		this.setAdjustRadarForGunTurn(true);
