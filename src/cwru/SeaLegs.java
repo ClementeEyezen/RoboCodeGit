@@ -72,8 +72,11 @@ public class SeaLegs extends Legs
 	public double[] efficient_move_to_point(double x, double y, double c_math_heading)
 	{
 		//outputs the desired heading and move distance. Allows for backwards move
+		System.out.println("c_math_heading = "+c_math_heading);
 		double[] heading_distance = new double[2];
-		double delta = (math_radians_to_point(x,y)-c_math_heading)%(Math.PI*2);
+		System.out.println("math_radians to point = "+math_radians_to_point(x,y));
+		double delta = (math_radians_to_point(x,y));
+		System.out.println("Suggested delta = "+delta);
 		double distance = Brain.distance(x, y, robot.getX(), robot.getY());
 		if(Math.abs(delta)<=Math.PI/2) //if it is in the forward range
 		{
@@ -238,8 +241,10 @@ public class SeaLegs extends Legs
 		//MOVE TO THE FIRST POINT ON THE LIST
 		double c_game_heading = robot.getHeadingRadians();
 		double c_math_heading = -c_game_heading+Math.PI/2;
-		efficient_move_to_point(this.move_here_x.get(0), this.move_here_y.get(0),
+		double[] output = efficient_move_to_point(this.move_here_x.get(0), this.move_here_y.get(0),
 				c_math_heading);
+		moveEndTheta = output[0];
+		moveEndDistance = 8;
 	}
 	public void onPaint(Graphics2D g)
 	{
