@@ -34,14 +34,14 @@ public class RobotBite
 		cEnergy = energy;
 		cBearing_radians = bearing_radians;
 		double myBearing = self.getHeadingRadians();
-		System.out.println("I'm going "+self.getHeadingRadians());
+		//System.out.println("I'm going "+self.getHeadingRadians());
 		double adjust_bearing = (bearing_radians+myBearing)%(2*Math.PI);
-		System.out.println("input bearing  "+(bearing_radians));
-		System.out.println("adjust bearing "+(adjust_bearing));
-		System.out.println("math bearing"+(-adjust_bearing+Math.PI/2));
+		//System.out.println("input bearing  "+(bearing_radians));
+		//System.out.println("adjust bearing "+(adjust_bearing));
+		//System.out.println("math bearing"+(-adjust_bearing+Math.PI/2));
 		cDistance = distance;
 		cHeading_radians = heading_radians;
-		System.out.println("location heading "+heading_radians);
+		//System.out.println("location heading "+heading_radians);
 		cVelocity = velocity;
 		
 		double myX = self.getX();
@@ -56,9 +56,9 @@ public class RobotBite
 		 *           180
 		 */
 		double dX = distance*Math.cos(math_bearing);
-		System.out.println("location dx:" + dX);
+		//System.out.println("location dx:" + dX);
 		double dY = distance*Math.sin(math_bearing);
-		System.out.println("location dy:" + dY);
+		//System.out.println("location dy:" + dY);
 		cx = myX+dX;
 		cy = myY+dY;
 	}

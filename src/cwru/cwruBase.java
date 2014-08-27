@@ -1,5 +1,7 @@
 package cwru;
 
+import java.awt.Graphics2D;
+
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
 
@@ -15,7 +17,7 @@ public class cwruBase extends AdvancedRobot
 	double cx;
 	double cy;
 	boolean runDelayTest = false;
-	
+		
 	long counter;
 	
 	public void run()
@@ -64,7 +66,7 @@ public class cwruBase extends AdvancedRobot
 	}
 	public void onScannedRobot(ScannedRobotEvent sre)
 	{
-		System.out.println("Scanned a new sre, which sounds like MRE");
+		//System.out.println("Scanned a new sre, which sounds like MRE");
 		sally.inputScan(sre);
 	}
 	public void testResponseTime(long startTime, boolean runYN)
@@ -92,5 +94,13 @@ public class cwruBase extends AdvancedRobot
 			counter+=0;
 			System.out.println("    Cycle "+counter);
 		}
+	}
+	public void onPaint(Graphics2D g)
+	{
+		fileSystem.onPaint(g);
+		sally.onPaint(g);
+		biggles.onPaint(g);
+		larson.onPaint(g);
+		lcd.onPaint(g);
 	}
 }

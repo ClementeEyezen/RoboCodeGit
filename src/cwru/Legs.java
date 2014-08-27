@@ -1,5 +1,6 @@
 package cwru;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 
 public class Legs extends Brain implements Paintable
@@ -9,6 +10,12 @@ public class Legs extends Brain implements Paintable
 	double randomW;
 	double randomH;
 	cwruBase robot;
+	
+	int pointer_x; //pointers for where the robot is pointing at range 100
+	int pointer_y;
+	int current_x;
+	int current_y;
+
 	public Legs(LifeBox source, cwruBase cwruBase) 
 	{
 		super(source);
@@ -32,8 +39,27 @@ public class Legs extends Brain implements Paintable
 	}
 	public final void set()
 	{
+		current_x = (int) (robot.getX()+100*Math.cos(-robot.getHeadingRadians()+Math.PI/2));
+		current_y = (int) (robot.getY()+100*Math.sin(-robot.getHeadingRadians()+Math.PI/2));;
+		reduceTheta();
+		pointer_x = (int) (robot.getX()+100*Math.cos(moveEndTheta-robot.getHeadingRadians()+Math.PI/2));
+		pointer_y = (int) (robot.getY()+100*Math.sin(moveEndTheta-robot.getHeadingRadians()+Math.PI/2));;
 		robot.setTurnLeftRadians(moveEndTheta);
 		robot.setAhead(moveEndDistance);
+	}
+	public void reduceTheta()
+	{
+		moveEndTheta = moveEndTheta%(Math.PI*2);
+		if (moveEndTheta > Math.PI)
+		{
+			double delta = moveEndTheta-Math.PI;
+			moveEndTheta = delta-Math.PI;
+		}
+		if (moveEndTheta < -1*Math.PI)
+		{
+			double delta = -moveEndTheta-Math.PI;
+			moveEndTheta = delta-Math.PI;
+		}
 	}
 	public double choose_radians_to_turn_left()
 	{
@@ -126,9 +152,12 @@ public class Legs extends Brain implements Paintable
 	{
 		return Brain.distance(px, py, mx, my);
 	}
-	@Override
-	public void onPaint(Graphics2D g) {
-		// TODO Auto-generated method stub
-		
+	public void onPaint(Graphics2D g) 
+	{
+		System.out.println("Painting Legs graphics");
+		g.setColor(Color.ORANGE);
+		g.drawLine((int) robot.getX(), (int) robot.getY(), pointer_x, pointer_y);
+		g.setColor(Color.RED);
+		g.drawLine((int) robot.getX(), (int) robot.getY(), current_x, current_y);
 	}
 }

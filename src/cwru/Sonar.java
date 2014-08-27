@@ -117,7 +117,7 @@ public class Sonar extends Brain implements Paintable
 			//this should find the old one and add the data properly
 */	
 		//take the new robotbite larry, add to Lifebox
-		System.out.println("storing a LARRY");
+		//System.out.println("storing a LARRY");
 		source.store(larry);
 	}
 	public final void set()

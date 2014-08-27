@@ -26,7 +26,7 @@ public class LifeBox implements Paintable
 	ArrayList<RoboCore> ronny = new ArrayList<RoboCore>(1);
 	/*
 	ArrayList<IDArray> indexOfArrays;
-	*/
+	 */
 	int defaultTime = 500;
 	public LifeBox(cwruBase robot)
 	{
@@ -54,25 +54,37 @@ public class LifeBox implements Paintable
 	}
 	public void store(RobotBite store_this)
 	{
-		System.out.println("inputing a LARRY");
+		boolean match_found = false;
+		System.out.println("Storing LARRY for: "+store_this.name);
 		if (ronny.size()>0) //make sure there are cores to scan
 		{
+			System.out.println("ronny checks out");
 			for (RoboCore rc : ronny)
 			{
+				System.out.println("Cycling RCore "+rc.name);
 				//run through all of the existing cores and see if it matches pre-collected data
 				if (rc.name.equals(store_this.name))
 				{
+					System.out.println("Name found a match");
 					rc.add(store_this);
+					match_found = true;
 				}
+			}
+			//if the system didn't find a match
+			if(!match_found)
+			{
+				System.out.println("name didn't find a match logic");
+				ronny.add(new RoboCore(store_this.name)); //add a new core
+				System.out.println("New total robocores =======> "+ronny.size());
 			}
 		}
 		else
 		{
+			System.out.println("ronny didn't check out");
 			ronny.add(new RoboCore(store_this.name)); //add a new core
 			System.out.println("New total robocores =======> "+ronny.size());
 			store(store_this); //run the test again
 		}
-		
 	}
 	//Commenting out the code that uses IDArrays, moving to a more simple soluction
 	/*
@@ -139,7 +151,7 @@ public class LifeBox implements Paintable
 		}
 		return null;
 	}
-*/
+	 */
 	//Start new code storage system
 	@Override
 	public void onPaint(Graphics2D g) 
@@ -161,5 +173,5 @@ public class LifeBox implements Paintable
 			}
 		}
 	}
-	
+
 }
