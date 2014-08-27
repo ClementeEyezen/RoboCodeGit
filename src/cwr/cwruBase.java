@@ -1,18 +1,32 @@
-package cwru;
+package cwr;
 
 import java.awt.Graphics2D;
 
+import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
 
-public class CodeBlue extends cwruBase implements Paintable
+public class cwruBase extends AdvancedRobot
 {
+	LifeBox fileSystem;
+	Sonar sally;
+	Gunner biggles;
+	Legs larson;
+	Projector lcd;
+	long processTime;
+	long totalTime;
+	double cx;
+	double cy;
+	boolean runDelayTest = false;
+		
+	long counter;
+	
 	public void run()
 	{
 		//================SETUP================
 		fileSystem = new LifeBox(this);
 		sally = new Sonar(fileSystem, this);
 		biggles = new Gunner(fileSystem, this);
-		larson = new SeaLegs(fileSystem, this);
+		larson = new Legs(fileSystem, this);
 		lcd = new Projector(fileSystem, this);
 		this.setAdjustGunForRobotTurn(true);
 		this.setAdjustRadarForGunTurn(true);
@@ -21,7 +35,6 @@ public class CodeBlue extends cwruBase implements Paintable
 		//==========REPEATING ACTIONS==========
 		while(true)
 		{
-			System.out.println("New Turn "+getTime());
 			//get X, Y coords and store
 			cx = this.getX();
 			cy = this.getY();
@@ -42,11 +55,44 @@ public class CodeBlue extends cwruBase implements Paintable
 			totalTime = System.currentTimeMillis()-processTime;
 			System.out.println("set Action time (millis):"+totalTime);
 			
+			testResponseTime(40,runDelayTest);
+			
 			//execute all movement
 			processTime = System.currentTimeMillis();
 			execute();
 			totalTime = System.currentTimeMillis()-processTime;
 			System.out.println("execute Time (millis):"+totalTime);
+		}
+	}
+	public void onScannedRobot(ScannedRobotEvent sre)
+	{
+		//System.out.println("Scanned a new sre, which sounds like MRE");
+		sally.inputScan(sre);
+	}
+	public void testResponseTime(long startTime, boolean runYN)
+	{
+		System.out.println("Delay test...");
+		long displayed_time = startTime;
+		if (runYN == true)
+		{
+			System.out.println("initiated...");
+			long starter = System.currentTimeMillis();
+			System.out.println("  Start time = "+starter);
+			System.out.println("tst1:"+(System.currentTimeMillis() - starter));
+			System.out.println("tst2:"+(counter+startTime));
+			while (System.currentTimeMillis() - starter <= counter+startTime)
+			{
+				//System.out.println("tst1: "+(System.currentTimeMillis() - starter));
+				//while the time since the start time < than the desired test time
+				//do nothing, display the wait time if it's new
+				if (displayed_time<counter+startTime)
+				{
+					displayed_time = counter+startTime;
+					System.out.println("    Current delay: "+displayed_time);
+				}
+			}
+			counter+=0;
+			System.out.println("    Cycle "+counter);
 		}
 	}
 	public void onPaint(Graphics2D g)

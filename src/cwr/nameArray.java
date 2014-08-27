@@ -1,4 +1,4 @@
-package cwru;
+package cwr;
 
 import java.util.ArrayList;
 

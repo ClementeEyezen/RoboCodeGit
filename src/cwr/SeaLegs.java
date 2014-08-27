@@ -1,4 +1,4 @@
-package cwru;
+package cwr;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
