@@ -1,5 +1,8 @@
 package cepl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import cepl.dataStorage.DataPoint;
 import robocode.ScannedRobotEvent;
 
@@ -119,5 +122,48 @@ public class RadarControl extends Control	{
 	{
 		//TODO
 		mode = "multi";
+		if(source.getRadarTurnRemainingRadians()<.01)
+		{
+			DataPoint last_self = source.ssd.selfie.info.get(source.ssd.selfie.info.size()-1);
+			double myX = last_self.x;
+			double myY = last_self.y;
+			ArrayList<Double> bearing = new ArrayList<Double>();
+
+			for (int i = 0 ; i < source.ssd.robots.size(); i++)
+			{
+				DataPoint last_else = source.ssd.robots.get(i).info.get(source.ssd.robots.get(i).info.size()-1);
+				double eX =  last_else.x;
+				double eY =  last_else.y;
+				bearing.add(Math.atan2(eY-myY,eX-myX));
+			}
+			Collections.sort(bearing);
+			ArrayList<Double> splits = new ArrayList<Double>();
+			for (int i = 0; i < bearing.size()-2; i++)
+			{
+				splits.add(bearing.get(i+1)-bearing.get(i));
+			}
+			splits.add(Math.PI*2-bearing.get(bearing.size()-1)+bearing.get(0));
+			double max = 0;
+			int index = 0;
+			for (int i = 0; i < splits.size(); i++)
+			{
+				if (splits.get(i)>max)
+				{
+					max = splits.get(i);
+					index = i;
+				}
+			}
+			double fudge_factor = .1;
+			double min_robot_bearing = bearing.get(index)-fudge_factor;
+			double max_robot_bearing;
+			if (index < bearing.size()-1)
+			{
+				max_robot_bearing = bearing.get(index+1)+fudge_factor;
+			}
+			else
+			{
+				max_robot_bearing = bearing.get(0)+fudge_factor;
+			}
+		}
 	}
 }
