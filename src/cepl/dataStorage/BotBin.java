@@ -5,6 +5,8 @@ import java.util.ArrayList;
 public class BotBin {
 	public ArrayList<DataPoint> info;
 	public String name;
+	public int scan_data;
+	public int fill_data;
 	
 	public BotBin(String name)
 	{
@@ -22,8 +24,10 @@ public class BotBin {
 				for(int i = 0; i < generated_data.size(); i++)
 				{
 					info.add(generated_data.get(i));
+					fill_data++;
 				}
 				info.add(dp);
+				scan_data++;
 			}
 			else if (delta_time <= 0)
 			{
@@ -32,7 +36,14 @@ public class BotBin {
 			else
 			{
 				info.add(dp);
+				scan_data++;
 			}
+		}
+		else
+		{
+			//no other data, just add
+			info.add(dp);
+			scan_data++;
 		}
 		
 	}
@@ -62,5 +73,12 @@ public class BotBin {
 		}
 		
 		return toReturn;
+	}
+	
+	public String percent_fill()
+	{
+		double percent = (double)(fill_data)/((double)(scan_data)+(double)(fill_data));
+		String toReturn = percent+"";
+		return toReturn.substring(0, 3);
 	}
 }

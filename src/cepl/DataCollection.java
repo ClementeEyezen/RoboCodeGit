@@ -88,5 +88,32 @@ public class DataCollection extends Control 	{
 				source.getHeadingRadians(), source.getTime(), prior, false);
 		selfie.addData(dp);
 	}
+
+	@Override
+	public String toFile() {
+		String complete = new String();
+		
+		//self
+		complete += "<BotBin name="+selfie.name+
+		" fill%= "+selfie.percent_fill()+">"+"\n";
+		for(int j = 0; j < selfie.info.size(); j++)
+		{
+			complete += selfie.info.get(j).toString()+"\n";
+		}
+		complete += "</BotBin>";
+		//others
+		for(int i = 0; i < robots.size(); i++)
+		{
+			complete += "<BotBin name="+robots.get(i).name+
+			" fill%= "+robots.get(i).percent_fill()+">"+"\n";
+			for(int j = 0; j < robots.get(i).info.size(); i++)
+			{
+				complete += robots.get(i).info.get(j).toString()+"\n";
+			}
+			complete += "</BotBin>";
+		}
+		
+		return complete;
+	}
 	
 }

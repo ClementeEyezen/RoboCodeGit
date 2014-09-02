@@ -12,5 +12,7 @@ public abstract class Control {
 	public abstract void update();
 	
 	public abstract void setRobot(Ceepl s);
+	
+	public abstract String toFile();
 
 }

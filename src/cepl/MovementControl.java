@@ -25,4 +25,10 @@ public class MovementControl extends Control	{
 		update();
 	}
 
+	@Override
+	public String toFile() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

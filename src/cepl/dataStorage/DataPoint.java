@@ -2,8 +2,8 @@ package cepl.dataStorage;
 
 public class DataPoint {
 
-	double x;
-	double y;
+	public double x;
+	public double y;
 	double energy;
 	double speed;
 	double direction;
@@ -80,5 +80,17 @@ public class DataPoint {
 			this.ds = speed;
 			this.theta = direction;
 		}
+	}
+	
+	public String toString()
+	{
+		return "<DataPoint x="+(x+"      ").substring(0, 6)
+		+" y="+(y+"      ").substring(0,6)
+		+" energy="+(energy)
+		+" speed="+(speed)
+		+" direction="+(direction+"      ").substring(0,6)
+		+" time="+(time)
+		+" generated_data="+(generated_data)
+		+">";
 	}
 }

@@ -19,6 +19,8 @@ public class Ceepl extends AdvancedRobot
 	long remaining_data_storage;
 	File data_directory;
 	File data_file;
+	
+	int robot_scans;
 
 	public boolean melee_mode;
 	public boolean on_startup;
@@ -28,6 +30,11 @@ public class Ceepl extends AdvancedRobot
 		//================SETUP================
 		melee_mode = false;
 		on_startup = true;
+		robot_scans = 0;
+		
+		this.setAdjustGunForRobotTurn(true);
+		this.setAdjustRadarForGunTurn(true);
+		this.setAdjustRadarForRobotTurn(true);
 		
 		ssd = new DataCollection();
 		ssd.setRobot(this);
@@ -40,7 +47,6 @@ public class Ceepl extends AdvancedRobot
 		
 		remaining_data_storage = getDataQuotaAvailable();
 		data_directory = getDataDirectory();
-		//data_file = getDataFile(this.getName());
 		
 		//==========REPEATING ACTIONS==========
 		while(true)
@@ -51,11 +57,13 @@ public class Ceepl extends AdvancedRobot
 			scope.update();
 			
 			remaining_data_storage = getDataQuotaAvailable();
+			execute();
 		}
 	}
 	
 	public void onScannedRobot(ScannedRobotEvent sre)
 	{
+		robot_scans += 1;
 		ssd.update(sre);
 	}
 	
@@ -78,23 +86,73 @@ public class Ceepl extends AdvancedRobot
 		File gunSettings = getDataFile(this.getName()+"_shoot");
 		System.out.println("main file path: "+main.getAbsolutePath());
 		System.out.println("add _data, _radar, _drive, _shoot for respective files");
-		
+		//main
 		BufferedWriter r = null;
+		String current_file = "null";
 		try
 		{
 			r = new BufferedWriter(new FileWriter(main,true));
-			r.write("<Ceepl>"+"\n");
-			r.write("ssd: "+ssd.id+"\n");
-			r.write("mov: "+driver.id+"\n");
-			r.write("rad: "+antenna.id+"\n");
-			r.write("gun: "+scope.id+"\n");
-			r.write("<data_volume_remaining>"+this.remaining_data_storage+"</data_volume_remaining>");
-			r.write("<data>"+dataPoints.getAbsolutePath()+"</data>"+"\n");
-			//TODO Start here
+			current_file = "main";
+			r.write(writeMainFile());
+			r.write("\n-----------\n");
+			r.close();
+			r = new BufferedWriter(new FileWriter(dataPoints,true));
+			current_file = "data";
+			r.write(writeDataFile(ssd));
+			r.write("\n-----------\n");
+			r.close();
+			r = new BufferedWriter(new FileWriter(radarSettings,true));
+			current_file = "radar";
+			r.write(writeRadarFile(antenna));
+			r.write("\n-----------\n");
+			r.close();
+			r = new BufferedWriter(new FileWriter(driveSettings,true));
+			current_file = "move";
+			r.write(writeDriveFile(driver));
+			r.write("\n-----------\n");
+			r.close();
+			r = new BufferedWriter(new FileWriter(gunSettings,true));
+			current_file = "gun";
+			r.write(writeGunFile(scope));
+			r.write("\n-----------\n");
+			r.close();
+			current_file = "done";
 		}
 		catch(IOException ioe)
 		{
-			
+			System.out.println("Error occured on file write: "+current_file);
 		}
 	}
+	
+	public String writeMainFile()
+	{
+		String complete = new String();
+		complete += "<Ceepl>"+"\n";
+		complete += "<DataCollection>"+ssd.id+"</DataCollection>"+"\n";
+		complete += "<MovementControl>"+driver.id+"</MovementControl>"+"\n";
+		complete += "<RadarControl>"+antenna.id+"</RadarControl>"+"\n";
+		complete += "<GunControl>"+scope.id+"</GunControl>"+"\n";
+		
+		complete += "<dataStorage>"+this.remaining_data_storage+"</dataStorage>"+"\n";
+		complete += "<melee_mode>"+melee_mode+"</melee_mode>"+"\n";
+		
+		return complete;
+	}
+	public String writeDataFile(DataCollection data)
+	{
+		return data.toFile();
+	}
+	public String writeRadarFile(RadarControl radar)
+	{
+		return radar.toFile();
+	}
+	public String writeDriveFile(MovementControl driver)
+	{
+		return driver.toFile();
+	}
+	public String writeGunFile(GunControl scope)
+	{
+		return scope.toFile();
+	}
+	
 }
