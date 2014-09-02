@@ -13,11 +13,17 @@ public class RadarControl extends Control	{
 	short turn_count;
 	String mode;
 	double escape_angle = Math.atan(8.0/17.0);
+	
+	double first_bearing;
+	double second_bearing;
+	boolean second_flag;
 
 	public RadarControl()
 	{
 		id = "RadarControl";
 		mode = "default";
+		first_bearing = 0;
+		second_bearing = 0;
 	}
 
 	@Override
@@ -95,7 +101,7 @@ public class RadarControl extends Control	{
 
 			double min_robot_loc = robo_bearing - max_move_angle;
 			double max_robot_loc = robo_bearing + max_move_angle;
-
+			//TODO check for error with rotated coordinate system
 			if (source.getRadarHeadingRadians()>robo_bearing && source.getRadarHeadingRadians() <robo_bearing+Math.PI)
 			{
 				//scan left to min_robot_loc
@@ -122,7 +128,7 @@ public class RadarControl extends Control	{
 	{
 		//TODO
 		mode = "multi";
-		if(source.getRadarTurnRemainingRadians()<.01)
+		if(source.getRadarTurnRemainingRadians()<.01 && second_flag)
 		{
 			DataPoint last_self = source.ssd.selfie.info.get(source.ssd.selfie.info.size()-1);
 			double myX = last_self.x;
@@ -153,7 +159,7 @@ public class RadarControl extends Control	{
 					index = i;
 				}
 			}
-			double fudge_factor = .1;
+			double fudge_factor = (8-max/45)*(8/100); //(radar turns per swing)*(s/turn)
 			double min_robot_bearing = bearing.get(index)-fudge_factor;
 			double max_robot_bearing;
 			if (index < bearing.size()-1)
@@ -164,6 +170,16 @@ public class RadarControl extends Control	{
 			{
 				max_robot_bearing = bearing.get(0)+fudge_factor;
 			}
+			second_flag = false;
+		}
+		else if (!second_flag)
+		{
+			//then set the next move
+			//TODO
+		}
+		else
+		{
+			// do nothing, still in motion
 		}
 	}
 }
