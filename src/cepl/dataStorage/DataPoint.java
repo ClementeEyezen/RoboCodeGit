@@ -4,10 +4,10 @@ public class DataPoint {
 
 	public double x;
 	public double y;
-	double energy;
+	public double energy;
 	double speed;
 	double direction;
-	long time;
+	public long time;
 	
 	boolean shot_flag;
 	

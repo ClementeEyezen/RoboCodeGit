@@ -17,6 +17,7 @@ public class RadarControl extends Control	{
 	double first_bearing;
 	double second_bearing;
 	boolean second_flag;
+	boolean default_mode;
 
 	public RadarControl()
 	{
@@ -24,6 +25,7 @@ public class RadarControl extends Control	{
 		mode = "default";
 		first_bearing = 0;
 		second_bearing = 0;
+		second_flag = true;
 	}
 
 	@Override
@@ -44,7 +46,7 @@ public class RadarControl extends Control	{
 			}
 		}
 		//control selection
-		if (!target_mode)
+		if (!target_mode || default_mode)
 		{
 			dizzy_mode();
 		}
@@ -130,6 +132,7 @@ public class RadarControl extends Control	{
 		mode = "multi";
 		if(source.getRadarTurnRemainingRadians()<.01 && second_flag)
 		{
+			//if it is finished the second swing
 			DataPoint last_self = source.ssd.selfie.info.get(source.ssd.selfie.info.size()-1);
 			double myX = last_self.x;
 			double myY = last_self.y;
@@ -171,11 +174,36 @@ public class RadarControl extends Control	{
 				max_robot_bearing = bearing.get(0)+fudge_factor;
 			}
 			second_flag = false;
-		}
-		else if (!second_flag)
-		{
-			//then set the next move
+			//Turn to first
 			//TODO
+			first_bearing = min_robot_bearing;
+			second_bearing = max_robot_bearing;
+			
+			double delta;
+			if (first_bearing > source.getRadarHeadingRadians())
+			{
+				delta = Math.PI*2 - (first_bearing-source.getRadarHeadingRadians());
+			}
+			else
+			{
+				delta = source.getRadarHeadingRadians() - first_bearing;
+			}
+			source.setTurnRadarLeftRadians(delta);
+		}
+		else if (source.getRadarTurnRemainingRadians()<.01 && !second_flag)
+		{
+			//if it is finished the first swing
+			//then turn to second
+			double delta;
+			if (second_bearing < source.getRadarHeadingRadians())
+			{
+				delta = Math.PI*2 - (second_bearing - source.getRadarHeadingRadians());
+			}
+			else
+			{
+				delta = source.getRadarHeadingRadians() - second_bearing;
+			}
+			source.setTurnRadarRightRadians(delta);
 		}
 		else
 		{
