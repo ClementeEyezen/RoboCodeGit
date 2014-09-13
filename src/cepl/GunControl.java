@@ -1,5 +1,7 @@
 package cepl;
 
+import java.awt.Graphics2D;
+
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
 
@@ -32,6 +34,11 @@ public class GunControl extends Control 	{
 	public String toFile() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void onPaint(Graphics2D g) {
+		// TODO Auto-generated method stub, etc.
+		
 	}
 
 }

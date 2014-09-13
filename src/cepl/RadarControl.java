@@ -1,5 +1,6 @@
 package cepl;
 
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -218,5 +219,10 @@ public class RadarControl extends Control	{
 		{
 			// do nothing, still in motion
 		}
+	}
+
+	public void onPaint(Graphics2D g) {
+		// TODO Auto-generated method stub, etc.
+		
 	}
 }

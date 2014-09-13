@@ -1,5 +1,7 @@
 package cepl;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import cepl.dataStorage.BotBin;
@@ -136,4 +138,21 @@ public class DataCollection extends Control {
 		return complete;
 	}
 
+	public void onPaint(Graphics2D g) {
+		//paint existing data by robots
+		BotBin current_robot;
+		for(int i = 0; i < robots.size(); i++)
+		{
+			current_robot = robots.get(i);
+			for (int j = 0; j < current_robot.info.size(); j++)
+			{
+				Color c = new Color((int) 255, (int) (i/robots.size()*255), (int) 0, 
+						Math.max(0,(int) (255-(current_robot.info.size()-j))));
+				DataPoint dp = current_robot.info.get(j);
+				g.setColor(c);
+				g.fillRect((int) (dp.x-1),(int) (dp.y-1), 3, 3);
+			}
+		}
+		
+	}
 }

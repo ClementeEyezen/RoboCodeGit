@@ -1,5 +1,6 @@
 package cepl;
 
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import cepl.dataStorage.BotBin;
@@ -81,6 +82,15 @@ public class MovementControl extends Control	{
 	public String toFile() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public void onPaint(Graphics2D g) {
+		// TODO Waves, etc.
+		for (int i = 0 ; i < shoreline.size(); i++)
+		{
+			
+		}
+		
 	}
 
 }
