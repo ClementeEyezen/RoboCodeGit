@@ -48,7 +48,13 @@ public class RadarControl extends Control	{
 			System.out.println("Target Mode : "+target_mode+" multi : "+multi_mode);
 		}
 		//control selection
-		if (!target_mode || default_mode)
+		if (source.reset_radar) {
+			//System.out.println("Radar Reset");
+		}
+		//System.out.println("last scan time     = "+source.ssd.last_scan_time);
+		//System.out.println("current robot time = "+source.getTime());
+		
+		if (!target_mode || default_mode || source.reset_radar)
 		{
 			dizzy_mode();
 		}
@@ -105,7 +111,7 @@ public class RadarControl extends Control	{
 
 			double min_robot_loc = robo_bearing - max_move_angle;
 			double max_robot_loc = robo_bearing + max_move_angle;
-			System.out.println("Robo_bearing = "+robo_bearing*180/Math.PI);
+			//System.out.println("Robo_bearing = "+robo_bearing*180/Math.PI);
 			//TODO check for error with rotated coordinate system
 			if (source.getRadarHeadingRadians()>robo_bearing && source.getRadarHeadingRadians() <robo_bearing+Math.PI)
 			{
@@ -115,7 +121,7 @@ public class RadarControl extends Control	{
 				{
 					delta = (360 + delta);
 				}
-				source.setTurnRadarLeftRadians(delta);
+				source.setTurnRadarLeftRadians(delta%(2*Math.PI));
 			}
 			else
 			{
@@ -125,7 +131,7 @@ public class RadarControl extends Control	{
 				{
 					delta = delta - 360;
 				}
-				source.setTurnRadarLeftRadians(delta);
+				source.setTurnRadarLeftRadians(delta%(2*Math.PI));
 			}
 		}
 	}
@@ -191,7 +197,7 @@ public class RadarControl extends Control	{
 			{
 				delta = source.getRadarHeadingRadians() - first_bearing;
 			}
-			source.setTurnRadarLeftRadians(delta);
+			source.setTurnRadarLeftRadians(delta%(2*Math.PI));
 		}
 		else if (source.getRadarTurnRemainingRadians()<.01 && !second_flag)
 		{
@@ -206,7 +212,7 @@ public class RadarControl extends Control	{
 			{
 				delta = source.getRadarHeadingRadians() - second_bearing;
 			}
-			source.setTurnRadarRightRadians(delta);
+			source.setTurnRadarRightRadians(delta%(2*Math.PI));
 		}
 		else
 		{

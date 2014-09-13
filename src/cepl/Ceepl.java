@@ -1,9 +1,14 @@
 package cepl;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
+
+import cepl.dataStorage.BotBin;
+import cepl.dataStorage.DataPoint;
 
 import robocode.AdvancedRobot;
 import robocode.DeathEvent;
@@ -23,6 +28,7 @@ public class Ceepl extends AdvancedRobot
 	int robot_scans;
 
 	public boolean melee_mode;
+	public boolean reset_radar;
 	public boolean on_startup;
 	
 	public void run()
@@ -84,7 +90,7 @@ public class Ceepl extends AdvancedRobot
 	@Override
 	public void onDeath(DeathEvent de)
 	{
-		writeDataToFile(ssd);
+		//writeDataToFile(ssd);
 	}
 	public void writeDataToFile(DataCollection storage)
 	{
@@ -162,5 +168,23 @@ public class Ceepl extends AdvancedRobot
 	public String writeGunFile(GunControl scope)
 	{
 		return scope.toFile();
+	}
+	
+	public void onPaint(Graphics2D g) {
+		//paint existing data by robots
+		BotBin current_robot;
+		for(int i = 0; i < ssd.robots.size(); i++)
+		{
+			current_robot = ssd.robots.get(i);
+			for (int j = 0; j < current_robot.info.size(); j++)
+			{
+				Color c = new Color((int) 255, (int) (i/ssd.robots.size()*255), (int) 0, 
+						Math.max(0,(int) (255-(current_robot.info.size()-j))));
+				DataPoint dp = current_robot.info.get(j);
+				g.setColor(c);
+				g.fillRect((int) (dp.x-1),(int) (dp.y-1), 3, 3);
+			}
+		}
+		
 	}
 }
