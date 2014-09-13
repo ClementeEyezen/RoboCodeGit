@@ -26,6 +26,7 @@ public class RadarControl extends Control	{
 		first_bearing = 0;
 		second_bearing = 0;
 		second_flag = true;
+		default_mode = false;
 	}
 
 	@Override
@@ -44,6 +45,7 @@ public class RadarControl extends Control	{
 				// if it has seen multiple robots, activate multi-target mode
 				multi_mode = true;
 			}
+			System.out.println("Target Mode : "+target_mode+" multi : "+multi_mode);
 		}
 		//control selection
 		if (!target_mode || default_mode)
@@ -103,6 +105,7 @@ public class RadarControl extends Control	{
 
 			double min_robot_loc = robo_bearing - max_move_angle;
 			double max_robot_loc = robo_bearing + max_move_angle;
+			System.out.println("Robo_bearing = "+robo_bearing*180/Math.PI);
 			//TODO check for error with rotated coordinate system
 			if (source.getRadarHeadingRadians()>robo_bearing && source.getRadarHeadingRadians() <robo_bearing+Math.PI)
 			{

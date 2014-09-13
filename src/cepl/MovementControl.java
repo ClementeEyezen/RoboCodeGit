@@ -32,7 +32,8 @@ public class MovementControl extends Control	{
 		{
 			try
 			{
-				if (robot.info.get(1) != null && robot.info.get(robot.info.size()-1).time == current_time)
+				if (robot.info.size()>1 && robot.info.get(0) != null 
+						&& robot.info.get(robot.info.size()-1).time == current_time)
 				{
 					if (robot.info.get(robot.info.size()-1).energy < robot.info.get(robot.info.size()-2).energy)
 					{

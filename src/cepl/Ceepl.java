@@ -36,19 +36,28 @@ public class Ceepl extends AdvancedRobot
 		this.setAdjustRadarForGunTurn(true);
 		this.setAdjustRadarForRobotTurn(true);
 		
+		System.out.println("new DataCollection()");
 		ssd = new DataCollection();
 		ssd.setRobot(this);
+		System.out.println("new MovementControl()");
 		driver = new MovementControl();
 		driver.setRobot(this);
+		System.out.println("new RadarControl()");
 		antenna = new RadarControl();
 		antenna.setRobot(this);
+		System.out.println("new GunControl()");
 		scope = new GunControl();
 		scope.setRobot(this);
 		
+		System.out.println("data info");
 		remaining_data_storage = getDataQuotaAvailable();
 		data_directory = getDataDirectory();
+		System.out.println("data_quota : "+remaining_data_storage);
+		System.out.println("data_direc : "+data_directory.getAbsolutePath());
 		
 		//==========REPEATING ACTIONS==========
+		System.out.println("standard run initiated");
+		on_startup = false;
 		while(true)
 		{
 			ssd.update();
@@ -154,5 +163,4 @@ public class Ceepl extends AdvancedRobot
 	{
 		return scope.toFile();
 	}
-	
 }

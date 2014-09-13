@@ -11,6 +11,7 @@ public class BotBin {
 	public BotBin(String name)
 	{
 		info = new ArrayList<DataPoint>();
+		this.name = name;
 	}
 	
 	public void addData(DataPoint dp)

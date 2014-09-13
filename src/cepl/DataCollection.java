@@ -15,22 +15,26 @@ public class DataCollection extends Control 	{
 	public DataCollection()
 	{
 		robots = new ArrayList<BotBin>();
-		selfie = new BotBin(source.getName());
 		id = "DataCollection";
 	}
 	
 	@Override
 	public void setRobot(Ceepl s) {
 		source = s;
+		selfie = new BotBin(source.getName());
 	}
 
 	@Override
 	public void update(ScannedRobotEvent sre) {
+		System.out.println("Scanned Robot Event");
 		String name = sre.getName();
 		boolean name_found = false;
 		BotBin scanned_robot = null;
 		for(int i = 0 ; i < robots.size() ; i++ )
 		{
+			System.out.println("Robots list = "+robots);
+			System.out.println("Robot = "+robots.get(i));
+			System.out.println("Robot.name = "+robots.get(i).name);
 			if (robots.get(i).name.equals(name))
 			{
 				name_found = true;
@@ -56,7 +60,7 @@ public class DataCollection extends Control 	{
 		double myX = source.getX();
 		double myY = source.getY();
 		
-		double robo_bearing = sre.getBearingRadians();
+		double robo_bearing = (sre.getBearingRadians()+source.getHeadingRadians())%(Math.PI*2);
 		double real_bearing = -robo_bearing + Math.PI/2;
 		double robo_distance = sre.getDistance();
 		
@@ -72,7 +76,7 @@ public class DataCollection extends Control 	{
 		{
 			source.melee_mode = true;
 		}
-		
+		System.out.println("End Scanned Robot Event");
 	}
 
 	@Override
