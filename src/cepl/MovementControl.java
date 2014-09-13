@@ -1,5 +1,6 @@
 package cepl;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
@@ -40,9 +41,10 @@ public class MovementControl extends Control	{
 					{
 						DataPoint robot_of_choice = robot.info.get(robot.info.size()-1);
 						shoreline.add(new Wave(
+								robot.name,
 								robot_of_choice.x, 
 								robot_of_choice.y, 
-								current_time, 
+								robot.info.get(robot.info.size()-1).time, 
 								Math.abs(robot_of_choice.energy - 
 										robot.info.get(robot.info.size()-2).energy),
 										source));
@@ -57,16 +59,11 @@ public class MovementControl extends Control	{
 		//update wave list
 		for(int i = 0; i < shoreline.size(); i++)
 		{
-			double tracker = shoreline.get(i).update(current_time);
-			if( tracker < 0)
-			{
-				//radius has exceeded max battlefield dimension, it is removed
-				shoreline.remove(i);
-				i--;
-			}
+			shoreline.get(i).update(source.getTime());
 		}
 
 		//movement code
+		// state generation min-max AI?
 		// wave surfing
 		// flat movement on fire (single only)
 		// hot bullets
@@ -85,10 +82,16 @@ public class MovementControl extends Control	{
 	}
 
 	public void onPaint(Graphics2D g) {
-		// TODO Waves, etc.
 		for (int i = 0 ; i < shoreline.size(); i++)
 		{
-			
+			g.setColor(new Color (0, 0,	255, (int)(255/2)));
+			Wave current = shoreline.get(i);
+			if (!current.complete)
+			{
+			g.drawOval((int) (current.x - current.radius), 
+					(int) (current.y - current.radius), 
+					(int) (2*current.radius), (int) (2*current.radius));
+			}
 		}
 		
 	}

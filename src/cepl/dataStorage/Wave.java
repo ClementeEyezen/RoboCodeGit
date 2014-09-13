@@ -3,10 +3,13 @@ package cepl.dataStorage;
 import robocode.AdvancedRobot;
 
 public class Wave {
-	double x;
-	double y;
+	
+	public String name;
+	
+	public double x;
+	public double y;
 	long start_time;
-	double radius;
+	public double radius;
 	double energy_drop;
 	double bullet_velocity;
 	double max_battlefield_dimension;
@@ -14,8 +17,14 @@ public class Wave {
 	double hot_head_on;
 	double hot_linear;
 	
-	public Wave(double x, double y, long start_time, double energy_drop, AdvancedRobot source)
+	public boolean complete = false;
+	public long hit_time = -1;
+	public double true_hit_bearing;
+	public double relative_hit_bearing;
+	
+	public Wave(String name, double x, double y, long start_time, double energy_drop, AdvancedRobot source)
 	{
+		this.name = name;
 		this.x = x;
 		this.y = y;
 		this.start_time = start_time;
@@ -38,12 +47,13 @@ public class Wave {
 	}
 	public double update(long current_time)
 	{
-		long delta = current_time-start_time;
+		long delta = current_time-start_time+2;
 		radius = delta*bullet_velocity;
 		if (radius > max_battlefield_dimension)
 		{
 			bullet_velocity = -1;
 			radius = -1;
+			complete = true;
 		}
 		return radius;
 	}

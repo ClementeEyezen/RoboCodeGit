@@ -1,0 +1,10 @@
+Data is stored in "BotBins", a proxy for the physical robot that aggregates information for
+  each given enemy robot.
+ 
+DataPoints are the storage format for BotBins, for locations, etc.
+
+Waves are used in MovementControl, and represent the probable location of bullets fired.
+  Waves will also have wall-hit filtering integrated at some point.
+  
+//TODO 
+1. Wall filtering for wave generation.
