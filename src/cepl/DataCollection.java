@@ -201,13 +201,32 @@ public class DataCollection extends Control {
 		//paint waves
 		for (int i = 0 ; i < shoreline.size(); i++)
 		{
-			g.setColor(new Color (0, 0,	255, (int)(255/2)));
 			Wave current = shoreline.get(i);
 			if (!current.complete)
 			{
-			g.drawOval((int) (current.x - current.radius), 
-					(int) (current.y - current.radius), 
+			//set color to wave
+			g.setColor(new Color (0, (int)(255/5*0),255, (int)(255)));
+			g.drawOval((int) (current.wave_x - current.radius), 
+					(int) (current.wave_y - current.radius), 
 					(int) (2*current.radius), (int) (2*current.radius));
+			//set color to headon
+			g.setColor(new Color(0,(int)(255/5*1),255,(int)(255)));
+			g.drawLine((int)(current.wave_x), (int)(current.wave_y), 
+					(int)(current.wave_x+current.radius*Math.cos(current.hot_head_on)),
+					(int)(current.wave_y+current.radius*Math.sin(current.hot_head_on)));
+			//set color to linear
+			g.setColor(new Color(0,(int)(255/5*2),255,(int)(255)));
+			g.drawLine((int)(current.wave_x), (int)(current.wave_y), 
+					(int)(current.wave_x+current.radius*Math.cos(current.hot_linear)),
+					(int)(current.wave_y+current.radius*Math.sin(current.hot_linear)));
+			//set color to curve_linear
+			g.setColor(new Color(0,(int)(255/5*3),255,(int)(255)));
+			g.drawLine((int)(current.wave_x), (int)(current.wave_y), 
+					(int)(current.wave_x+current.radius*Math.cos(current.hot_curve_linear)),
+					(int)(current.wave_y+current.radius*Math.sin(current.hot_curve_linear)));
+			//set color to prior
+			//g.setColor(new Color(0,(255/5*1),255,(int)(255/2)));
+			//draw prior line (not in wave)
 			}
 		}
 		

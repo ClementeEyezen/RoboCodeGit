@@ -5,8 +5,8 @@ public class DataPoint {
 	public double x;
 	public double y;
 	public double energy;
-	double speed;
-	double direction;
+	public double speed;
+	public double direction; //this is robocode direction
 	public long time;
 	
 	boolean shot_flag;

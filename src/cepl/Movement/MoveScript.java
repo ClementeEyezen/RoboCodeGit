@@ -8,4 +8,8 @@ public class MoveScript {
 	{
 		gps = input;
 	}
+	public MoveScript()
+	{
+		
+	}
 }

@@ -63,11 +63,20 @@ public class BotBin {
 		double oldy = last_known.y;
 		
 		ArrayList<DataPoint> toReturn = new ArrayList<DataPoint>();
-		
+		/*
+		if(delta_heading > Math.PI)
+		{
+			delta_heading = -((delta_heading%(2*Math.PI))-2*Math.PI);
+		}
+		else if (delta_heading < -Math.PI)
+		{
+			delta_heading = -(delta_heading%(2*Math.PI)-2*Math.PI);
+		}
+		*/
 		for(int i = 1; i <= step_count; i++)
 		{
-			double x = oldx + (last_known.speed+i*delta_speed)*Math.cos(last_known.direction+i*delta_heading);
-			double y = oldy + (last_known.speed+i*delta_speed)*Math.sin(last_known.direction+i*delta_heading);
+			double x = oldx + (last_known.speed+i*delta_speed)*Math.cos(-(last_known.direction-Math.PI/2)+i*delta_heading);
+			double y = oldy + (last_known.speed+i*delta_speed)*Math.sin(-(last_known.direction-Math.PI/2)+i*delta_heading);
 			toReturn.add(new DataPoint(x, y, new_scan.energy, last_known.speed+i*delta_speed, 
 					last_known.direction+i*delta_heading, last_known.time+i, last_known, true));
 			oldx = x;

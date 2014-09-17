@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
 
+import cepl.dataStorage.BotBin;
 import cepl.dataStorage.Wave;
 
 import robocode.AdvancedRobot;
@@ -65,6 +66,8 @@ public class Ceepl extends AdvancedRobot
 		on_startup = false;
 		while(true)
 		{
+			//this.setAhead(Double.MAX_VALUE);
+			//this.setTurnLeftRadians(Double.MAX_VALUE);
 			ssd.update();
 			driver.update();
 			antenna.update();
@@ -89,8 +92,8 @@ public class Ceepl extends AdvancedRobot
 		if (closest != null)
 		{
 			//determine the head on bearing for that shot
-			double real_bearing = Math.atan2(hbbe.getBullet().getY()-closest.y, 
-					hbbe.getBullet().getX()-closest.x);
+			double real_bearing = Math.atan2(hbbe.getBullet().getY()-closest.wave_y, 
+					hbbe.getBullet().getX()-closest.wave_x);
 			//get the bullet hit bearing
 			double bullet_robo_heading = hbbe.getBullet().getHeadingRadians();
 			double bullet_real_heading = -bullet_robo_heading + Math.PI/2;
@@ -108,7 +111,8 @@ public class Ceepl extends AdvancedRobot
 		{
 			if (robot_name.equals(w.name) && !w.complete)
 			{
-				double distance = Math.sqrt((hit_x-w.x)*(hit_x-w.x)+(hit_y-w.y)*(hit_y-w.y));
+				double distance = Math.sqrt((hit_x-w.wave_x)*(hit_x-w.wave_x)+
+						(hit_y-w.wave_y)*(hit_y-w.wave_y));
 				double delta = Math.abs(distance-w.radius);
 				if (distance < nearest_delta)
 				{
@@ -206,6 +210,10 @@ public class Ceepl extends AdvancedRobot
 	public String writeGunFile(GunControl scope)
 	{
 		return scope.toFile();
+	}
+	public BotBin self_locations()
+	{
+		return ssd.selfie;
 	}
 
 	public void onPaint(Graphics2D g) {
