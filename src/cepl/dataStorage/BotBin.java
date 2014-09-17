@@ -24,6 +24,7 @@ public class BotBin {
 				ArrayList<DataPoint> generated_data = fill_data(info.get(info.size()-1),dp);
 				for(int i = 0; i < generated_data.size(); i++)
 				{
+					generated_data.get(i).generated_data = true;
 					info.add(generated_data.get(i));
 					fill_data++;
 				}

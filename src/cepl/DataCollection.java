@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import cepl.dataStorage.BotBin;
 import cepl.dataStorage.DataPoint;
+import cepl.dataStorage.Wave;
 import robocode.ScannedRobotEvent;
 
 public class DataCollection extends Control {
@@ -13,12 +14,14 @@ public class DataCollection extends Control {
 	long last_scan_time;
 
 	ArrayList<BotBin> robots;
+	ArrayList<Wave> shoreline;
 
 	BotBin selfie;
 
 	public DataCollection()
 	{
 		robots = new ArrayList<BotBin>();
+		shoreline = new ArrayList<Wave>();
 		id = "DataCollection";
 	}
 
@@ -89,8 +92,8 @@ public class DataCollection extends Control {
 	@Override
 	public void update() 
 	{
+		//check for radar misses
 		DataPoint prior = null;
-
 		if (last_scan_time <= source.getTime()- 8)
 		{
 			//System.out.println("Radar Reset = true");
@@ -101,14 +104,48 @@ public class DataCollection extends Control {
 			source.reset_radar = false;
 		}
 
+		//add information about self
 		if(selfie.info.size()>1)
 		{
 			prior = selfie.info.get(selfie.info.size()-1);
 		}
-
 		DataPoint dp = new DataPoint(source.getX(), source.getY(), source.getEnergy(), source.getVelocity(), 
 				source.getHeadingRadians(), source.getTime(), prior, false);
 		selfie.addData(dp);
+		
+		//look for waves
+		long current_time = source.getTime();
+		for (BotBin robot : robots)
+		{
+			try
+			{
+				if (robot.info.size()>1 && robot.info.get(0) != null 
+						&& robot.info.get(robot.info.size()-1).time == current_time)
+				{
+					if (robot.info.get(robot.info.size()-1).energy < robot.info.get(robot.info.size()-2).energy)
+					{
+						DataPoint robot_of_choice = robot.info.get(robot.info.size()-1);
+						shoreline.add(new Wave(
+								robot.name,
+								robot_of_choice.x, 
+								robot_of_choice.y, 
+								robot.info.get(robot.info.size()-1).time, 
+								Math.abs(robot_of_choice.energy - 
+										robot.info.get(robot.info.size()-2).energy),
+										source));
+					}
+				}
+			}
+			catch (NullPointerException npe)
+			{
+
+			}
+		}
+		//update wave list
+		for(int i = 0; i < shoreline.size(); i++)
+		{
+			shoreline.get(i).update(source.getTime());
+		}
 	}
 
 	@Override
@@ -146,11 +183,31 @@ public class DataCollection extends Control {
 			current_robot = robots.get(i);
 			for (int j = 0; j < current_robot.info.size(); j++)
 			{
-				Color c = new Color((int) 255, (int) (i/robots.size()*255), (int) 0, 
-						Math.max(0,(int) (255-(current_robot.info.size()-j))));
 				DataPoint dp = current_robot.info.get(j);
-				g.setColor(c);
+				if (dp.generated_data) {
+					Color filled = new Color((int) 0, (int) (i/robots.size()*255), (int) 255, 
+							Math.max(0,(int) (255-(current_robot.info.size()-j)))); 
+					g.setColor(filled);
+				}
+				else
+				{
+					Color scanned = new Color((int) 255, (int) (i/robots.size()*255), (int) 0, 
+							Math.max(0,(int) (255-(current_robot.info.size()-j))));
+					g.setColor(scanned);
+				}
 				g.fillRect((int) (dp.x-1),(int) (dp.y-1), 3, 3);
+			}
+		}
+		//paint waves
+		for (int i = 0 ; i < shoreline.size(); i++)
+		{
+			g.setColor(new Color (0, 0,	255, (int)(255/2)));
+			Wave current = shoreline.get(i);
+			if (!current.complete)
+			{
+			g.drawOval((int) (current.x - current.radius), 
+					(int) (current.y - current.radius), 
+					(int) (2*current.radius), (int) (2*current.radius));
 			}
 		}
 		

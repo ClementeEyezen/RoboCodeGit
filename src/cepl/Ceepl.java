@@ -1,12 +1,10 @@
 package cepl;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import cepl.dataStorage.Wave;
 
@@ -106,7 +104,7 @@ public class Ceepl extends AdvancedRobot
 	{
 		double nearest_delta = Double.MAX_VALUE;
 		Wave nearest_wave = null;
-		for(Wave w : driver.shoreline)
+		for(Wave w : ssd.shoreline)
 		{
 			if (robot_name.equals(w.name) && !w.complete)
 			{

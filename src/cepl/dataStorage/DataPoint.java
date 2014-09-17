@@ -16,7 +16,7 @@ public class DataPoint {
 	
 	DataPoint prior;
 	
-	boolean generated_data;
+	public boolean generated_data;
 	
 	// full constructor
 	public DataPoint(double x, double y, double energy, double speed, double direction, long time, 

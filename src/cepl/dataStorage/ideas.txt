@@ -7,4 +7,5 @@ Waves are used in MovementControl, and represent the probable location of bullet
   Waves will also have wall-hit filtering integrated at some point.
   
 //TODO 
+0. Fix Data fill. It is currently in non-robocode coordinates and it is confused
 1. Wall filtering for wave generation.
