@@ -8,10 +8,14 @@ public class BotBin {
 	public int scan_data;
 	public int fill_data;
 	
+	public int[] hitbin;
+	public int sum;
+	
 	public BotBin(String name)
 	{
 		info = new ArrayList<DataPoint>();
 		this.name = name;
+		hitbin = new int[40];
 	}
 	
 	public void addData(DataPoint dp)
@@ -91,5 +95,22 @@ public class BotBin {
 		double percent = (double)(fill_data)/((double)(scan_data)+(double)(fill_data));
 		String toReturn = percent+"";
 		return toReturn.substring(0, 3);
+	}
+	
+	public void increment_hitbin(double percent)
+	{
+		if(percent >=-1 && percent <=1)
+		{//if its a valid input
+			sum++;
+			if(percent == 1.0)
+			{
+				hitbin[hitbin.length-1]++;
+			}
+			else
+			{
+				int index = (int) Math.floor((percent*((double)hitbin.length)/2+hitbin.length/2));
+				hitbin[index]++;
+			}
+		}
 	}
 }

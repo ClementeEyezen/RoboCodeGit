@@ -101,7 +101,22 @@ public class Ceepl extends AdvancedRobot
 			closest.true_hit_bearing = bullet_real_heading;
 			closest.relative_hit_bearing = bullet_real_heading-real_bearing;
 			closest.complete = true;
+			
+			double hit_angle = Math.atan2(hbbe.getBullet().getY()-closest.wave_y,hbbe.getBullet().getX()-closest.wave_x);
+			//positive left
+			double delta_from_head_on = closest.hot_head_on-hit_angle;
+			double max_escape_angle = Math.atan(8/closest.bullet_velocity)+0;
+			if (delta_from_head_on < -max_escape_angle)
+			{
+				delta_from_head_on = -Math.PI*(-2)-delta_from_head_on;
+			}
+			else if (delta_from_head_on > max_escape_angle)
+			{
+				delta_from_head_on = Math.PI*2-delta_from_head_on;
+			}
+			
 		}
+		
 	}
 	public Wave nearest_wave(String robot_name, double hit_x, double hit_y)
 	{

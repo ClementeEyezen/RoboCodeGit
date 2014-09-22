@@ -8,10 +8,18 @@ Hot-Bullets Wave Surfing: avoid head on, linear, accelerator shots and/or common
 State Space forward projection: calculate all possible steps, and take the least dangerous path
 
 //TODO
-- Wave Surfing
-- Flat Movement
-- Hot-Bullets
-- State-Search
+// in waiting - Flat Movement (flat guess factor profile, moving along radius, maximum escape trajectory)
+- Hot-Bullets (complete)
+// - adaptive time linear (include normal velocity in time calc), 
+//    curvelinear (adjust for loop termination by current x,y + time already traveled (i))
+ - prior hit registry by guess-factor
+- State-Search (generalized way to implement this)
+ - may not be as efficient as just picking n points
+ - prunes and expands non-hit paths
+ - evaluates the longest paths (or all that reach maximum depth) with fitness algorithm
+  + chooses each with a probability based on relative fitness
+ - movement is programaitcally generated, so there is potential for it to follow new movement 
+    patterns, but that would require allowing it to adjust its own fitness (long goal)
 
 Important common classes :
 MoveScript - a series of point to point moves that tell the robot exactly what to do for the 
@@ -21,5 +29,16 @@ ScriptGenerator - takes a series of waypoints and then generates the MoveScript 
   //the idea is that each generation method can return a list of points to travel through,
   //  and the script generator will turn that into specific instructions
 
-//TODO
-et.al.
+//TODO.list
+1. HotBullets - prior hit registry
+2. StateSearch - move wave storage to StateSearch
+2.1 StateSearch - finalize hit pruning
+2.2 State Search - create an eval function
+2.3 StateSearch - give each an eval function based on distance to other robots,
+     remaining waves
+2.4 StateSearch - implement state search visualization (line + colored block based on eval, red for hit)
+2.5 StateSearch - pick the depth based on other robot distance, etc.
+2.6 StateSearch - probabilistically pick the final destination with weight based on eval
+3. ScriptGenerator -
+4. MoveScript - 
+5. Direction -  
