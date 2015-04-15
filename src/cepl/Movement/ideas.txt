@@ -31,12 +31,15 @@ ScriptGenerator - takes a series of waypoints and then generates the MoveScript 
 
 //TODO.list
 1. HotBullets - prior hit registry
-2. StateSearch - move wave storage to StateSearch
+1.0 [create list by robot]
+1.1 check the list for hits
+1.2 display info (hitbins on waves, )
+2. StateSearch - move wave storage to StateSearch from State
 2.1 StateSearch - finalize hit pruning
 2.2 State Search - create an eval function
 2.3 StateSearch - give each an eval function based on distance to other robots,
      remaining waves
-2.4 StateSearch - implement state search visualization (line + colored block based on eval, red for hit)
+2.4 StateSearch - implement state search visualization (line + colored block based on eval, yellow/orange/red for hit pruning)
 2.5 StateSearch - pick the depth based on other robot distance, etc.
 2.6 StateSearch - probabilistically pick the final destination with weight based on eval
 3. ScriptGenerator -

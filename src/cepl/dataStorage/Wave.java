@@ -1,11 +1,11 @@
 package cepl.dataStorage;
 
 import cepl.Ceepl;
-import robocode.AdvancedRobot;
 
 public class Wave {
 	
 	public String name;
+	public BotBin robot;
 	
 	public double wave_x;
 	public double wave_y;
@@ -24,9 +24,10 @@ public class Wave {
 	public double true_hit_bearing;
 	public double relative_hit_bearing;
 	
-	public Wave(String name, double x, double y, long start_time, double energy_drop, Ceepl source)
+	public Wave(String name, BotBin shooter, double x, double y, long start_time, double energy_drop, Ceepl source)
 	{
 		this.name = name;
+		robot = shooter;
 		this.wave_x = x;
 		this.wave_y = y;
 		this.start_time = start_time;

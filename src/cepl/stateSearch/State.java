@@ -2,6 +2,7 @@ package cepl.stateSearch;
 
 import java.util.ArrayList;
 
+import cepl.dataStorage.BotBin;
 import cepl.dataStorage.DataPoint;
 import cepl.dataStorage.Wave;
 
@@ -164,9 +165,34 @@ public class State {
 	{
 		//W = the wave that was calculated to overlap the robot
 		//x,y = the position the robot was calculated to be in at the time of the overlap
-		//TODO
 		//cycle through old (complete) waves, looking for hit angles.
 		//if this matches, return true;
+		BotBin goal = null;
+		for(BotBin robot : source.robot.ssd.robots)
+		{
+			if(robot.name.equals(w.name))
+			{
+				//This is the right robot
+				goal = robot;
+			}
+		}
+		if (goal != null)
+		{
+			double test_angle = Math.atan2(x-w.wave_x,y-w.wave_y);
+			double wave_head_angle = w.hot_head_on;
+			double delta_from_head_on = wave_head_angle-test_angle;
+			double max_escape_angle = Math.atan(8/w.bullet_velocity);
+			if (delta_from_head_on < -max_escape_angle)
+			{
+				delta_from_head_on = -Math.PI*(-2)-delta_from_head_on;
+			}
+			else if (delta_from_head_on > max_escape_angle)
+			{
+				delta_from_head_on = Math.PI*2-delta_from_head_on;
+			}
+			double percent = delta_from_head_on/max_escape_angle;
+			return goal.check_hitbin(percent);
+		}
 		return false;
 	}
 }

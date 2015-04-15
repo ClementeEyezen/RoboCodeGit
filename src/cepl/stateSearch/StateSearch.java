@@ -1,5 +1,6 @@
 package cepl.stateSearch;
 
+import cepl.Ceepl;
 import cepl.Movement.MoveScript;
 
 public class StateSearch {
@@ -10,6 +11,8 @@ public class StateSearch {
 	boolean linear;
 	boolean curve_linear;
 	boolean prior_hits;
+	
+	public Ceepl robot;
 	
 	double precision;
 	int max_depth;

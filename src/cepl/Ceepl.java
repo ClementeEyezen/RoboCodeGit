@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 
 import cepl.dataStorage.BotBin;
-import cepl.dataStorage.Wave;
 
 import robocode.AdvancedRobot;
 import robocode.DeathEvent;
@@ -16,7 +15,7 @@ import robocode.ScannedRobotEvent;
 
 public class Ceepl extends AdvancedRobot 
 {
-	DataCollection ssd;
+	public DataCollection ssd;
 	MovementControl driver;
 	RadarControl antenna;
 	GunControl scope;
@@ -66,8 +65,8 @@ public class Ceepl extends AdvancedRobot
 		on_startup = false;
 		while(true)
 		{
-			//this.setAhead(Double.MAX_VALUE);
-			//this.setTurnLeftRadians(Double.MAX_VALUE);
+			this.setAhead(Double.MAX_VALUE);
+			this.setTurnLeftRadians(Double.MAX_VALUE);
 			ssd.update();
 			driver.update();
 			antenna.update();
@@ -83,61 +82,12 @@ public class Ceepl extends AdvancedRobot
 		robot_scans += 1;
 		ssd.update(sre);
 	}
-	public void onHitByBulletEvent(HitByBulletEvent hbbe)
+	public void onHitByBullet(HitByBulletEvent hbbe)
 	{
-		//TODO
-		//find the closest wave
-		Wave closest = nearest_wave(hbbe.getName(), 
-				hbbe.getBullet().getX(), hbbe.getBullet().getY());
-		if (closest != null)
-		{
-			//determine the head on bearing for that shot
-			double real_bearing = Math.atan2(hbbe.getBullet().getY()-closest.wave_y, 
-					hbbe.getBullet().getX()-closest.wave_x);
-			//get the bullet hit bearing
-			double bullet_robo_heading = hbbe.getBullet().getHeadingRadians();
-			double bullet_real_heading = -bullet_robo_heading + Math.PI/2;
-			//save the offset to that wave
-			closest.true_hit_bearing = bullet_real_heading;
-			closest.relative_hit_bearing = bullet_real_heading-real_bearing;
-			closest.complete = true;
-			
-			double hit_angle = Math.atan2(hbbe.getBullet().getY()-closest.wave_y,hbbe.getBullet().getX()-closest.wave_x);
-			//positive left
-			double delta_from_head_on = closest.hot_head_on-hit_angle;
-			double max_escape_angle = Math.atan(8/closest.bullet_velocity)+0;
-			if (delta_from_head_on < -max_escape_angle)
-			{
-				delta_from_head_on = -Math.PI*(-2)-delta_from_head_on;
-			}
-			else if (delta_from_head_on > max_escape_angle)
-			{
-				delta_from_head_on = Math.PI*2-delta_from_head_on;
-			}
-			
-		}
-		
+		System.out.println("On hit by bullet event qqqqqqqqqqqqo");
+		ssd.update(hbbe);
 	}
-	public Wave nearest_wave(String robot_name, double hit_x, double hit_y)
-	{
-		double nearest_delta = Double.MAX_VALUE;
-		Wave nearest_wave = null;
-		for(Wave w : ssd.shoreline)
-		{
-			if (robot_name.equals(w.name) && !w.complete)
-			{
-				double distance = Math.sqrt((hit_x-w.wave_x)*(hit_x-w.wave_x)+
-						(hit_y-w.wave_y)*(hit_y-w.wave_y));
-				double delta = Math.abs(distance-w.radius);
-				if (distance < nearest_delta)
-				{
-					nearest_delta = delta;
-					nearest_wave = w;
-				}
-			}
-		}
-		return nearest_wave;
-	}
+	
 
 	public File getDataFile(String s)
 	{
@@ -232,9 +182,9 @@ public class Ceepl extends AdvancedRobot
 	}
 
 	public void onPaint(Graphics2D g) {
-		ssd.onPaint(g);
 		driver.onPaint(g);
 		antenna.onPaint(g);
 		scope.onPaint(g);
+		ssd.onPaint(g);
 	}
 }

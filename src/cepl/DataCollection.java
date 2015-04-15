@@ -7,13 +7,14 @@ import java.util.ArrayList;
 import cepl.dataStorage.BotBin;
 import cepl.dataStorage.DataPoint;
 import cepl.dataStorage.Wave;
+import robocode.HitByBulletEvent;
 import robocode.ScannedRobotEvent;
 
 public class DataCollection extends Control {
 
 	long last_scan_time;
 
-	ArrayList<BotBin> robots;
+	public ArrayList<BotBin> robots;
 	ArrayList<Wave> shoreline;
 
 	BotBin selfie;
@@ -89,6 +90,69 @@ public class DataCollection extends Control {
 		//System.out.println("End Scanned Robot Event");
 	}
 
+	public void update(HitByBulletEvent hbbe)
+	{
+		Wave closest = nearest_wave(hbbe.getName(), 
+				hbbe.getBullet().getX(), hbbe.getBullet().getY());
+		System.out.println("qqqqqqq closest = "+closest);
+		if (closest != null)
+		{
+			System.out.println("hit by bullet from "+hbbe.getBullet().getName());
+			//determine the head on bearing for that shot
+			double real_bearing = Math.atan2(hbbe.getBullet().getY()-closest.wave_y, 
+					hbbe.getBullet().getX()-closest.wave_x);
+			//get the bullet hit bearing
+			double bullet_robo_heading = hbbe.getBullet().getHeadingRadians();
+			double bullet_real_heading = -bullet_robo_heading + Math.PI/2;
+			//save the offset to that wave
+			closest.true_hit_bearing = bullet_real_heading;
+			closest.relative_hit_bearing = bullet_real_heading-real_bearing;
+			closest.complete = true;
+
+			double hit_angle = Math.atan2(hbbe.getBullet().getY()-closest.wave_y,hbbe.getBullet().getX()-closest.wave_x);
+			//positive left
+			double delta_from_head_on = closest.hot_head_on-hit_angle;
+			double max_escape_angle = Math.atan(8/closest.bullet_velocity)+0;
+			if (delta_from_head_on < -max_escape_angle)
+			{
+				delta_from_head_on = -Math.PI*(-2)-delta_from_head_on;
+			}
+			else if (delta_from_head_on > max_escape_angle)
+			{
+				delta_from_head_on = Math.PI*2-delta_from_head_on;
+			}
+			double percent = delta_from_head_on/max_escape_angle;
+			for(BotBin robot : robots)
+			{
+				if(hbbe.getName().equals(robot.name))
+				{
+					robot.increment_hitbin(percent);
+				}
+			}
+		}
+	}
+
+	public Wave nearest_wave(String robot_name, double hit_x, double hit_y)
+	{
+		double nearest_delta = Double.MAX_VALUE;
+		Wave nearest_wave = null;
+		for(Wave w : shoreline)
+		{
+			if (robot_name.equals(w.name) && !w.complete)
+			{
+				double distance = Math.sqrt((hit_x-w.wave_x)*(hit_x-w.wave_x)+
+						(hit_y-w.wave_y)*(hit_y-w.wave_y));
+				double delta = Math.abs(distance-w.radius);
+				if (distance < nearest_delta)
+				{
+					nearest_delta = delta;
+					nearest_wave = w;
+				}
+			}
+		}
+		return nearest_wave;
+	}
+
 	@Override
 	public void update() 
 	{
@@ -112,7 +176,7 @@ public class DataCollection extends Control {
 		DataPoint dp = new DataPoint(source.getX(), source.getY(), source.getEnergy(), source.getVelocity(), 
 				source.getHeadingRadians(), source.getTime(), prior, false);
 		selfie.addData(dp);
-		
+
 		//look for waves
 		long current_time = source.getTime();
 		for (BotBin robot : robots)
@@ -127,6 +191,7 @@ public class DataCollection extends Control {
 						DataPoint robot_of_choice = robot.info.get(robot.info.size()-1);
 						shoreline.add(new Wave(
 								robot.name,
+								robot,
 								robot_of_choice.x, 
 								robot_of_choice.y, 
 								robot.info.get(robot.info.size()-1).time, 
@@ -204,31 +269,54 @@ public class DataCollection extends Control {
 			Wave current = shoreline.get(i);
 			if (!current.complete)
 			{
-			//set color to wave
-			g.setColor(new Color (0, (int)(255/5*0),255, (int)(255)));
-			g.drawOval((int) (current.wave_x - current.radius), 
-					(int) (current.wave_y - current.radius), 
-					(int) (2*current.radius), (int) (2*current.radius));
-			//set color to headon
-			g.setColor(new Color(0,(int)(255/5*1),255,(int)(255)));
-			g.drawLine((int)(current.wave_x), (int)(current.wave_y), 
-					(int)(current.wave_x+current.radius*Math.cos(current.hot_head_on)),
-					(int)(current.wave_y+current.radius*Math.sin(current.hot_head_on)));
-			//set color to linear
-			g.setColor(new Color(0,(int)(255/5*2),255,(int)(255)));
-			g.drawLine((int)(current.wave_x), (int)(current.wave_y), 
-					(int)(current.wave_x+current.radius*Math.cos(current.hot_linear)),
-					(int)(current.wave_y+current.radius*Math.sin(current.hot_linear)));
-			//set color to curve_linear
-			g.setColor(new Color(0,(int)(255/5*3),255,(int)(255)));
-			g.drawLine((int)(current.wave_x), (int)(current.wave_y), 
-					(int)(current.wave_x+current.radius*Math.cos(current.hot_curve_linear)),
-					(int)(current.wave_y+current.radius*Math.sin(current.hot_curve_linear)));
-			//set color to prior
-			//g.setColor(new Color(0,(255/5*1),255,(int)(255/2)));
-			//draw prior line (not in wave)
+				//set color to wave
+				g.setColor(new Color (0, (int)(255/5*0),255, (int)(255)));
+				g.drawOval((int) (current.wave_x - current.radius), //x
+						(int) (current.wave_y - current.radius),  //y
+						(int) (2*current.radius), //width
+						(int) (2*current.radius)); //height
+				//calculate hitbin arcs
+				double escape_angle_rad = Math.atan(8/current.bullet_velocity);
+				double start_angle_rad = current.hot_head_on;
+				double neg_angle_deg = ((start_angle_rad-escape_angle_rad+2*Math.PI)%Math.PI)/Math.PI*180;
+				double unit_angle_deg = (escape_angle_rad/(current.robot.hitbin.length/2))/Math.PI*180;
+				for(int j = 0; j < current.robot.hitbin.length; j++)
+				{
+					double hit_percent = (double) (current.robot.hitbin[j])/(double) (current.robot.sum+.000000001);
+					//System.out.println("hitbin["+j+"] = "+current.robot.hitbin[j]+" percent = "+hit_percent);
+					//System.out.println("hit_percent = "+hit_percent);
+					g.setColor(new Color(255,0,0,255));//(int)(255*Math.min(1,Math.log(hit_percent+1)+.307)))); //rgba
+					g.drawArc((int) (current.wave_x - current.radius), //x
+							(int) (current.wave_y - current.radius), //y
+							(int) (2*current.radius), //width
+							(int) (2*current.radius), //height
+							(int) (neg_angle_deg+i*unit_angle_deg), // arc start (deg)
+							(int) Math.max(1,unit_angle_deg)); //arc swing (deg)
+					if(hit_percent >0)
+						System.out.println("qq hitbin["+j+"] percent "+hit_percent+
+								" unit: "+(int)unit_angle_deg+" start:"
+								+(int)(neg_angle_deg+i*unit_angle_deg));
+				}
+				//set color to headon
+				g.setColor(new Color(0,(int)(255/5*1),255,(int)(255)));
+				g.drawLine((int)(current.wave_x), (int)(current.wave_y), 
+						(int)(current.wave_x+current.radius*Math.cos(current.hot_head_on)),
+						(int)(current.wave_y+current.radius*Math.sin(current.hot_head_on)));
+				//set color to linear
+				g.setColor(new Color(0,(int)(255/5*2),255,(int)(255)));
+				g.drawLine((int)(current.wave_x), (int)(current.wave_y), 
+						(int)(current.wave_x+current.radius*Math.cos(current.hot_linear)),
+						(int)(current.wave_y+current.radius*Math.sin(current.hot_linear)));
+				//set color to curve_linear
+				g.setColor(new Color(0,(int)(255/5*3),255,(int)(255)));
+				g.drawLine((int)(current.wave_x), (int)(current.wave_y), 
+						(int)(current.wave_x+current.radius*Math.cos(current.hot_curve_linear)),
+						(int)(current.wave_y+current.radius*Math.sin(current.hot_curve_linear)));
+				//set color to prior
+				//g.setColor(new Color(0,(255/5*1),255,(int)(255/2)));
+				//draw prior line (not in wave)
 			}
 		}
-		
+
 	}
 }
