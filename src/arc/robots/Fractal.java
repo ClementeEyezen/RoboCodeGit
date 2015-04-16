@@ -1,8 +1,9 @@
-package arc;
+package arc.robots;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 
+import arc.model.RobotModel;
 import robocode.AdvancedRobot;
 import robocode.BattleEndedEvent;
 import robocode.BulletHitBulletEvent;
