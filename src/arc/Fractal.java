@@ -24,38 +24,40 @@ public class Fractal extends AdvancedRobot {
 	double time;
 	
 	// Robot Properties
-	double height, width;
-	double energy;
-	double gun_cooling_rate, gun_heading, gun_heat;
-	double radar_heading;
-	double heading, velocity;
-	double x, y;
-	String name;
-	
+	RobotModel rm;
 	
 	public void run()
 	{
 		// "Constructor"
 		this.setRotateFree();
-		this.setColor(Color.BLUE);
+		this.setColor(Color.ORANGE);
 		
 		// Battle Properties
 		room_width = this.getBattleFieldWidth();
 		room_height = this.getBattleFieldHeight();
 		
 		// Robot Properties
-		energy = this.getEnergy();
-		gun_cooling_rate = this.getGunCoolingRate();
+		rm = new RobotModel(this);
+		rm.update();
 		
+		setTurnRadarRightRadians(Math.PI*2);
+		while(getRadarTurnRemainingRadians() > 0.005) {
+			rm.update();
+			execute();
+		}
 		
 		while (true)
 		{
+			rm.update();
+			
+			/*
 			setTurnRadarLeftRadians(1.0);
 			setTurnRadarRightRadians(1.0);
 			setTurnGunLeftRadians(1.0);
 			setTurnGunRightRadians(1.0);
 			setTurnLeftRadians(1.0);
 			setTurnRightRadians(1.0);
+			*/
 			
 			execute();
 		}
@@ -83,9 +85,9 @@ public class Fractal extends AdvancedRobot {
 	public void onBattleEnded(BattleEndedEvent bee) {
 		
 	}
-	public void onScannedRobot(ScannedRobotEvent sre)
-	{
+	public void onScannedRobot(ScannedRobotEvent sre) {
 		//when my robot scans another robot
+		rm.update(sre);
 	}
 	public void onBulletHit(BulletHitEvent bhe) {
 		// when my bullet hits another robot
@@ -98,6 +100,7 @@ public class Fractal extends AdvancedRobot {
 	}
 	public void onHitByBullet(HitByBulletEvent hbbe) {
 		// when my robot is hit by another bullet
+		rm.update(hbbe);
 	}
 	public void onHitRobot(HitRobotEvent hre) {
 		// when my robot hits another robot
