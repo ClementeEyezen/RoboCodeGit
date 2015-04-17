@@ -6,6 +6,7 @@ import robocode.AdvancedRobot;
 
 public class TimeCapsule {
 	RobotModel parent;
+	long current_time;
 	HashMap<Long, StateVector> data;
 	public TimeCapsule(RobotModel parent) {
 		// stores historical data about the robot
@@ -27,6 +28,7 @@ public class TimeCapsule {
 		data.put(new Long(time), 
 				new StateVector((double)time, ener, g_hd, g_ht, head, velo, x, y)
 		);
+		current_time = time;
 	}
 	
 	class StateVector {

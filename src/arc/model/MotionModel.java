@@ -1,5 +1,8 @@
 package arc.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
 
@@ -7,12 +10,23 @@ public class MotionModel {
 	
 	private MotionType most_likely;
 	
+	private List<MotionType> models;
+	
 	public MotionModel(RobotModel parent) {
 		// TODO constructor
 		// models/calculates the motions of the parent robot
 		// two functions:
 		// 		provide domain knowledge about how the robot could move
 		// 		provide maximum likelihood fitting to a Motion Type
+		
+		models = new ArrayList<MotionType>();
+		models.add(new StandStill());
+		most_likely = models.get(0);
+	}
+	public void update() {
+		for(MotionType mt : models) {
+			
+		}
 	}
 	public void test(ScannedRobotEvent sre, TimeCapsule history) {
 		
@@ -58,12 +72,27 @@ public class MotionModel {
 	
 	abstract class MotionType {
 		// project the motion of the robot forward using this motion type
-		abstract Projection project(TimeCapsule tc, long start_time, long time_forward);
+		// keeps track of projections and rating for the MotionType
+		ArrayList<Projection> past_projections;
+		double running_rating;
+		public void update(TimeCapsule tc) {
+			past_projections.add(project(tc,tc.current_time,20));
+		}
+		public abstract Projection project(TimeCapsule tc, long start_time, long time_forward);
+		public final double update_rating(TimeCapsule tc) {
+			double new_value = past_projections.remove(0).test(tc);
+			if(running_rating == 0) {
+				running_rating = new_value;
+			}
+			else {
+				running_rating = (running_rating*20+new_value)/(20+1);
+			}
+			return running_rating;
+		}
 	} 
 	class StandStill extends MotionType {
-
 		@Override
-		Projection project(TimeCapsule tc, long start_time, long time_forward) {
+		public Projection project(TimeCapsule tc, long start_time, long time_forward) {
 			double[] x = new double[(int)time_forward];
 			double[] y = new double[(int)time_forward];
 			long[] t = new long[(int)time_forward];
@@ -75,5 +104,4 @@ public class MotionModel {
 			return new Projection(x,y,t);
 		}
 	}
-	
 }

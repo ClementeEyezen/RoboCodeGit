@@ -79,11 +79,15 @@ public class Gaussian {
         */
     	double z = 0;
     	double mu = 0;
-    	double sigma = 10;
-    	System.out.println("prob 0-1 error given mean "+mu+" and stdev "+sigma);
+    	double sigma = 36;
+    	System.out.println("prob 0-18 error given mean "+mu+" and stdev "+sigma);
+    	System.out.println("rates a  36 (35? of data is a hit) as a .18");
+    	System.out.println("rates an 18 (70% of data is a hit) as a .50");
+    	System.out.println("rates a  9  (95% of data is a hit) as a .91");
+    	System.out.println("rates a  6  (99% of data is a hit) as a .99");
         //System.out.println(Phi(z, mu, sigma));
         //System.out.println(Phi(z+1, mu, sigma));
-    	double rating = Math.pow(2*(Phi(z+1, mu, sigma)-.5),.75);
+    	double rating = Math.pow( 2*(Phi(18, mu, sigma)-.5) , 1.8 );
         System.out.println(" rating: "+rating);
         
         
