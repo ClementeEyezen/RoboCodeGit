@@ -1,0 +1,31 @@
+package arc.model.motions;
+
+import arc.model.MotionProjection;
+import arc.model.MotionType;
+import arc.model.TimeCapsule;
+
+public class LinearMotion extends MotionType {
+
+	@Override
+	public MotionProjection project(TimeCapsule tc, long start_time,
+			long time_forward) {
+		double[] x = new double[(int) time_forward];
+		double[] y = new double[(int) time_forward];
+		long[] t = new long[(int) time_forward];
+		
+		TimeCapsule.StateVector start_data = tc.get_last(0);
+		int t_offset = (int) start_time - (int) start_data.time();
+		double dx = start_data.velocity() * Math.cos(start_data.heading());
+		double dy = start_data.velocity() * Math.cos(start_data.heading());
+		
+		
+		for(int i = 0; i < time_forward; i++) {
+			x[i] = start_data.x() + (i+t_offset)*dx;
+			y[i] = start_data.y() + (i+t_offset)*dy;
+			t[i] = start_time+time_forward;
+		}
+		
+		return new MotionProjection(x, y, t);
+	}
+	
+}
