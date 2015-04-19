@@ -3,6 +3,7 @@ package arc.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import arc.model.motions.LinearMotion;
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
 
@@ -23,6 +24,7 @@ public class MotionModel {
 		
 		models = new ArrayList<MotionType>();
 		models.add(new StandStill());
+		models.add(new LinearMotion());
 		most_likely = models.get(0);
 		this.parent = parent;
 	}
@@ -60,6 +62,27 @@ public class MotionModel {
 	        ar.getVelocity() 
 	        ar.getTime()
 		 */
+	}
+	
+	public MotionType most_likely() {
+		return most_likely;
+	}
+	public MotionProjection ml_projection(long future_time) {
+		// return the most likely projection for where the robot is going to be through future time
+		/*
+		 * Example Use:
+		 * Gun wants to fire at a power p that will hit the other robot after approx 10 turns
+		 * Asks for prediction out to 12 turns
+		 * If dist to prediction matches up for 10 turns, then shoot at that point
+		 * If dist is too close , check 9, 8 etc.
+		 * If dist is too far, check 11, 12 until a match
+		 * 
+		 * Shoot at the match
+		 */
+		MotionType likely = most_likely();
+		long current_time = parent.tc.current_time;
+		long delta_time = future_time - current_time;
+		return likely.project(parent.tc, current_time, delta_time);
 	}
 	
 	public double max_velocity(TimeCapsule.StateVector state) {
