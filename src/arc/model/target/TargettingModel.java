@@ -1,5 +1,7 @@
-package arc.model;
+package arc.model.target;
 
+import arc.model.RobotModel;
+import arc.model.TimeCapsule;
 import robocode.AdvancedRobot;
 import robocode.HitByBulletEvent;
 import robocode.ScannedRobotEvent;
@@ -50,9 +52,6 @@ public class TargettingModel {
 		return 0.0;
 	}
 	
-	abstract class TargettingType {
-		// TODO implement
-	} 
 	class HeadOn extends TargettingType {
 		// TODO implement example
 	}

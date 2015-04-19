@@ -1,5 +1,7 @@
 package arc.model;
 
+import arc.model.motion.MotionModel;
+import arc.model.target.TargettingModel;
 import robocode.AdvancedRobot;
 import robocode.HitByBulletEvent;
 import robocode.ScannedRobotEvent;
@@ -87,5 +89,11 @@ public class RobotModel {
 		double bearing = sre.getBearingRadians();
 		double distance = sre.getDistance();
 		return frame_x + distance * Math.cos(bearing);
+	}
+	public TimeCapsule current_history() {
+		return tc;
+	}
+	public String name() {
+		return name;
 	}
 }

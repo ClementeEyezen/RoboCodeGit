@@ -1,8 +1,11 @@
-package arc.model;
+package arc.model.motion;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import arc.model.RobotModel;
+import arc.model.TimeCapsule;
+import arc.model.TimeCapsule.StateVector;
 import arc.model.motions.LinearMotion;
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
@@ -30,7 +33,7 @@ public class MotionModel {
 	}
 	public void update() {
 		for(MotionType mt : models) {
-			mt.update(parent.tc);
+			mt.update(parent.current_history());
 		}
 	}
 	public void test(ScannedRobotEvent sre, TimeCapsule updated_history) {
@@ -46,7 +49,7 @@ public class MotionModel {
 	          sre.getVelocity() 
 	          sre.getTime()
 		 */
-		if(!sre.getName().equals(parent.name)) return;
+		if(!sre.getName().equals(parent.name())) return;
 		for(MotionType mt : models) {
 			mt.update_rating(updated_history);
 		}
@@ -80,9 +83,9 @@ public class MotionModel {
 		 * Shoot at the match
 		 */
 		MotionType likely = most_likely();
-		long current_time = parent.tc.current_time;
+		long current_time = parent.current_history().current_time();
 		long delta_time = future_time - current_time;
-		return likely.project(parent.tc, current_time, delta_time);
+		return likely.project(parent.current_history(), current_time, delta_time);
 	}
 	
 	public double max_velocity(TimeCapsule.StateVector state) {

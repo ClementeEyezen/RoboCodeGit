@@ -1,6 +1,8 @@
-package arc.model;
+package arc.model.motion;
 
 import java.util.ArrayList;
+
+import arc.model.TimeCapsule;
 
 public abstract class MotionType {
 	// project the motion of the robot forward using this motion type
@@ -8,7 +10,7 @@ public abstract class MotionType {
 	ArrayList<MotionProjection> past_projections;
 	double running_rating;
 	public void update(TimeCapsule tc) {
-		past_projections.add(project(tc,tc.current_time,20));
+		past_projections.add(project(tc,tc.current_time(),20));
 	}
 	public abstract MotionProjection project(TimeCapsule tc, long start_time, long time_forward);
 	public final double update_rating(TimeCapsule tc) {

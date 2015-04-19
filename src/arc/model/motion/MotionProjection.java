@@ -1,6 +1,10 @@
-package arc.model;
+package arc.model.motion;
 
 import java.util.ArrayList;
+
+import arc.model.Gaussian;
+import arc.model.TimeCapsule;
+import arc.model.TimeCapsule.StateVector;
 
 public class MotionProjection {
 	ArrayList<Triple<Double, Double, Long>> forward;

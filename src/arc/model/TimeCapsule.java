@@ -19,6 +19,9 @@ public class TimeCapsule {
 		this.parent = parent;
 		data = new HashMap<Long, StateVector>();
 	}
+	public long current_time() {
+		return current_time;
+	}
 	
 	public StateVector get_data(long time) {
 		return data.get(new Long(time));
