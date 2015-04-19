@@ -15,6 +15,13 @@ public class LinearMotion extends MotionType {
 		
 		TimeCapsule.StateVector start_data = tc.get_last(0);
 		int t_offset = (int) start_time - (int) start_data.time();
+		if (t_offset < 0) {
+			start_data = tc.get_data(start_time);
+			t_offset = 0;
+		}
+		if (start_data == null ) {
+			System.out.println("Linear Motion: invalid prediction start time (null data at start_time)");
+		}
 		double dx = start_data.velocity() * Math.cos(start_data.heading());
 		double dy = start_data.velocity() * Math.cos(start_data.heading());
 		
