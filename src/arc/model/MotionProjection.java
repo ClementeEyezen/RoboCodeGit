@@ -2,12 +2,12 @@ package arc.model;
 
 import java.util.ArrayList;
 
-public class Projection {
+public class MotionProjection {
 	ArrayList<Triple<Double, Double, Long>> forward;
 	long start_time;
 	long end_time;
 	
-	public Projection(double[] x, double[] y, long[] t) {
+	public MotionProjection(double[] x, double[] y, long[] t) {
 		for(int i = 0; i < x.length && i < y.length; i++) {
 			forward.add(new Triple<Double, Double, Long>(new Double(x[i]), new Double(y[i]), new Long(t[i])));
 		}
