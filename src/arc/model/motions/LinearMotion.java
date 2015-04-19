@@ -1,8 +1,8 @@
 package arc.model.motions;
 
-import arc.model.MotionProjection;
-import arc.model.MotionType;
 import arc.model.TimeCapsule;
+import arc.model.motion.MotionProjection;
+import arc.model.motion.MotionType;
 
 public class LinearMotion extends MotionType {
 
