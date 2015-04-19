@@ -1,13 +1,19 @@
 package arc.model;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import robocode.AdvancedRobot;
 
 public class TimeCapsule {
+	
 	RobotModel parent;
+	
 	long current_time;
 	HashMap<Long, StateVector> data;
+	
 	public TimeCapsule(RobotModel parent) {
 		// stores historical data about the robot
 		this.parent = parent;
@@ -16,6 +22,13 @@ public class TimeCapsule {
 	
 	public StateVector get_data(long time) {
 		return data.get(new Long(time));
+	}
+	public StateVector get_last(int delta) {
+		// 0 is last data, 1 is second to last, etc.
+		List<Long> keys = new ArrayList<Long>();
+		keys.addAll(data.keySet());
+		Collections.sort(keys);
+		return data.get(keys.get(keys.size() - (1+delta)));
 	}
 	
 	public void update(AdvancedRobot self) {
@@ -31,7 +44,7 @@ public class TimeCapsule {
 		current_time = time;
 	}
 	
-	class StateVector {
+	public class StateVector {
 		double[] state_vec;
 		public StateVector() {
 			this(0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0);
