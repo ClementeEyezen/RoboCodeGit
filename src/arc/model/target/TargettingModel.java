@@ -1,7 +1,11 @@
 package arc.model.target;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import arc.model.RobotModel;
 import arc.model.TimeCapsule;
+import arc.model.motion.MotionType;
 import robocode.AdvancedRobot;
 import robocode.HitByBulletEvent;
 import robocode.ScannedRobotEvent;
@@ -9,6 +13,8 @@ import robocode.ScannedRobotEvent;
 public class TargettingModel {
 	
 	private TargettingType most_likely;
+	private List<TargettingType> models;
+	private RobotModel parent;
 	
 	public TargettingModel(RobotModel parent) {
 		// TODO constructor
@@ -16,6 +22,10 @@ public class TargettingModel {
 		// two functions:
 		// 		provide domain knowledge about how the robot could target/shoot
 		// 		provide maximum likelihood fitting to a Targetting Type
+		this.parent = parent;
+		models = new ArrayList<TargettingType>();
+		models.add(new HeadOn());
+		most_likely = models.get(0);
 	}
 	public void test(HitByBulletEvent current, TimeCapsule history) {
 		// Test models for fit
@@ -37,6 +47,10 @@ public class TargettingModel {
 			current.getVelocity(); // velocity of the bullet
 		*/
 	}
+	public void test(TimeCapsule history) {
+		// TODO
+		// called if HBBE event didn't happen
+	}
 	public void test(AdvancedRobot ar, TimeCapsule history) {
 		// TODO test in the case of self
 	}
@@ -53,6 +67,10 @@ public class TargettingModel {
 	}
 	
 	class HeadOn extends TargettingType {
-		// TODO implement example
+
+		@Override
+		public TargettingProjection project(TimeCapsule tc, Wave w) {
+			return new TargettingProjection(0.0, w, this);
+		}
 	}
 }
