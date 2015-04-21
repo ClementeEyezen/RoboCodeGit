@@ -19,7 +19,7 @@ public class MotionProjection {
 		end_time = t[t.length-1];
 	}
 	
-	public double test(TimeCapsule tc) {
+	public double test(TimeCapsule tc) { // someone else calls test after past last time in projection
 		ArrayList<Double> error = new ArrayList<Double>();
 		double sum = 0;
 		for(int i = 0; i < forward.size(); i++) {

@@ -88,7 +88,8 @@ public class Gaussian {
         //System.out.println(Phi(z, mu, sigma));
         //System.out.println(Phi(z+1, mu, sigma));
     	double rating = Math.pow( 2*(Phi(18, mu, sigma)-.5) , 1.8 );
-        System.out.println(" rating: "+rating);
+    	double percent = 2*(Phi(18,mu,sigma)-.5);
+        System.out.println(" rating: "+rating+" percent: "+percent);
         
         
         //double y = Phi(z);

@@ -19,7 +19,7 @@ public class MotionModel {
 	private RobotModel parent;
 	
 	public MotionModel(RobotModel parent) {
-		// TODO constructor
+		// constructor
 		// models/calculates the motions of the parent robot
 		// two functions:
 		// 		provide domain knowledge about how the robot could move
@@ -39,7 +39,7 @@ public class MotionModel {
 	public void test(ScannedRobotEvent sre, TimeCapsule updated_history) {
 		
 		// Test models for fit
-		// TODO
+		// TODO check
 		/*
 			  sre.getBearingRadians() 
 	          sre.getDistance() 
