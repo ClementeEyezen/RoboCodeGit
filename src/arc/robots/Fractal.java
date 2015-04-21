@@ -27,6 +27,8 @@ public class Fractal extends AdvancedRobot {
 	// Robot Properties
 	RobotModel rm;
 	
+	// TODO paint
+	
 	public void run()
 	{
 		// "Constructor"
