@@ -2,6 +2,9 @@ package arc.robots;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import arc.model.RobotModel;
 import robocode.AdvancedRobot;
@@ -24,16 +27,22 @@ public class Fractal extends AdvancedRobot {
 	double room_width, room_height;
 	double time;
 	
+	boolean debug = true;
+	
+	boolean oneVoneAssumption = true;
+	
 	// Robot Properties
 	RobotModel rm;
 	
-	// TODO paint
+	// Enemy Robots
+	Map<String, RobotModel> enemy;
 	
 	public void run()
 	{
 		// "Constructor"
 		this.setRotateFree();
 		this.setColor(Color.ORANGE);
+		enemy = new HashMap<String, RobotModel>();
 		
 		// Battle Properties
 		room_width = this.getBattleFieldWidth();
@@ -51,7 +60,14 @@ public class Fractal extends AdvancedRobot {
 		
 		while (true)
 		{
+			// default actions. Overwrite with better ones
+			//setTurnRadarLeftRadians(7.7);
+			setTurnLeftRadians(0.0625);
+			setAhead(8.0);
+			
 			rm.update();
+			
+			
 			
 			/*
 			setTurnRadarLeftRadians(1.0);
@@ -89,8 +105,43 @@ public class Fractal extends AdvancedRobot {
 		
 	}
 	public void onScannedRobot(ScannedRobotEvent sre) {
+		if(oneVoneAssumption) {
+			// keep tight radar
+			double x = rm.getX(sre, getHeadingRadians(), getX());
+			double y = rm.getY(sre, getHeadingRadians(), getY());
+			x += Math.cos(sre.getHeadingRadians()) * sre.getVelocity();
+			y += Math.sin(sre.getHeadingRadians()) * sre.getVelocity();
+			double delta = Math.atan2(y-getY(), x-getX())-rm.correct_angle(getRadarHeadingRadians());
+			while(delta > 2*Math.PI) {
+				delta -= Math.PI*2;
+			}
+			while(delta < -2*Math.PI) {
+				delta += Math.PI*2;
+			}
+			if(delta > Math.PI) {
+				delta = Math.PI * -2 + delta; 
+			}
+			if(delta < -1*Math.PI) {
+				delta = Math.PI * 2 + delta;
+			}
+			setTurnRadarLeftRadians(delta);
+			
+		}
 		//when my robot scans another robot
-		rm.update(sre);
+		if(enemy.containsKey(sre.getName())) {
+			// if the robot is already tracked
+			if (debug) System.out.println("SCANNED ROBOT: "+sre.getName());
+			enemy.get(sre.getName()).update(sre, getHeadingRadians(), getX(), getY());
+		}
+		else {
+			if (debug) System.out.println("CREATED ROBOT MODEL: " + sre.getName());
+			RobotModel new_scan = new RobotModel(sre.getName(), getHeight(), getWidth(),
+					sre.getEnergy(), rm.gun_cooling_rate, 0.0, rm.gun_heat, 0.0, 
+					sre.getHeadingRadians(), sre.getVelocity(), 
+					rm.getX(sre, getHeadingRadians(), getX()), rm.getY(sre, getHeadingRadians(), getY()));
+			enemy.put(sre.getName(), new_scan);
+		}
+		rm.update(sre, getHeadingRadians(), getX(), getY());
 	}
 	public void onBulletHit(BulletHitEvent bhe) {
 		// when my bullet hits another robot
@@ -133,6 +184,10 @@ public class Fractal extends AdvancedRobot {
 	 */
 	public void onPaint(Graphics2D g) {
 		// when my robot is painted
+		rm.onPaint(g);
+		for (RobotModel e : enemy.values()) {
+			e.onPaint(g);
+		}
 	}
 	
 	

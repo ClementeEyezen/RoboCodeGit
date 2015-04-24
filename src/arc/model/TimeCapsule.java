@@ -23,6 +23,9 @@ public class TimeCapsule {
 		return current_time;
 	}
 	
+	public String toString() {
+		return "Time Capsule for "+parent.name;
+	}
 	public StateVector get_data(long time) {
 		return data.get(new Long(time));
 	}
@@ -31,6 +34,8 @@ public class TimeCapsule {
 		List<Long> keys = new ArrayList<Long>();
 		keys.addAll(data.keySet());
 		Collections.sort(keys);
+		if(keys.size() <= 0) return null;
+		else if (keys.size() == 1) return data.get(keys.get(0));
 		return data.get(keys.get(keys.size() - (1+delta)));
 	}
 	
