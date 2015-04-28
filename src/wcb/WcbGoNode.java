@@ -438,7 +438,7 @@ public class WcbGoNode extends WcbCircularTarget
 			 */
 			double compareX = X[i][0];
 			double compareY = Y[i][0];
-			double compareRadius = (bulletCircle[6][0]+bulletCircle[7][0])/2;
+			double compareRadius = 1; //(bulletCircle[6][0]+bulletCircle[7][0])/2;
 			double compareDistance = distancePtoP(compareX,compareY,mX,mY)-compareRadius;
 			if (compareDistance<setDistance)
 			{
