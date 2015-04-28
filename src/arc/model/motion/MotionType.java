@@ -10,7 +10,12 @@ public abstract class MotionType {
 	ArrayList<MotionProjection> past_projections;
 	double running_rating;
 	public void update(TimeCapsule tc) {
-		past_projections.add(project(tc,tc.current_time(),20));
+		try {
+			past_projections.add(project(tc,tc.current_time(),20));
+		}
+		catch (NullPointerException npe) {
+			
+		}
 	}
 	public abstract MotionProjection project(TimeCapsule tc, long start_time, long time_forward);
 	public final double update_rating(TimeCapsule tc) {
@@ -22,5 +27,10 @@ public abstract class MotionType {
 			running_rating = (running_rating*20+new_value)/(20+1);
 		}
 		return running_rating;
+	}
+	
+	protected final double correct_angle(double head_or_bear) {
+		//return head_or_bear;
+		return -1*head_or_bear + Math.PI/2;
 	}
 }

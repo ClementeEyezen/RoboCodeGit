@@ -1,5 +1,6 @@
 package arc.model.target;
 
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,5 +73,10 @@ public class TargettingModel {
 		public TargettingProjection project(TimeCapsule tc, Wave w) {
 			return new TargettingProjection(0.0, w, this);
 		}
+	}
+
+	public void onPaint(Graphics2D g) {
+		// TODO Auto-generated method stub
+		
 	}
 }

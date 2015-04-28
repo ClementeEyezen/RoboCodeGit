@@ -48,4 +48,8 @@ public abstract class TargettingType {
 		}
 		return running_rating;
 	}
+	protected final double correct_angle(double head_or_bear) {
+		//return head_or_bear;
+		return -1*head_or_bear + Math.PI/2;
+	}
 }

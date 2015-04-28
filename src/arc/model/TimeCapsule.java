@@ -1,5 +1,6 @@
 package arc.model;
 
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class TimeCapsule {
 	
 	public void update(AdvancedRobot self) {
 		update(self.getTime(), self.getEnergy(), self.getGunHeading(), self.getGunHeat(), 
-				self.getHeading(), self.getVelocity(), self.getX(), self.getY());
+				self.getHeadingRadians(), self.getVelocity(), self.getX(), self.getY());
 	}
 	public void update(long time, double ener, 
 			double g_hd, double g_ht, double head, double velo,
@@ -117,5 +118,10 @@ public class TimeCapsule {
 		public void set_y(double y) {
 			state_vec[7] = y;
 		}
+	}
+
+	public void onPaint(Graphics2D g) {
+		// TODO Auto-generated method stub
+		
 	}
 }

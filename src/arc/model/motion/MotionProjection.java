@@ -1,5 +1,7 @@
 package arc.model.motion;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 import arc.model.Gaussian;
@@ -12,6 +14,7 @@ public class MotionProjection {
 	long end_time;
 	
 	public MotionProjection(double[] x, double[] y, long[] t) {
+		forward = new ArrayList<Triple<Double, Double, Long>>();
 		for(int i = 0; i < x.length && i < y.length; i++) {
 			forward.add(new Triple<Double, Double, Long>(new Double(x[i]), new Double(y[i]), new Long(t[i])));
 		}
@@ -67,5 +70,12 @@ public class MotionProjection {
 			t = three;
 		}
 		
+	}
+	
+	public void onPaint(Graphics2D g, Color c) {
+		g.setColor(c);
+		for(Triple<Double,Double,Long> trip : forward) {
+			g.drawOval((int)(trip.x-5), (int)(trip.y-5), 10, 10);
+		}
 	}
 }

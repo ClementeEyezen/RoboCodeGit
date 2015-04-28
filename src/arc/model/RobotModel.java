@@ -71,6 +71,7 @@ public class RobotModel {
 	}
 	
 	public void update() {
+		mm.update();
 		tc.update(parent);
 		x = parent.getX();
 		y = parent.getY();
@@ -80,13 +81,13 @@ public class RobotModel {
 			//System.out.println("Scanned "+name+" at "+getX(sre, self_h, self_x)+" , "+getY(sre,self_h, self_y));
 			tc.update(sre.getTime(), sre.getEnergy(), 
 					tm.predict_gun_heading(sre, tc), tm.predict_gun_heat(sre, tc), 
-					correct_angle(sre.getHeading()), sre.getVelocity(),
+					correct_angle(self_h+sre.getHeadingRadians()), sre.getVelocity(),
 					getX(sre,self_h, self_x), getY(sre, self_h, self_y));
 			this.x = getX(sre, self_h, self_x);
 			this.y = getY(sre, self_h, self_y);
 		}
 		else {
-			//System.out.println("ERR: Robot Model for "+name+" recieved data for "+sre.getName());
+			System.out.println("ERR: Robot Model for "+name+" recieved data for "+sre.getName());
 		}
 	}
 	public void update(HitByBulletEvent hbbe) {
@@ -124,7 +125,6 @@ public class RobotModel {
 	}
 	
 	public void onPaint(Graphics2D g) {
-		// TODO paint
 		g.setColor(this.c);
 		try {
 			g.drawRect((int) (x-this.width/2), (int) (y-this.height/2),
@@ -133,5 +133,9 @@ public class RobotModel {
 		catch (NullPointerException npe) {
 			System.out.println("Robot "+name+"painted incorrectly");
 		}
+		System.out.println("Motion Model Painted for Robot Model "+this);
+		mm.onPaint(g);
+		tc.onPaint(g);
+		tm.onPaint(g);
 	}
 }

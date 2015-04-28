@@ -1,5 +1,7 @@
 package arc.model.motion;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,7 @@ public class MotionModel {
 		// 		provide maximum likelihood fitting to a Motion Type
 		
 		models = new ArrayList<MotionType>();
-		models.add(new StandStill());
+		//models.add(new StandStill());
 		models.add(new LinearMotion());
 		most_likely = models.get(0);
 		this.parent = parent;
@@ -34,6 +36,11 @@ public class MotionModel {
 	public void update() {
 		for(MotionType mt : models) {
 			mt.update(parent.current_history());
+		}
+		for(MotionType mt : models) {
+			if(mt.running_rating > most_likely().running_rating) {
+				most_likely = mt;
+			}
 		}
 	}
 	public void test(ScannedRobotEvent sre, TimeCapsule updated_history) {
@@ -70,7 +77,7 @@ public class MotionModel {
 	public MotionType most_likely() {
 		return most_likely;
 	}
-	public MotionProjection ml_projection(long future_time) {
+	public MotionProjection ml_projection(long delta_time) {
 		// return the most likely projection for where the robot is going to be through future time
 		/*
 		 * Example Use:
@@ -84,7 +91,6 @@ public class MotionModel {
 		 */
 		MotionType likely = most_likely();
 		long current_time = parent.current_history().current_time();
-		long delta_time = future_time - current_time;
 		return likely.project(parent.current_history(), current_time, delta_time);
 	}
 	
@@ -115,6 +121,7 @@ public class MotionModel {
 	class StandStill extends MotionType {
 		@Override
 		public MotionProjection project(TimeCapsule tc, long start_time, long time_forward) {
+			System.out.println("time forward");
 			double[] x = new double[(int)time_forward];
 			double[] y = new double[(int)time_forward];
 			long[] t = new long[(int)time_forward];
@@ -123,10 +130,20 @@ public class MotionModel {
 			
 			for(int i = 0; i < (int)time_forward; i++) {
 				x[i] = start_data.x();
-				x[i] = start_data.y();
+				y[i] = start_data.y();
 				t[i] = start_time + i;
 			}
 			return new MotionProjection(x,y,t);
+		}
+	}
+	
+	public void onPaint(Graphics2D g) {
+		try {
+			System.out.println("Paint ML");
+			ml_projection(20).onPaint(g, Color.ORANGE);
+		}
+		catch (NullPointerException npe){
+			
 		}
 	}
 }
