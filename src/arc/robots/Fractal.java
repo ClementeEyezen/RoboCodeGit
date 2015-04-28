@@ -62,8 +62,8 @@ public class Fractal extends AdvancedRobot {
 		{
 			// default actions. Overwrite with better ones
 			//setTurnRadarLeftRadians(7.7);
-			setTurnLeftRadians(0.0625);
-			setAhead(8.0);
+			setTurnLeftRadians(0.0);
+			setAhead(0.0);
 			
 			rm.update();
 			
@@ -184,6 +184,7 @@ public class Fractal extends AdvancedRobot {
 	 */
 	public void onPaint(Graphics2D g) {
 		// when my robot is painted
+		System.out.println("Print Robot Model");
 		rm.onPaint(g);
 		for (RobotModel e : enemy.values()) {
 			e.onPaint(g);
