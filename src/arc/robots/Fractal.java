@@ -130,18 +130,22 @@ public class Fractal extends AdvancedRobot {
 		//when my robot scans another robot
 		if(enemy.containsKey(sre.getName())) {
 			// if the robot is already tracked
-			if (debug) System.out.println("SCANNED ROBOT: "+sre.getName());
+			if (debug) {
+				System.out.println("SCANNED ROBOT: "+sre.getName());
+				System.out.println("sre heading: "+sre.getHeadingRadians());
+				System.out.println("sre correced: "+rm.correct_angle(sre.getHeadingRadians()));
+			}
 			enemy.get(sre.getName()).update(sre, getHeadingRadians(), getX(), getY());
 		}
 		else {
 			if (debug) System.out.println("CREATED ROBOT MODEL: " + sre.getName());
 			RobotModel new_scan = new RobotModel(sre.getName(), getHeight(), getWidth(),
 					sre.getEnergy(), rm.gun_cooling_rate, 0.0, rm.gun_heat, 0.0, 
-					sre.getHeadingRadians(), sre.getVelocity(), 
+					rm.correct_angle(sre.getHeadingRadians()), sre.getVelocity(), 
 					rm.getX(sre, getHeadingRadians(), getX()), rm.getY(sre, getHeadingRadians(), getY()));
 			enemy.put(sre.getName(), new_scan);
 		}
-		rm.update(sre, getHeadingRadians(), getX(), getY());
+		//rm.update(sre, getHeadingRadians(), getX(), getY());
 	}
 	public void onBulletHit(BulletHitEvent bhe) {
 		// when my bullet hits another robot

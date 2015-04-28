@@ -17,7 +17,7 @@ public class RobotModel {
 	AdvancedRobot parent;
 	TimeCapsule tc;
 	MotionModel mm;
-	TargettingModel tm;
+	//TargettingModel tm;
 	
 	Color c;
 	
@@ -64,8 +64,9 @@ public class RobotModel {
 		this.y = y;
 		parent = null;
 		this.tc = new TimeCapsule(this);
+		tc.update(0, ener, g_hd, g_ht, head, velo, x, y);
 		this.mm = new MotionModel(this);
-		this.tm = new TargettingModel(this);
+		//this.tm = new TargettingModel(this);
 		Random r = new Random();
 		c = new Color((name.hashCode()+r.nextInt(16777215))%(16777215));
 	}
@@ -80,8 +81,8 @@ public class RobotModel {
 		if(sre.getName().equals(name)) {
 			//System.out.println("Scanned "+name+" at "+getX(sre, self_h, self_x)+" , "+getY(sre,self_h, self_y));
 			tc.update(sre.getTime(), sre.getEnergy(), 
-					tm.predict_gun_heading(sre, tc), tm.predict_gun_heat(sre, tc), 
-					correct_angle(self_h+sre.getHeadingRadians()), sre.getVelocity(),
+					0.0, 0.0, //tm.predict_gun_heading(sre, tc), tm.predict_gun_heat(sre, tc), 
+					correct_angle(sre.getHeadingRadians()), sre.getVelocity(),
 					getX(sre,self_h, self_x), getY(sre, self_h, self_y));
 			this.x = getX(sre, self_h, self_x);
 			this.y = getY(sre, self_h, self_y);
@@ -91,7 +92,7 @@ public class RobotModel {
 		}
 	}
 	public void update(HitByBulletEvent hbbe) {
-		tm.test(hbbe, tc);
+		//tm.test(hbbe, tc);
 	}
 	
 	public double correct_angle(double head_or_bear) {
@@ -136,6 +137,6 @@ public class RobotModel {
 		System.out.println("Motion Model Painted for Robot Model "+this);
 		mm.onPaint(g);
 		tc.onPaint(g);
-		tm.onPaint(g);
+		//tm.onPaint(g);
 	}
 }

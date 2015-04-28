@@ -8,6 +8,7 @@ import java.util.List;
 import arc.model.RobotModel;
 import arc.model.TimeCapsule;
 import arc.model.TimeCapsule.StateVector;
+import arc.model.motions.CircularMotion;
 import arc.model.motions.LinearMotion;
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
@@ -29,7 +30,8 @@ public class MotionModel {
 		
 		models = new ArrayList<MotionType>();
 		//models.add(new StandStill());
-		models.add(new LinearMotion());
+		models.add(new CircularMotion());
+		//models.add(new LinearMotion());
 		most_likely = models.get(0);
 		this.parent = parent;
 	}

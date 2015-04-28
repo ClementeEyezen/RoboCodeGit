@@ -22,14 +22,14 @@ public class LinearMotion extends MotionType {
 		if (start_data == null ) {
 			System.out.println("Linear Motion: invalid prediction start time (null data at start_time)");
 		}
-		double dx = start_data.velocity() * Math.cos(correct_angle(start_data.heading()));
-		double dy = start_data.velocity() * Math.sin(correct_angle(start_data.heading()));
-		System.out.println("LinearMotion: heading: "+correct_angle(start_data.heading()));
+		double dx = start_data.velocity() * Math.cos(start_data.heading());
+		double dy = start_data.velocity() * Math.sin(start_data.heading());
+		System.out.println(tc+" LinearMotion: heading: "+correct_angle(start_data.heading()));
 		
 		for(int i = 0; i < time_forward; i++) {
 			x[i] = start_data.x() + (i+t_offset)*dx;
 			y[i] = start_data.y() + (i+t_offset)*dy;
-			t[i] = start_time+time_forward;
+			t[i] = start_time+i;
 		}
 		
 		return new MotionProjection(x, y, t);
