@@ -132,8 +132,8 @@ public class Fractal extends AdvancedRobot {
 			// if the robot is already tracked
 			if (debug) {
 				System.out.println("SCANNED ROBOT: "+sre.getName());
-				System.out.println("sre heading: "+sre.getHeadingRadians());
-				System.out.println("sre correced: "+rm.correct_angle(sre.getHeadingRadians()));
+				//System.out.println("sre heading: "+sre.getHeadingRadians());
+				//System.out.println("sre correced: "+rm.correct_angle(sre.getHeadingRadians()));
 			}
 			enemy.get(sre.getName()).update(sre, getHeadingRadians(), getX(), getY());
 		}

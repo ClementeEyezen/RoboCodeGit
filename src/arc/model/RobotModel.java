@@ -134,7 +134,7 @@ public class RobotModel {
 		catch (NullPointerException npe) {
 			System.out.println("Robot "+name+"painted incorrectly");
 		}
-		System.out.println("Motion Model Painted for Robot Model "+this);
+		//System.out.println("Motion Model Painted for Robot Model "+this);
 		mm.onPaint(g);
 		tc.onPaint(g);
 		//tm.onPaint(g);

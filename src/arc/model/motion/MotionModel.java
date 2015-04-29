@@ -10,6 +10,7 @@ import arc.model.TimeCapsule;
 import arc.model.TimeCapsule.StateVector;
 import arc.model.motions.CircularMotion;
 import arc.model.motions.LinearMotion;
+import arc.model.motions.PatternMatcher;
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
 
@@ -30,7 +31,7 @@ public class MotionModel {
 		
 		models = new ArrayList<MotionType>();
 		//models.add(new StandStill());
-		models.add(new CircularMotion());
+		models.add(new PatternMatcher(7));
 		//models.add(new LinearMotion());
 		most_likely = models.get(0);
 		this.parent = parent;
@@ -141,7 +142,7 @@ public class MotionModel {
 	
 	public void onPaint(Graphics2D g) {
 		try {
-			System.out.println("Paint ML");
+			//System.out.println("Paint ML");
 			ml_projection(20).onPaint(g, Color.ORANGE);
 		}
 		catch (NullPointerException npe){
