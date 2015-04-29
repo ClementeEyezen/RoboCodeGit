@@ -35,9 +35,24 @@ public class TimeCapsule {
 		List<Long> keys = new ArrayList<Long>();
 		keys.addAll(data.keySet());
 		Collections.sort(keys);
-		if(keys.size() <= 0) return null;
-		else if (keys.size() == 1) return data.get(keys.get(0));
-		return data.get(keys.get(keys.size() - (1+delta)));
+		if(keys.size() <= 0) { 
+			System.out.println("TC: no keys err"); 
+			return null; 
+		}
+		else if (keys.size() == 1) {
+			System.out.println("TC: only 1 key warn");
+			return data.get(new Long(keys.get(0)));
+		}
+		else if (keys.size() - (1+delta) < 0) {
+			System.out.println("TC: before known history err");
+			return null;
+		}
+		else if (keys.get(keys.size() - (1+delta)) < 0 || keys.get(keys.size() - (1+delta)) >= data.size()) {
+			return null;
+		}
+		System.out.println("TC: data.get("+(keys.get(keys.size() - (1+delta)))+") -> "+ 
+							data.get(keys.get(keys.size() - (1+delta)).toString()));
+		return data.get(new Long(keys.get(keys.size() - (1+delta))));
 	}
 	
 	public void update(AdvancedRobot self) {
@@ -50,6 +65,7 @@ public class TimeCapsule {
 		data.put(new Long(time), 
 				new StateVector((double)time, ener, g_hd, g_ht, head, velo, x, y)
 		);
+		System.out.println("TC: updated/placed "+time);
 		current_time = time;
 	}
 	
@@ -117,6 +133,9 @@ public class TimeCapsule {
 		}
 		public void set_y(double y) {
 			state_vec[7] = y;
+		}
+		public String toString() {
+			return "[SV ("+x()+","+y()+") ]";
 		}
 	}
 
