@@ -8,7 +8,7 @@ import java.util.List;
 
 import robocode.AdvancedRobot;
 
-public class TimeCapsule {
+public class TimeCapsule implements Update {
 	
 	RobotModel parent;
 	
@@ -123,5 +123,9 @@ public class TimeCapsule {
 	public void onPaint(Graphics2D g) {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public void update() {
+		// TODO created by interface
 	}
 }

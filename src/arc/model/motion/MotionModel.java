@@ -8,12 +8,13 @@ import java.util.List;
 import arc.model.RobotModel;
 import arc.model.TimeCapsule;
 import arc.model.TimeCapsule.StateVector;
+import arc.model.Update;
 import arc.model.motions.CircularMotion;
 import arc.model.motions.LinearMotion;
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
 
-public class MotionModel {
+public class MotionModel implements Update {
 	
 	private MotionType most_likely;
 	
@@ -35,6 +36,7 @@ public class MotionModel {
 		most_likely = models.get(0);
 		this.parent = parent;
 	}
+	@Override
 	public void update() {
 		for(MotionType mt : models) {
 			mt.update(parent.current_history());

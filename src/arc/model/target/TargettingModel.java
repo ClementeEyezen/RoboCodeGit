@@ -6,12 +6,13 @@ import java.util.List;
 
 import arc.model.RobotModel;
 import arc.model.TimeCapsule;
+import arc.model.Update;
 import arc.model.motion.MotionType;
 import robocode.AdvancedRobot;
 import robocode.HitByBulletEvent;
 import robocode.ScannedRobotEvent;
 
-public class TargettingModel {
+public class TargettingModel implements Update {
 	
 	private TargettingType most_likely;
 	private List<TargettingType> models;
@@ -78,5 +79,9 @@ public class TargettingModel {
 	public void onPaint(Graphics2D g) {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public void update() {
+		// TODO created by interface
 	}
 }
