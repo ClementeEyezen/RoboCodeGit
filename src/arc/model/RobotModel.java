@@ -86,20 +86,12 @@ public class RobotModel implements arc.model.Update{
 		tm.update();
 	}
 	public void update(ScannedRobotEvent sre, double self_h, double self_x, double self_y) {
-		/* TODO change
 		if(sre.getName().equals(name)) {
-			//System.out.println("Scanned "+name+" at "+getX(sre, self_h, self_x)+" , "+getY(sre,self_h, self_y));
 			tc.update(sre.getTime(), sre.getEnergy(), 
-					0.0, 0.0, //tm.predict_gun_heading(sre, tc), tm.predict_gun_heat(sre, tc), 
+					tm.predict_gun_heading(sre, tc), tm.predict_gun_heat(sre, tc), 
 					correct_angle(sre.getHeadingRadians()), sre.getVelocity(),
 					getX(sre,self_h, self_x), getY(sre, self_h, self_y));
-			this.x = getX(sre, self_h, self_x);
-			this.y = getY(sre, self_h, self_y);
 		}
-		else {
-			System.out.println("ERR: Robot Model for "+name+" recieved data for "+sre.getName());
-		}
-		*/
 	}
 	public void update(HitByBulletEvent hbbe) {
 		//TODO change
