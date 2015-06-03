@@ -11,13 +11,13 @@ import robocode.HitByBulletEvent;
 import robocode.ScannedRobotEvent;
 
 
-public class RobotModel {
+public class RobotModel implements arc.model.Update{
 	
 	// Robot Parameters
 	AdvancedRobot parent;
 	TimeCapsule tc;
 	MotionModel mm;
-	//TargettingModel tm;
+	TargettingModel tm;
 	
 	Color c;
 	
@@ -25,12 +25,6 @@ public class RobotModel {
 	public double gun_cooling_rate;
 	
 	// Robot state
-	double energy;
-	double gun_heading;
-	public double gun_heat;
-	double radar_heading;
-	double heading, velocity;
-	double x, y;
 	String name;
 	
 	/*
@@ -49,26 +43,26 @@ public class RobotModel {
 	private RobotModel(String name, 
 			double heig, double widt, double ener, 
 			double g_co, double g_hd, double g_ht, 
-			double r_he, 
+			double r_he, // radar heading
 			double head, double velo,
 			double x, double y) {
+		
+		// Some unchanging features of the robot
 		this.name = name;
 		height = heig;
 		width = widt;
-		energy = ener;
 		gun_cooling_rate = g_co;
-		gun_heading = g_hd;
-		gun_heat = g_ht;
-		radar_heading = r_he;
-		heading = head;
-		velocity = velo;
-		this.x = x;
-		this.y = y;
 		parent = null;
+		
+		// Initialize TimeCapsule and start tracking state
 		this.tc = new TimeCapsule(this);
 		tc.update(0, ener, g_hd, g_ht, head, velo, x, y);
+		
+		// Set up auxilary features
 		this.mm = new MotionModel(this);
-		//this.tm = new TargettingModel(this);
+		this.tm = new TargettingModel(this);
+		
+		// Generate random color for paint purposes
 		Random r = new Random();
 		c = new Color((name.hashCode()+r.nextInt(16777215))%(16777215));
 	}
@@ -84,16 +78,12 @@ public class RobotModel {
 				getX(fs, parent.getHeadingRadians(), parent.getX()), 
 				getY(fs, parent.getHeadingRadians(), parent.getY()));
 		this.parent = parent;
-		c = Color.GREEN;
 	}
 	
 	public void update() {
-		/* TODO change
+		tc.update();
 		mm.update();
-		tc.update(parent);
-		x = parent.getX();
-		y = parent.getY();
-		*/ 
+		tm.update();
 	}
 	public void update(ScannedRobotEvent sre, double self_h, double self_x, double self_y) {
 		/* TODO change
@@ -140,6 +130,11 @@ public class RobotModel {
 	}
 	
 	// GETTERS and SETTERS
+	
+	public TimeCapsule.StateVector state() {
+		// TODO 
+		return current_history().get_last(0);
+	}
 	
 	public TimeCapsule current_history() {
 		return tc;
