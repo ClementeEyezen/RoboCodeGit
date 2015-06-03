@@ -94,7 +94,7 @@ public class RobotModel implements arc.model.Update{
 		}
 	}
 	public void update(HitByBulletEvent hbbe) {
-		//TODO change
+		//TODO use this to retcon in aid of the TargettingModel's predictions
 	}
 	
 	
@@ -124,7 +124,6 @@ public class RobotModel implements arc.model.Update{
 	// GETTERS and SETTERS
 	
 	public TimeCapsule.StateVector state() {
-		// TODO 
 		return current_history().get_last(0);
 	}
 	

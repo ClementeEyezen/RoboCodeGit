@@ -127,5 +127,6 @@ public class TimeCapsule implements Update {
 	@Override
 	public void update() {
 		// TODO created by interface
+		// TODO make useful changes
 	}
 }
