@@ -33,6 +33,7 @@ public class RobotModel {
 	double x, y;
 	String name;
 	
+	/*
 	public RobotModel(AdvancedRobot ar) {
 		// Robot model for self
 		this(ar.getName(), 
@@ -44,7 +45,8 @@ public class RobotModel {
 		parent = ar;
 		c = Color.GREEN;
 	}
-	public RobotModel(String name, 
+	*/
+	private RobotModel(String name, 
 			double heig, double widt, double ener, 
 			double g_co, double g_hd, double g_ht, 
 			double r_he, 
@@ -70,14 +72,31 @@ public class RobotModel {
 		Random r = new Random();
 		c = new Color((name.hashCode()+r.nextInt(16777215))%(16777215));
 	}
+	public RobotModel(ScannedRobotEvent fs, AdvancedRobot parent) { // firstScan
+		this(fs.getName(), 
+				parent.getHeight(), parent.getWidth(), 
+				fs.getEnergy(), 
+				// TODO update parent. if a more intelligent method is found
+				parent.getGunCoolingRate(),parent.getGunHeadingRadians(), parent.getGunHeat(),
+				parent.getRadarHeadingRadians(),
+				fs.getHeadingRadians(), fs.getVelocity(), 
+				// adjusted locations
+				getX(fs, parent.getHeadingRadians(), parent.getX()), 
+				getY(fs, parent.getHeadingRadians(), parent.getY()));
+		this.parent = parent;
+		c = Color.GREEN;
+	}
 	
 	public void update() {
+		/* TODO change
 		mm.update();
 		tc.update(parent);
 		x = parent.getX();
 		y = parent.getY();
+		*/ 
 	}
 	public void update(ScannedRobotEvent sre, double self_h, double self_x, double self_y) {
+		/* TODO change
 		if(sre.getName().equals(name)) {
 			//System.out.println("Scanned "+name+" at "+getX(sre, self_h, self_x)+" , "+getY(sre,self_h, self_y));
 			tc.update(sre.getTime(), sre.getEnergy(), 
@@ -90,34 +109,38 @@ public class RobotModel {
 		else {
 			System.out.println("ERR: Robot Model for "+name+" recieved data for "+sre.getName());
 		}
+		*/
 	}
 	public void update(HitByBulletEvent hbbe) {
-		//tm.test(hbbe, tc);
+		//TODO change
 	}
 	
-	public double correct_angle(double head_or_bear) {
+	
+	// UTILITY FUNCTIONS
+	// candidates for private, TODO later
+	
+	public static double correct_angle(double head_or_bear) {
 		//return head_or_bear;
 		return -1*head_or_bear + Math.PI/2;
 	}
 	
-	public double getX(ScannedRobotEvent sre, double self_h, double self_x) {
+	public static double getX(ScannedRobotEvent sre, double self_h, double self_x) { 
+		// returns the X position of a scanned robot
 		double frame_x = self_x;
 		double bearing = correct_angle(self_h+sre.getBearingRadians());
 		double distance = sre.getDistance();
-		//System.out.println("get x -> fx: "+frame_x+" r: "+distance+" @ theta "+bearing);
-		//System.out.println("         := deg = "+bearing*180/Math.PI);
-		//System.out.println("         -> x = "+(frame_x + distance * Math.cos(bearing)));
 		return frame_x + distance * Math.cos(bearing);
 	}
-	public double getY(ScannedRobotEvent sre, double self_h, double self_y) {
+	public static double getY(ScannedRobotEvent sre, double self_h, double self_y) {
+		// returns the Y position of a scanned robot
 		double frame_y = self_y;
 		double bearing = correct_angle(self_h+sre.getBearingRadians());
 		double distance = sre.getDistance();
-		//System.out.println("get y -> fy: "+frame_y+" r: "+distance+" @ theta "+bearing);
-		//System.out.println("         := deg = "+bearing*180/Math.PI);
-		//System.out.println("         -> y = "+(frame_y + distance * Math.sin(bearing)));
 		return frame_y + distance * Math.sin(bearing);
 	}
+	
+	// GETTERS and SETTERS
+	
 	public TimeCapsule current_history() {
 		return tc;
 	}
@@ -125,7 +148,11 @@ public class RobotModel {
 		return name;
 	}
 	
+	// PAINT METHOD
+	
 	public void onPaint(Graphics2D g) {
+		System.out.println("RobotModel.onPaint(g) called. Change in progress");
+		/* TODO change
 		g.setColor(this.c);
 		try {
 			g.drawRect((int) (x-this.width/2), (int) (y-this.height/2),
@@ -138,5 +165,6 @@ public class RobotModel {
 		mm.onPaint(g);
 		tc.onPaint(g);
 		//tm.onPaint(g);
+		*/
 	}
 }
