@@ -15,12 +15,12 @@ public class TimeCapsule implements Update {
 	long last_time;
 	ArrayList<StateVector> data;
 	
-	// METHOD TODO
 	/*
-	 * Constructor
+	 * Constructor	
 	 * last_time()
 	 * last() - returns last data point
 	 * last(int n) - returns the last n data points
+	// METHOD TODO
 	 * before(long time) - returns the last data point before time
 	 * before(long time, int n) - returns the last n data points before time
 	 * after(long time) - returns the first data point after time
@@ -54,13 +54,29 @@ public class TimeCapsule implements Update {
 	
 	// ACCESS
 	
+	public ArrayList<StateVector> last() {
+		return last(1);
+	}
 	
+	public ArrayList<StateVector> last(int n) {
+		// ordered earliest to latest
+		n = (n <= 0) ? 1 : n;
+		ArrayList<StateVector> toReturn = new ArrayList<StateVector>();
+		for(int i =0 ; i < n; i++) {
+			if(data.size()-1-i >= 0) { // in valid range
+				toReturn.add(0, data.get(data.size()-1-i));
+			}
+		}
+		return toReturn;
+	}
 	
 	// UTILITIES
-	// TODO
-//	public long last_time() {
-//		return last().time();
-//	}
+	public long last_time() {
+		ArrayList<StateVector> l = last();
+		return (l.size() > 0) ? 
+					((long) l.get(0).time()) : 
+					((long) 0);
+	}
 	
 	public void onPaint(Graphics2D g) {
 		// TODO Auto-generated method stub
