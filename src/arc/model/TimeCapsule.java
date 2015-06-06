@@ -12,33 +12,30 @@ public class TimeCapsule implements Update {
 	
 	RobotModel parent;
 	
-	long current_time;
-	HashMap<Long, StateVector> data;
+	long last_time;
+	ArrayList<StateVector> data;
+	
+	// METHOD TODO
+	/*
+	 * Constructor
+	 * last_time()
+	 * last() - returns last data point
+	 * last(int n) - returns the last n data points
+	 * before(long time) - returns the last data point before time
+	 * before(long time, int n) - returns the last n data points before time
+	 * after(long time) - returns the first data point after time
+	 * after(long time, int n) - returns the next n data points after time
+	 */
+	
+	// CONSTRUCTOR
 	
 	public TimeCapsule(RobotModel parent) {
 		// stores historical data about the robot
 		this.parent = parent;
-		data = new HashMap<Long, StateVector>();
-	}
-	public long current_time() {
-		return current_time;
+		data = new ArrayList<StateVector>();
 	}
 	
-	public String toString() {
-		return "Time Capsule for "+parent.name;
-	}
-	public StateVector get_data(long time) {
-		return data.get(new Long(time));
-	}
-	public StateVector get_last(int delta) {
-		// 0 is last data, 1 is second to last, etc.
-		List<Long> keys = new ArrayList<Long>();
-		keys.addAll(data.keySet());
-		Collections.sort(keys);
-		if(keys.size() <= 0) return null;
-		else if (keys.size() == 1) return data.get(keys.get(0));
-		return data.get(keys.get(keys.size() - (1+delta)));
-	}
+	// UPDATE
 	
 	public void update(AdvancedRobot self) {
 		update(self.getTime(), self.getEnergy(), self.getGunHeading(), self.getGunHeat(), 
@@ -47,11 +44,35 @@ public class TimeCapsule implements Update {
 	public void update(long time, double ener, 
 			double g_hd, double g_ht, double head, double velo,
 			double x, double y) {
-		data.put(new Long(time), 
-				new StateVector((double)time, ener, g_hd, g_ht, head, velo, x, y)
-		);
-		current_time = time;
+		data.add(new StateVector((double)time, ener, g_hd, g_ht, head, velo, x, y));
 	}
+	@Override
+	public void update() {
+		// TODO created by interface
+		// TODO make useful changes
+	}
+	
+	// ACCESS
+	
+	
+	
+	// UTILITIES
+	// TODO
+//	public long last_time() {
+//		return last().time();
+//	}
+	
+	public void onPaint(Graphics2D g) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public String toString() {
+		return "Time Capsule for "+parent.name;
+	}
+	
+	
+	// INNER CLASS
 	
 	public class StateVector {
 		double[] state_vec;
@@ -118,15 +139,5 @@ public class TimeCapsule implements Update {
 		public void set_y(double y) {
 			state_vec[7] = y;
 		}
-	}
-
-	public void onPaint(Graphics2D g) {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
-	public void update() {
-		// TODO created by interface
-		// TODO make useful changes
 	}
 }
