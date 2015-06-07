@@ -66,11 +66,61 @@ public class TimeCapsule implements Update {
 			if(data.size()-1-i >= 0) { // in valid range
 				toReturn.add(0, data.get(data.size()-1-i));
 			}
+			else {
+				break;
+			}
+		}
+		return toReturn;
+	}
+	
+	public ArrayList<StateVector> before(long time) {
+		return before(time, 1);
+	}
+	
+	public ArrayList<StateVector> before(long time, int n) {
+		int index = search(time, true);
+		// location of last element before/including the given time
+		ArrayList<StateVector> toReturn = new ArrayList<StateVector>();
+		for(int i = 0; i < n; i++) {
+			if(index - i >= 0) {
+				toReturn.add(0, data.get(index - i));
+			}
+			else {
+				break;
+			}
+		}
+		return toReturn;
+	}
+	
+	public ArrayList<StateVector> after(long time) {
+		return after(time, 1);
+	}
+	
+	public ArrayList<StateVector> after(long time, int n) {
+		int index = search(time, false);
+		// location of last element before/including the given time
+		ArrayList<StateVector> toReturn = new ArrayList<StateVector>();
+		for(int i = 0; i < n; i++) {
+			if(index + i < data.size()) {
+				toReturn.add(data.get(index + i));
+			}
+			else {
+				break;
+			}
 		}
 		return toReturn;
 	}
 	
 	// UTILITIES
+	
+	public int search(long time, boolean before) {
+		// performs binary search to find the element at time.
+		// 	if there is not an element at the time, it returns the index
+		// 	before (or after if bool is false)
+		// TODO
+		return 0;
+	}
+	
 	public long last_time() {
 		ArrayList<StateVector> l = last();
 		return (l.size() > 0) ? 
