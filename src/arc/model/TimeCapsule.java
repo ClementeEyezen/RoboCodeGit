@@ -35,6 +35,23 @@ public class TimeCapsule implements Update {
 		data = new ArrayList<StateVector>();
 	}
 	
+	// MAIN METHOD / for test
+	
+	public static void main(String[] args) {
+		ArrayList<Long> datar = new ArrayList<Long>();
+		int start = 1;
+		int end = 9;
+		for(long i = start; i <= end; i+=3) {
+			datar.add(i);
+		}
+		System.out.println("datar: "+datar);
+		for(int i = start-2; i <= end+2; i++) {
+			int before = search_test(datar, i, true, 0, datar.size());
+			int after = search_test(datar, i, false, 0, datar.size());
+			System.out.println(i+" before: "+((before >= 0) ? datar.get(before) : -1)+" after: "+((after >= 0) ? datar.get(after) : -1));
+		}
+	}
+	
 	// UPDATE
 	
 	public void update(AdvancedRobot self) {
@@ -113,12 +130,98 @@ public class TimeCapsule implements Update {
 	
 	// UTILITIES
 	
-	public int search(long time, boolean before) {
+	private int search(long time, boolean before) {
 		// performs binary search to find the element at time.
 		// 	if there is not an element at the time, it returns the index
 		// 	before (or after if bool is false)
-		// TODO
-		return 0;
+		return search_help(time, before, 0, data.size());
+	}
+	
+	private int search_help(long goal, boolean before, int start, int end) {
+		
+		if(start >= data.size() || end <= 0) {
+			//System.out.println("out of range. s: "+start+" e: "+end);
+			if(start == data.size() && before)
+				return start-1;
+			else if(end == 0 && !before) {
+				return end;
+			}
+			return -1;
+		}
+		
+		long test_time = (long) data.get((start+end)/2).time();
+		// termination conditions
+		if(end - start <= 0) {
+			if (before) {
+				//System.out.println("terminate before. s: "+start+" e: "+end);
+				if (start-1 >= 0)
+					return start-1;
+				else
+					return -1;
+			}
+			else {
+				//System.out.println("terminate after. s: "+start+" e: "+end);
+				if (end < data.size())
+					return end;
+				else 
+					return -1;
+			}
+		}
+		if (test_time == goal) {
+			//System.out.println("terminate match. s: "+start+" e: "+end);
+			return (start+end)/2;
+		}
+		// continuation conditions
+		else if (test_time > goal) {
+			return search_help(goal, before, start, (start+end)/2);
+		}
+		else {
+			return search_help(goal, before, (start+end)/2+1, end);
+		}
+	}
+	
+	private static int search_test(ArrayList<Long> data, long goal, boolean before, int start, int end) {
+		// termination conditions
+		
+		if(start >= data.size() || end <= 0) {
+			//System.out.println("out of range. s: "+start+" e: "+end);
+			if(start == data.size() && before)
+				return start-1;
+			else if(end == 0 && !before) {
+				return end;
+			}
+			return -1;
+		}
+		
+		long test_time = data.get((start+end)/2);
+		
+		if(end - start <= 0) {
+			if (before) {
+				//System.out.println("terminate before. s: "+start+" e: "+end);
+				if (start-1 >= 0)
+					return start-1;
+				else
+					return -1;
+			}
+			else {
+				//System.out.println("terminate after. s: "+start+" e: "+end);
+				if (end < data.size())
+					return end;
+				else 
+					return -1;
+			}
+		}
+		if (test_time == goal) {
+			//System.out.println("terminate match. s: "+start+" e: "+end);
+			return (start+end)/2;
+		}
+		// continuation conditions
+		else if (test_time > goal) {
+			return search_test(data, goal, before, start, (start+end)/2);
+		}
+		else {
+			return search_test(data, goal, before, (start+end)/2+1, end);
+		}
 	}
 	
 	public long last_time() {
