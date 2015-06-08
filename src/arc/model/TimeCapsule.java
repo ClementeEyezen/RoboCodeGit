@@ -20,11 +20,11 @@ public class TimeCapsule implements Update {
 	 * last_time()
 	 * last() - returns last data point
 	 * last(int n) - returns the last n data points
-	// METHOD TODO
 	 * before(long time) - returns the last data point before time
 	 * before(long time, int n) - returns the last n data points before time
 	 * after(long time) - returns the first data point after time
 	 * after(long time, int n) - returns the next n data points after time
+	// METHOD TODO
 	 */
 	
 	// CONSTRUCTOR
