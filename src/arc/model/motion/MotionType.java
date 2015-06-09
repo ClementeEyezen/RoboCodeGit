@@ -11,7 +11,7 @@ public abstract class MotionType {
 	double running_rating;
 	public void update(TimeCapsule tc) {
 		try {
-			past_projections.add(project(tc,tc.current_time(),20));
+			past_projections.add(project(tc,tc.last_time(),20));
 		}
 		catch (NullPointerException npe) {
 			

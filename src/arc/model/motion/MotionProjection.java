@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import arc.model.Gaussian;
 import arc.model.TimeCapsule;
-import arc.model.TimeCapsule.StateVector;
 
 public class MotionProjection {
 	ArrayList<Triple<Double, Double, Long>> forward;
@@ -24,14 +23,19 @@ public class MotionProjection {
 	
 	public double test(TimeCapsule tc) { // someone else calls test after past last time in projection
 		ArrayList<Double> error = new ArrayList<Double>();
-		double sum = 0;
+		//double sum = 0;
 		for(int i = 0; i < forward.size(); i++) {
-			TimeCapsule.StateVector sv = tc.get_data(forward.get(i).t);
-			if (sv != null ) {
+			// Old way
+			// 		for each element in the prediction "forward", get data for that time
+			ArrayList<TimeCapsule.StateVector> val = tc.at(forward.get(i).t);
+			if (val.size() == 1) {
+				TimeCapsule.StateVector sv = val.get(0);
 				double err = error(sv, forward.get(i).x, forward.get(i).y);
 				error.add(new Double(err));
-				sum += err;
+				//sum += err;
 			}
+			// TODO New Way
+			// 		make a call to TimeCapsule to get all data points in a range		
 		}
 		if (error.size() <= 0) {
 			return 0.0;

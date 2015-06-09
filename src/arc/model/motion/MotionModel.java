@@ -7,11 +7,8 @@ import java.util.List;
 
 import arc.model.RobotModel;
 import arc.model.TimeCapsule;
-import arc.model.TimeCapsule.StateVector;
 import arc.model.Update;
 import arc.model.motions.CircularMotion;
-import arc.model.motions.LinearMotion;
-import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
 
 public class MotionModel implements Update {
@@ -94,7 +91,7 @@ public class MotionModel implements Update {
 		 * Shoot at the match
 		 */
 		MotionType likely = most_likely();
-		long current_time = parent.current_history().current_time();
+		long current_time = parent.current_history().last_time();
 		return likely.project(parent.current_history(), current_time, delta_time);
 	}
 	
@@ -130,7 +127,10 @@ public class MotionModel implements Update {
 			double[] y = new double[(int)time_forward];
 			long[] t = new long[(int)time_forward];
 			
-			TimeCapsule.StateVector start_data = tc.get_last(0);
+			if(tc.last().size() <= 0) {
+				return new MotionProjection(x,y,t);
+			}
+			TimeCapsule.StateVector start_data = tc.last().get(0);
 			
 			for(int i = 0; i < (int)time_forward; i++) {
 				x[i] = start_data.x();

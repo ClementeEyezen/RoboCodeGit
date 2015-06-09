@@ -87,6 +87,13 @@ public class TimeCapsule implements Update {
 		return toReturn;
 	}
 	
+	public ArrayList<StateVector> at(long time) {
+		if((long) before(time).get(0).time() == time)
+			return before(time);
+		else 
+			return new ArrayList<StateVector>();
+	}
+	
 	public ArrayList<StateVector> before(long time) {
 		return before(time, 1);
 	}
