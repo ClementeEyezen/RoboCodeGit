@@ -22,8 +22,8 @@ public class TargettingProjection {
 	// called after Wave w expires
 	public double test(TimeCapsule tc, boolean hit) {
 		
-		TimeCapsule.StateVector sv_end = tc.get_last(0);
-		TimeCapsule.StateVector sv_start = tc.get_data(w.create_time);
+		TimeCapsule.StateVector sv_end = tc.last().get(0);
+		TimeCapsule.StateVector sv_start = tc.at(w.create_time).get(0);
 		double actual_percent = w.percent_escape(sv_start.x(), sv_start.y(), sv_end.x(), sv_end.y());
 		double perc_delta = Math.abs(guess-actual_percent);
 		// theta

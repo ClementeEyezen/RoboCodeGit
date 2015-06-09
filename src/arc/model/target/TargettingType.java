@@ -13,8 +13,9 @@ public abstract class TargettingType {
 	
 	public void update(TimeCapsule tc, double self_x, double self_y) {
 		// if detect shot
-		TimeCapsule.StateVector sv1 = tc.get_last(0);
-		TimeCapsule.StateVector sv2 = tc.get_last(1);
+		ArrayList<TimeCapsule.StateVector> val = tc.last(2);
+		TimeCapsule.StateVector sv1 = val.get(0);
+		TimeCapsule.StateVector sv2 = val.get(1);
 		
 		boolean detected_shot = sv1.energy() < sv2.energy(); // TODO make smarter
 		if(detected_shot) {
