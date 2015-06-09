@@ -1,5 +1,7 @@
 package arc.model.motions;
 
+import java.util.ArrayList;
+
 import arc.model.TimeCapsule;
 import arc.model.motion.MotionProjection;
 import arc.model.motion.MotionType;
@@ -13,8 +15,9 @@ public class CircularMotion extends MotionType {
 		double[] y = new double[(int) time_forward];
 		long[] t = new long[(int) time_forward];
 		
-		TimeCapsule.StateVector step1 = tc.get_last(0);
-		TimeCapsule.StateVector step0 = tc.get_last(1);
+		ArrayList<TimeCapsule.StateVector> val = tc.last(2);
+		TimeCapsule.StateVector step1 = val.get(1);
+		TimeCapsule.StateVector step0 = val.get(0);
 		
 		double accel = step1.velocity()-step0.velocity();
 		double omega = step1.heading()-step0.heading();

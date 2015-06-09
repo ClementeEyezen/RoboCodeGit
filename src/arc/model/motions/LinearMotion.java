@@ -13,10 +13,10 @@ public class LinearMotion extends MotionType {
 		double[] y = new double[(int) time_forward];
 		long[] t = new long[(int) time_forward];
 		
-		TimeCapsule.StateVector start_data = tc.get_last(0);
+		TimeCapsule.StateVector start_data = tc.last().get(0);
 		int t_offset = (int) start_time - (int) start_data.time();
 		if (t_offset < 0) {
-			start_data = tc.get_data(start_time);
+			start_data = tc.at(start_time).get(0);
 			t_offset = 0;
 		}
 		if (start_data == null ) {
