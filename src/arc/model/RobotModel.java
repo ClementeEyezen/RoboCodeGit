@@ -136,6 +136,9 @@ public class RobotModel implements arc.model.Update{
 	public TimeCapsule current_history() {
 		return tc;
 	}
+	public TargettingModel tm() {
+		return tm;
+	}
 	public String name() {
 		return name;
 	}
