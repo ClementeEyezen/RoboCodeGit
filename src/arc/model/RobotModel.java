@@ -124,7 +124,13 @@ public class RobotModel implements arc.model.Update{
 	// GETTERS and SETTERS
 	
 	public TimeCapsule.StateVector state() {
-		return current_history().get_last(0);
+		try {
+			return current_history().last().get(0);
+		}
+		catch (IndexOutOfBoundsException ioobe) {
+			return null;
+		}
+		
 	}
 	
 	public TimeCapsule current_history() {

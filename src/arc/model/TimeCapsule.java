@@ -2,9 +2,6 @@ package arc.model;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 
 import robocode.AdvancedRobot;
 
