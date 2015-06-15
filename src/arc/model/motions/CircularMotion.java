@@ -15,9 +15,15 @@ public class CircularMotion extends MotionType {
 		double[] y = new double[(int) time_forward];
 		long[] t = new long[(int) time_forward];
 		
+		TimeCapsule.StateVector step0, step1;
 		ArrayList<TimeCapsule.StateVector> val = tc.last(2);
-		TimeCapsule.StateVector step1 = val.get(1);
-		TimeCapsule.StateVector step0 = val.get(0);
+		try {
+			step1 = val.get(1);
+			step0 = val.get(0);
+		}
+		catch (IndexOutOfBoundsException ioobe) {
+			return new MotionProjection(x, y, t);
+		}
 		
 		double accel = step1.velocity()-step0.velocity();
 		double omega = step1.heading()-step0.heading();

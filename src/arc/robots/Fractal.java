@@ -103,14 +103,21 @@ public class Fractal extends AdvancedRobot {
 	public void onBattleEnded(BattleEndedEvent bee) {
 		
 	}
+	
 	public void onScannedRobot(ScannedRobotEvent sre) {
 		if(oneVoneAssumption) {
 			// keep tight radar
+			
+			// robot's current location
 			double x = RobotModel.getX(sre, getHeadingRadians(), getX());
 			double y = RobotModel.getY(sre, getHeadingRadians(), getY());
+			
+			// project it's location forward one step
 			x += Math.cos(sre.getHeadingRadians()) * sre.getVelocity();
 			y += Math.sin(sre.getHeadingRadians()) * sre.getVelocity();
+			System.out.println("c1: "+Math.atan2(y-getY(), x-getX())+" c2: "+RobotModel.correct_angle(getRadarHeadingRadians()));
 			double delta = Math.atan2(y-getY(), x-getX())-RobotModel.correct_angle(getRadarHeadingRadians());
+			System.out.println("Delta in: "+delta);
 			while(delta > 2*Math.PI) {
 				delta -= Math.PI*2;
 			}
@@ -123,6 +130,7 @@ public class Fractal extends AdvancedRobot {
 			if(delta < -1*Math.PI) {
 				delta = Math.PI * 2 + delta;
 			}
+			System.out.println("Delta out: "+delta);
 			setTurnRadarLeftRadians(delta);
 			
 		}
