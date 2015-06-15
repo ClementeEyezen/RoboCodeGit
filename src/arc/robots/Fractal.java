@@ -2,7 +2,6 @@ package arc.robots;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,6 +53,7 @@ public class Fractal extends AdvancedRobot {
 		
 		setTurnRadarRightRadians(Math.PI*2);
 		while(getRadarTurnRemainingRadians() > 0.005) {
+			// While the robot is doing it's initial scan
 			rm.update();
 			execute();
 		}
@@ -61,7 +61,6 @@ public class Fractal extends AdvancedRobot {
 		while (true)
 		{
 			// default actions. Overwrite with better ones
-			//setTurnRadarLeftRadians(7.7);
 			setTurnLeftRadians(0.0);
 			setAhead(0.0);
 			
@@ -107,11 +106,11 @@ public class Fractal extends AdvancedRobot {
 	public void onScannedRobot(ScannedRobotEvent sre) {
 		if(oneVoneAssumption) {
 			// keep tight radar
-			double x = rm.getX(sre, getHeadingRadians(), getX());
-			double y = rm.getY(sre, getHeadingRadians(), getY());
+			double x = RobotModel.getX(sre, getHeadingRadians(), getX());
+			double y = RobotModel.getY(sre, getHeadingRadians(), getY());
 			x += Math.cos(sre.getHeadingRadians()) * sre.getVelocity();
 			y += Math.sin(sre.getHeadingRadians()) * sre.getVelocity();
-			double delta = Math.atan2(y-getY(), x-getX())-rm.correct_angle(getRadarHeadingRadians());
+			double delta = Math.atan2(y-getY(), x-getX())-RobotModel.correct_angle(getRadarHeadingRadians());
 			while(delta > 2*Math.PI) {
 				delta -= Math.PI*2;
 			}
@@ -133,16 +132,13 @@ public class Fractal extends AdvancedRobot {
 			if (debug) {
 				System.out.println("SCANNED ROBOT: "+sre.getName());
 				System.out.println("sre heading: "+sre.getHeadingRadians());
-				System.out.println("sre correced: "+rm.correct_angle(sre.getHeadingRadians()));
+				System.out.println("sre correced: "+RobotModel.correct_angle(sre.getHeadingRadians()));
 			}
 			enemy.get(sre.getName()).update(sre, getHeadingRadians(), getX(), getY());
 		}
 		else {
 			if (debug) System.out.println("CREATED ROBOT MODEL: " + sre.getName());
-			RobotModel new_scan = new RobotModel(sre.getName(), getHeight(), getWidth(),
-					sre.getEnergy(), rm.gun_cooling_rate, 0.0, rm.gun_heat, 0.0, 
-					rm.correct_angle(sre.getHeadingRadians()), sre.getVelocity(), 
-					rm.getX(sre, getHeadingRadians(), getX()), rm.getY(sre, getHeadingRadians(), getY()));
+			RobotModel new_scan = new RobotModel(sre, this);
 			enemy.put(sre.getName(), new_scan);
 		}
 		//rm.update(sre, getHeadingRadians(), getX(), getY());
