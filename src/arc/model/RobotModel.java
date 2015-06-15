@@ -11,7 +11,7 @@ import robocode.HitByBulletEvent;
 import robocode.ScannedRobotEvent;
 
 
-public class RobotModel implements arc.model.Update{
+public class RobotModel implements arc.model.Update {
 	
 	// Robot Parameters
 	AdvancedRobot parent;
@@ -27,19 +27,16 @@ public class RobotModel implements arc.model.Update{
 	// Robot state
 	String name;
 	
-	/*
-	public RobotModel(AdvancedRobot ar) {
-		// Robot model for self
-		this(ar.getName(), 
-				ar.getHeight(), ar.getWidth(), ar.getEnergy(), 
-				ar.getGunCoolingRate(),ar.getGunHeadingRadians(), ar.getGunHeat(),
-				ar.getRadarHeadingRadians(),
-				ar.getHeadingRadians(), ar.getVelocity(), 
-				ar.getX(), ar.getY());
-		parent = ar;
-		c = Color.GREEN;
+	public RobotModel (AdvancedRobot self) {
+		this(self.getName(),
+				self.getHeight(), self.getWidth(), self.getEnergy(),
+				self.getGunCoolingRate(), self.getGunHeadingRadians(), self.getGunHeat(),
+				self.getRadarHeadingRadians(),
+				self.getHeadingRadians(), self.getVelocity(),
+				self.getX(), self.getY()
+				);
 	}
-	*/
+	
 	private RobotModel(String name, 
 			double heig, double widt, double ener, 
 			double g_co, double g_hd, double g_ht, 
@@ -85,6 +82,7 @@ public class RobotModel implements arc.model.Update{
 		mm.update();
 		tm.update();
 	}
+	
 	public void update(ScannedRobotEvent sre, double self_h, double self_x, double self_y) {
 		if(sre.getName().equals(name)) {
 			tc.update(sre.getTime(), sre.getEnergy(), 
@@ -93,6 +91,16 @@ public class RobotModel implements arc.model.Update{
 					getX(sre,self_h, self_x), getY(sre, self_h, self_y));
 		}
 	}
+	
+	public void update(AdvancedRobot self) {
+		if(self.getName().equals(name)) {
+			tc.update(self.getTime(), self.getEnergy(),
+					tm.predict_gun_heading(self, tc), tm.predict_gun_heat(self, tc),
+					correct_angle(self.getHeadingRadians()), self.getVelocity(),
+					self.getX(), self.getY());
+		}
+	}
+	
 	public void update(HitByBulletEvent hbbe) {
 		//TODO use this to retcon in aid of the TargettingModel's predictions
 	}

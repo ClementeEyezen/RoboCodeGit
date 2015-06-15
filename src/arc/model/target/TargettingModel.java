@@ -62,9 +62,22 @@ public class TargettingModel implements Update {
 		// based on past tests, info where is the gun pointing?
 		return 0.0;
 	}
+	
+	public double predict_gun_heading(AdvancedRobot current, TimeCapsule history) {
+		// TODO
+		// based on past tests, where is the best guess for where the gun is pointing?
+		return 0.0;
+	}
+	
 	public double predict_gun_heat(ScannedRobotEvent current, TimeCapsule history) {
 		// TODO
 		// based on past tests, info what is the gun heat?
+		return 0.0;
+	}
+	
+	public double predict_gun_heat(AdvancedRobot current, TimeCapsule history) {
+		// TODO
+		// based on past tests, what is the gun heat?
 		return 0.0;
 	}
 	
