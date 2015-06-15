@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import arc.model.RobotModel;
+import arc.model.TimeCapsule;
 import robocode.AdvancedRobot;
 import robocode.BattleEndedEvent;
 import robocode.BulletHitBulletEvent;
@@ -61,24 +62,62 @@ public class Fractal extends AdvancedRobot {
 		while (true)
 		{
 			// default actions. Overwrite with better ones
-			setTurnLeftRadians(0.0);
+			setTurnLeftRadians(driveStep().angular());
+			setAhead(driveStep().linear());
+			setTurnGunLeftRadians(gunStep());
+			double radarStep = radarStep();
+			System.out.println("radarStep "+radarStep);
+			setTurnRadarLeftRadians(radarStep);
 			setAhead(0.0);
 			
 			rm.update();
 			
-			
-			
-			/*
-			setTurnRadarLeftRadians(1.0);
-			setTurnRadarRightRadians(1.0);
-			setTurnGunLeftRadians(1.0);
-			setTurnGunRightRadians(1.0);
-			setTurnLeftRadians(1.0);
-			setTurnRightRadians(1.0);
-			*/
-			
 			execute();
 		}
+		/*
+		setTurnGunLeftRadians(1.0);
+		setTurnLeftRadians(1.0);
+		*/
+	}
+	/*
+	 * Step by Step updates
+	 */
+	
+	public Twist driveStep() {
+		return new Twist(0.0, 0.0);
+	}
+	
+	public double gunStep() {
+		return 0.0;
+	}
+	
+	public double radarStep() {
+		if(oneVoneAssumption) {
+			if(enemy.keySet().size() > 0) {
+				try {
+					RobotModel e = enemy.values().iterator().next();
+					TimeCapsule.StateVector last_observed = e.current_history().last().get(0);
+					
+					double target_x = last_observed.x();
+					double target_y = last_observed.y();
+					double dx = target_x - this.getX();
+					double dy = target_y - this.getY();
+					double target_angle = Math.atan2(dy, dx);
+					double current_angle = RobotModel.correct_angle(this.getRadarHeadingRadians());
+					double delta = RobotModel.minim(target_angle-current_angle);
+					double min = 0.00001;
+					if(delta >= 0.0 && delta < min) {
+						delta = min;
+					}
+					if(delta <= 0.0 && delta > -1 * min) {
+						delta = -1 * min;
+					}
+					return delta;
+				}
+				catch(IndexOutOfBoundsException ioobe){}
+			}
+		}
+		return Math.PI*2;
 	}
 	
 	/*
@@ -106,32 +145,6 @@ public class Fractal extends AdvancedRobot {
 	
 	public void onScannedRobot(ScannedRobotEvent sre) {
 		if(oneVoneAssumption) {
-			// keep tight radar
-			
-			// robot's current location
-			double x = RobotModel.getX(sre, getHeadingRadians(), getX());
-			double y = RobotModel.getY(sre, getHeadingRadians(), getY());
-			
-			// project it's location forward one step
-			x += Math.cos(sre.getHeadingRadians()) * sre.getVelocity();
-			y += Math.sin(sre.getHeadingRadians()) * sre.getVelocity();
-			System.out.println("c1: "+Math.atan2(y-getY(), x-getX())+" c2: "+RobotModel.correct_angle(getRadarHeadingRadians()));
-			double delta = Math.atan2(y-getY(), x-getX())-RobotModel.correct_angle(getRadarHeadingRadians());
-			System.out.println("Delta in: "+delta);
-			while(delta > 2*Math.PI) {
-				delta -= Math.PI*2;
-			}
-			while(delta < -2*Math.PI) {
-				delta += Math.PI*2;
-			}
-			if(delta > Math.PI) {
-				delta = Math.PI * -2 + delta; 
-			}
-			if(delta < -1*Math.PI) {
-				delta = Math.PI * 2 + delta;
-			}
-			System.out.println("Delta out: "+delta);
-			setTurnRadarLeftRadians(delta);
 			
 		}
 		//when my robot scans another robot
@@ -140,7 +153,7 @@ public class Fractal extends AdvancedRobot {
 			if (debug) {
 				System.out.println("SCANNED ROBOT: "+sre.getName());
 				System.out.println("sre heading: "+sre.getHeadingRadians());
-				System.out.println("sre correced: "+RobotModel.correct_angle(sre.getHeadingRadians()));
+				System.out.println("sre corrected: "+RobotModel.correct_angle(sre.getHeadingRadians()));
 			}
 			enemy.get(sre.getName()).update(sre, getHeadingRadians(), getX(), getY());
 		}

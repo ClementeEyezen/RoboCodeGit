@@ -128,6 +128,22 @@ public class RobotModel implements arc.model.Update {
 		double distance = sre.getDistance();
 		return frame_y + distance * Math.sin(bearing);
 	}
+	public static double minim(double delta) {
+		// minimizes to the smallest absolute magnitude equivalent angle
+		while(delta > 2*Math.PI) {
+			delta -= Math.PI*2;
+		}
+		while(delta < -2*Math.PI) {
+			delta += Math.PI*2;
+		}
+		if(delta > Math.PI) {
+			delta = Math.PI * -2 + delta; 
+		}
+		if(delta < -1*Math.PI) {
+			delta = Math.PI * 2 + delta;
+		}
+		return delta;
+	}
 	
 	// GETTERS and SETTERS
 	
