@@ -1,6 +1,5 @@
 package arc.model.motion;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,92 +7,38 @@ import java.util.List;
 import arc.model.RobotModel;
 import arc.model.TimeCapsule;
 import arc.model.Update;
-import arc.model.motions.CircularMotion;
+import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
 
 public class MotionModel implements Update {
-	
-	private MotionType most_likely;
 	
 	private List<MotionType> models;
 	
 	private RobotModel parent;
 	
-	public MotionModel(RobotModel parent) {
+	private MotionModel(RobotModel parent) {
 		// constructor
-		// models/calculates the motions of the parent robot
-		// two functions:
-		// 		provide domain knowledge about how the robot could move
-		// 		provide maximum likelihood fitting to a Motion Type
-		
 		models = new ArrayList<MotionType>();
-		//models.add(new StandStill());
-		models.add(new CircularMotion());
-		//models.add(new LinearMotion());
-		most_likely = models.get(0);
 		this.parent = parent;
 	}
-	@Override
-	public void update() {
-		for(MotionType mt : models) {
-			mt.update(parent.current_history());
-		}
-		for(MotionType mt : models) {
-			if(mt.running_rating > most_likely().running_rating) {
-				most_likely = mt;
-			}
-		}
-	}
-	public void test(ScannedRobotEvent sre, TimeCapsule updated_history) {
+	public MotionModel(MotionType mt) {
 		
-		// Test models for fit
-		// TODO check
-		/*
-			  sre.getBearingRadians() 
-	          sre.getDistance() 
-	          sre.getEnergy() 
-	          sre.getHeadingRadians() 
-	          sre.getName() 
-	          sre.getVelocity() 
-	          sre.getTime()
-		 */
-		if(!sre.getName().equals(parent.name())) return;
-		for(MotionType mt : models) {
-			mt.update_rating(updated_history);
-		}
-	}
-	public void test(TimeCapsule updated_history) {
-		// TODO test in the case of looking at self
-		/*
-		  	ar.getX() 
-        	ar.getY() 
-	        ar.getEnergy() 
-	        ar.getHeadingRadians() 
-	        ar.getName() 
-	        ar.getVelocity() 
-	        ar.getTime()
-		 */
 	}
 	
-	public MotionType most_likely() {
-		return most_likely;
+	@Override
+	public void update() {
+		// TODO
 	}
-	public MotionProjection ml_projection(long delta_time) {
-		// return the most likely projection for where the robot is going to be through future time
-		/*
-		 * Example Use:
-		 * Gun wants to fire at a power p that will hit the other robot after approx 10 turns
-		 * Asks for prediction out to 12 turns
-		 * If dist to prediction matches up for 10 turns, then shoot at that point
-		 * If dist is too close , check 9, 8 etc.
-		 * If dist is too far, check 11, 12 until a match
-		 * 
-		 * Shoot at the match
-		 */
-		MotionType likely = most_likely();
-		long current_time = parent.current_history().last_time();
-		return likely.project(parent.current_history(), current_time, delta_time);
+	public void update(ScannedRobotEvent sre) {
+		// TODO // Update on scan of other
 	}
+	public void update(AdvancedRobot ar) {
+		// TODO // Update on scan of self
+	}
+	
+	/*
+	 * MOTION PROPERTIES
+	 */
 	
 	public double max_velocity(TimeCapsule.StateVector state) {
 		if(state.velocity() >= 0) {
@@ -119,6 +64,10 @@ public class MotionModel implements Update {
 		}
 	}
 	
+	/*
+	 * EXAMPLE MotionType
+	 */
+	
 	class StandStill extends MotionType {
 		@Override
 		public MotionProjection project(TimeCapsule tc, long start_time, long time_forward) {
@@ -142,12 +91,6 @@ public class MotionModel implements Update {
 	}
 	
 	public void onPaint(Graphics2D g) {
-		try {
-			System.out.println("Paint ML");
-			ml_projection(20).onPaint(g, Color.ORANGE);
-		}
-		catch (NullPointerException npe){
-			
-		}
+		// TODO
 	}
 }
