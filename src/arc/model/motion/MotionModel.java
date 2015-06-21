@@ -2,7 +2,7 @@ package arc.model.motion;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.PriorityQueue;
 
 import arc.model.RobotModel;
 import arc.model.TimeCapsule;
@@ -12,18 +12,22 @@ import robocode.ScannedRobotEvent;
 
 public class MotionModel implements Update {
 	
-	private List<MotionType> models;
+	private PriorityQueue<MotionType> models;
 	
 	private RobotModel parent;
 	
-	private MotionModel(RobotModel parent) {
-		// constructor
-		models = new ArrayList<MotionType>();
+	public MotionModel(RobotModel parent, MotionType mt) {
 		this.parent = parent;
+		models = new PriorityQueue<MotionType>(1);
+		models.add(mt);
 	}
-	public MotionModel(MotionType mt) {
-		
+	public MotionModel(RobotModel parent, ArrayList<MotionType> almt) {
+		this(parent, almt.get(0));
 	}
+	
+	/*
+	 * UPDATE
+	 */
 	
 	@Override
 	public void update() {
@@ -31,9 +35,15 @@ public class MotionModel implements Update {
 	}
 	public void update(ScannedRobotEvent sre) {
 		// TODO // Update on scan of other
+		if(sre.getName().equals(parent.name())) {
+			// This is where tests to determine the fit of a model are run
+		}
 	}
 	public void update(AdvancedRobot ar) {
 		// TODO // Update on scan of self
+		if(ar.getName().equals(parent.name())) {
+			// This is where tests to determine the fit of a model are run
+		}
 	}
 	
 	/*

@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.util.Random;
 
 import arc.model.motion.MotionModel;
+import arc.model.motions.CircularMotion;
 import arc.model.target.TargettingModel;
 import robocode.AdvancedRobot;
 import robocode.HitByBulletEvent;
@@ -56,7 +57,7 @@ public class RobotModel implements arc.model.Update {
 		tc.update(0, ener, g_hd, g_ht, head, velo, x, y);
 		
 		// Set up auxilary features
-		this.mm = new MotionModel(this);
+		this.mm = new MotionModel(this, new CircularMotion());
 		this.tm = new TargettingModel(this);
 		
 		// Generate random color for paint purposes
@@ -89,6 +90,7 @@ public class RobotModel implements arc.model.Update {
 					tm.predict_gun_heading(sre, tc), tm.predict_gun_heat(sre, tc), 
 					correct_angle(sre.getHeadingRadians()), sre.getVelocity(),
 					getX(sre,self_h, self_x), getY(sre, self_h, self_y));
+			mm.update(sre);
 		}
 	}
 	
@@ -98,6 +100,7 @@ public class RobotModel implements arc.model.Update {
 					tm.predict_gun_heading(self, tc), tm.predict_gun_heat(self, tc),
 					correct_angle(self.getHeadingRadians()), self.getVelocity(),
 					self.getX(), self.getY());
+			mm.update(self);
 		}
 	}
 	
