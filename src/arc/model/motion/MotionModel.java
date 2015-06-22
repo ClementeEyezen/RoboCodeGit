@@ -2,7 +2,10 @@ package arc.model.motion;
 
 import java.awt.Graphics2D;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.PriorityQueue;
+import java.util.Queue;
 
 import arc.model.RobotModel;
 import arc.model.TimeCapsule;
@@ -14,14 +17,19 @@ public class MotionModel implements Update {
 	
 	private PriorityQueue<MotionType> models;
 	
+	private HashMap<MotionType, Queue<MotionProjection>> projections;
+	
 	private RobotModel parent;
 	
 	public MotionModel(RobotModel parent, MotionType mt) {
 		this.parent = parent;
-		models = new PriorityQueue<MotionType>(1);
+		models = new PriorityQueue<MotionType>(1); // TODO add ordering
 		models.add(mt);
+		projections = new HashMap<MotionType, Queue<MotionProjection>>();
+		projections.put(mt, new LinkedList<MotionProjection>());
 	}
 	public MotionModel(RobotModel parent, ArrayList<MotionType> almt) {
+		// TODO update for multiple competing robot models
 		this(parent, almt.get(0));
 	}
 	
@@ -31,19 +39,55 @@ public class MotionModel implements Update {
 	
 	@Override
 	public void update() {
-		// TODO
+		for(MotionType mt : models) {
+			mt.update();
+			
+			while(projections.get(mt).element().expired()) {
+				test(mt, projections.get(mt).remove());
+			}
+		}
 	}
 	public void update(ScannedRobotEvent sre) {
-		// TODO // Update on scan of other
 		if(sre.getName().equals(parent.name())) {
-			// This is where tests to determine the fit of a model are run
+			for(MotionType mt: models) {
+				// update types
+				mt.update(sre);
+				
+				// create predictions
+				MotionProjection mp = mt.project(parent.current_history(), 10);
+				
+				// put it in the list of projections to check later
+				boolean success = projections.get(mt).offer(mp);
+				if(!success) {
+					System.out.println("Failed to add projection to FIFO for "+mt);
+				}
+			}
 		}
 	}
 	public void update(AdvancedRobot ar) {
-		// TODO // Update on scan of self
 		if(ar.getName().equals(parent.name())) {
-			// This is where tests to determine the fit of a model are run
+			for(MotionType mt: models) {
+				// update types
+				mt.update(ar);
+				
+				// create predictions
+				MotionProjection mp = mt.project(parent.current_history(), 10);
+				
+				// put it in the list of projections to check later
+				boolean success = projections.get(mt).offer(mp);
+				if(!success) {
+					System.out.println("Failed to add projection to FIFO for "+mt);
+				}
+			}
 		}
+	}
+	
+	/*
+	 * TESTING PROJECTIONS
+	 */
+	public double test(MotionType projector, MotionProjection expired_projection) {
+		// TODO fix
+		return 1.0;
 	}
 	
 	/*
@@ -80,7 +124,8 @@ public class MotionModel implements Update {
 	
 	class StandStill extends MotionType {
 		@Override
-		public MotionProjection project(TimeCapsule tc, long start_time, long time_forward) {
+		public MotionProjection project(TimeCapsule tc, long time_forward) {
+			long start_time = tc.last_time();
 			System.out.println("time forward");
 			double[] x = new double[(int)time_forward];
 			double[] y = new double[(int)time_forward];

@@ -76,6 +76,11 @@ public class MotionProjection {
 		
 	}
 	
+	public boolean expired() {
+		// TODO
+		return false;
+	}
+	
 	public void onPaint(Graphics2D g, Color c) {
 		g.setColor(c);
 		for(Triple<Double,Double,Long> trip : forward) {
