@@ -12,13 +12,20 @@ public class OnePassCircular extends MotionType {
 
 	TimeCapsule data;
 	
-	int projection_length = 15;
+	int max_time;
 	
-	double average_linear;
-	double average_angular;
+	double[] average_linear;
+	double[] average_angular;
 	
-	public OnePassCircular(TimeCapsule data_source) {
+	public OnePassCircular(TimeCapsule data_source, int max_length) {
 		data = data_source;
+		max_time = max_length;
+		average_linear = new double[max_time];
+		average_angular = new double[max_time];
+		for(int i = 0; i < max_time; i++) {
+			average_linear[i] = 0.0;
+			average_angular[i] = 0.0;
+		}
 	}
 	
 	@Override
@@ -41,9 +48,11 @@ public class OnePassCircular extends MotionType {
 			double new_ang = (last.get(1).heading() - last.get(0).heading()) / 
 					(last.get(1).time() - last.get(0).time());
 			
-			// Trailing moving average of the last few data points
-			average_linear = (new_lin+average_linear*projection_length)/(projection_length+1);
-			average_angular = (new_ang+average_angular*projection_length)/(projection_length+1);
+			// Trailing moving average over 0..max_time-1 trailing averages
+			for(int i = 0; i < max_time; i++) {
+				average_linear[i] = (new_lin+average_linear[i]*i)/(i+1);
+				average_angular[i] = (new_ang+average_angular[i]*i)/(i+1);
+			}
 		}
 	}
 
