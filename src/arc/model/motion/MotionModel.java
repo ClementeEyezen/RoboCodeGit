@@ -161,6 +161,15 @@ public class MotionModel implements Update {
 			}
 			return new MotionProjection(x,y,t);
 		}
+
+		@Override
+		public void update() {}
+
+		@Override
+		public void update(ScannedRobotEvent sre) {}
+
+		@Override
+		public void update(AdvancedRobot ar) {}
 	}
 	
 	public void onPaint(Graphics2D g) {
