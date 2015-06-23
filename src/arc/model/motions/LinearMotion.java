@@ -1,5 +1,7 @@
 package arc.model.motions;
 
+import robocode.AdvancedRobot;
+import robocode.ScannedRobotEvent;
 import arc.model.TimeCapsule;
 import arc.model.motion.MotionProjection;
 import arc.model.motion.MotionType;
@@ -7,11 +9,12 @@ import arc.model.motion.MotionType;
 public class LinearMotion extends MotionType {
 
 	@Override
-	public MotionProjection project(TimeCapsule tc, long start_time,
-			long time_forward) {
+	public MotionProjection project(TimeCapsule tc, long time_forward) {
 		double[] x = new double[(int) time_forward];
 		double[] y = new double[(int) time_forward];
 		long[] t = new long[(int) time_forward];
+		
+		long start_time = tc.last_time();
 		
 		TimeCapsule.StateVector start_data = tc.last().get(0);
 		int t_offset = (int) start_time - (int) start_data.time();
@@ -33,6 +36,24 @@ public class LinearMotion extends MotionType {
 		}
 		
 		return new MotionProjection(x, y, t);
+	}
+
+	@Override
+	public void update() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update(ScannedRobotEvent sre) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update(AdvancedRobot ar) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

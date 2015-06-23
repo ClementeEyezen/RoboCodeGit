@@ -12,4 +12,9 @@ public abstract class MotionType implements Update {
 	public abstract void update(AdvancedRobot ar);
 
 	public abstract MotionProjection project(TimeCapsule tc, long time_forward);
+	
+	protected final double correct_angle(double head_or_bear) {
+		//return head_or_bear;
+		return -1*head_or_bear + Math.PI/2;
+	}
 }
