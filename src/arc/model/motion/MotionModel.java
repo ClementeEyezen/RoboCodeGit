@@ -83,6 +83,24 @@ public class MotionModel implements Update {
 	}
 	
 	/*
+	 * MAKE PREDICTIONS
+	 */
+	
+	public ArrayList<MotionProjection> predict(int time_forward) {
+		ArrayList<MotionProjection> result = new ArrayList<MotionProjection>();
+		result.add(models.element().project(parent.current_history(), time_forward));
+		return result;
+	}
+	
+	public ArrayList<MotionProjection> predict(int time_forward, int num_predictions) {
+		ArrayList<MotionProjection> results = new ArrayList<MotionProjection>();
+		for(int i = 0; i < num_predictions; i++) {
+			results.addAll(predict(time_forward));
+		}
+		return results;
+	}
+	
+	/*
 	 * TESTING PROJECTIONS
 	 */
 	public double test(MotionType projector, MotionProjection expired_projection) {
