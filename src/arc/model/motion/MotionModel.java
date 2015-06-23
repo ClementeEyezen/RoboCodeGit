@@ -41,8 +41,8 @@ public class MotionModel implements Update {
 	public void update() {
 		for(MotionType mt : models) {
 			mt.update();
-			
-			while(projections.get(mt).element().expired()) {
+			long current_time = parent.current_history().last_time();
+			while(projections.get(mt).element().expired(current_time)) {
 				test(mt, projections.get(mt).remove());
 			}
 		}
