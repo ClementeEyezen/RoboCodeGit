@@ -7,7 +7,7 @@ import arc.model.Update;
 
 public abstract class MotionType implements Update {
 	
-	protected TimeCapsule data;
+	public TimeCapsule data;
 	
 	public MotionType(TimeCapsule tc) {
 		data = tc;

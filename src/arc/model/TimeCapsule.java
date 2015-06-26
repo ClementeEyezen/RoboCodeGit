@@ -134,6 +134,11 @@ public class TimeCapsule implements Update {
 	
 	// UTILITIES
 	
+	public StateVector sv_create(double t, double e, double ght, double ghd, 
+			double head, double vel, double x, double y) {
+		return new StateVector(t,e,ght,ghd,head,vel,x,y);
+	}
+	
 	private int search(long time, boolean before) {
 		// performs binary search to find the element at time.
 		// 	if there is not an element at the time, it returns the index
