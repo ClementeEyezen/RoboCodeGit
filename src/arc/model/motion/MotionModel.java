@@ -141,6 +141,10 @@ public class MotionModel implements Update {
 	 */
 	
 	class StandStill extends MotionType {
+		public StandStill(TimeCapsule tc) {
+			super(tc);
+		}
+
 		@Override
 		public MotionProjection project(TimeCapsule tc, long time_forward) {
 			long start_time = tc.last_time();

@@ -9,6 +9,10 @@ import arc.model.motion.MotionProjection;
 import arc.model.motion.MotionType;
 
 public class CircularMotion extends MotionType {
+	public CircularMotion(TimeCapsule tc) {
+		super(tc);
+	}
+
 	@Override
 	public MotionProjection project(TimeCapsule tc, long time_forward) {
 		

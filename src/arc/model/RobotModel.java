@@ -57,7 +57,7 @@ public class RobotModel implements arc.model.Update {
 		tc.update(0, ener, g_hd, g_ht, head, velo, x, y);
 		
 		// Set up auxilary features
-		this.mm = new MotionModel(this, new CircularMotion());
+		this.mm = new MotionModel(this, new CircularMotion(current_history()));
 		this.tm = new TargettingModel(this);
 		
 		// Generate random color for paint purposes

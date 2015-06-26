@@ -10,14 +10,13 @@ import arc.model.motion.MotionType;
 
 public class OnePassCircular extends MotionType {
 
-	TimeCapsule data;
-	
 	int max_time;
 	
 	double[] average_linear;
 	double[] average_angular;
 	
 	public OnePassCircular(TimeCapsule data_source, int max_length) {
+		super(data_source);
 		data = data_source;
 		max_time = max_length;
 		average_linear = new double[max_time];

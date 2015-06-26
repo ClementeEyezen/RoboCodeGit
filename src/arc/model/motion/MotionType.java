@@ -7,6 +7,12 @@ import arc.model.Update;
 
 public abstract class MotionType implements Update {
 	
+	protected TimeCapsule data;
+	
+	public MotionType(TimeCapsule tc) {
+		data = tc;
+	}
+	
 	public abstract void update();
 	public abstract void update(ScannedRobotEvent sre);
 	public abstract void update(AdvancedRobot ar);

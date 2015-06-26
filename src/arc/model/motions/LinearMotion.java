@@ -8,6 +8,10 @@ import arc.model.motion.MotionType;
 
 public class LinearMotion extends MotionType {
 
+	public LinearMotion(TimeCapsule tc) {
+		super(tc);
+	}
+
 	@Override
 	public MotionProjection project(TimeCapsule tc, long time_forward) {
 		double[] x = new double[(int) time_forward];
