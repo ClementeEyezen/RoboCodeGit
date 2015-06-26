@@ -1,5 +1,7 @@
 package arc.model.motions;
 
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Random;
 
 import robocode.AdvancedRobot;
@@ -12,12 +14,13 @@ public class ProbableAction extends MotionType {
 	
 	Random random;
 	
-	
+	HashMap<Pair<Integer,Integer>, HashMap<Pair<Integer,Integer>, Double>> transition_map;
 	
 
 	public ProbableAction(TimeCapsule data_source) {
 		super(data_source);
 		random = new Random();
+		transition_map = new HashMap<Pair<Integer,Integer>, HashMap<Pair<Integer,Integer>, Double>>();
 	}
 
 	/* UPDATE */
@@ -26,14 +29,17 @@ public class ProbableAction extends MotionType {
 	public void update() {}
 	@Override
 	public void update(ScannedRobotEvent sre) {
-		include_new_state(data.last().get(0));
+		include_new_state(data.last().get(0), data.last().get(1));
 	}
 	@Override
 	public void update(AdvancedRobot ar) {
-		include_new_state(data.last().get(0));
+		include_new_state(data.last().get(0), data.last().get(1));
 	}
-	public void include_new_state(TimeCapsule.StateVector sv) {
-		// TODO Fill in method
+	public void include_new_state(TimeCapsule.StateVector s0, TimeCapsule.StateVector s1) {
+		int v = round_zero(s1.velocity());
+		int omega = round_zero(s1.heading() - s0.heading());
+		
+		
 	}
 
 	/* PROJECT */
@@ -81,6 +87,15 @@ public class ProbableAction extends MotionType {
 		return s0.y();
 	}
 	
+	// UTILITIES
+	
+	public int round_zero(double val) {
+	    if (val < 0) {
+	        return (int) Math.ceil(val);
+	    }
+	    return (int) Math.floor(val);
+	}
+	
 	
 	
 	/* TEST Probable Action */
@@ -97,4 +112,13 @@ public class ProbableAction extends MotionType {
 			System.out.println("Failed test.");
 	}
 
+	
+	class Pair<T,U> {
+		T t;
+		U u;
+		public Pair(T t_, U u_) {
+			t = t_;
+			u = u_;
+		}
+	}
 }
