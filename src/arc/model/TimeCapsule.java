@@ -228,12 +228,37 @@ public class TimeCapsule implements Update {
 		}
 	}
 	
+	/* TIME CAPSULE QUICK ACCESS */
+	
 	public long last_time() {
 		ArrayList<StateVector> l = last();
 		return (l.size() > 0) ? 
 					((long) l.get(0).time()) : 
 					((long) 0);
 	}
+	
+	public long last_x() {
+		ArrayList<StateVector> l = last();
+		return (l.size() > 0) ? 
+					((long) l.get(0).x()) : 
+					((long) 0);
+	}
+	
+	public long last_y() {
+		ArrayList<StateVector> l = last();
+		return (l.size() > 0) ? 
+					((long) l.get(0).y()) : 
+					((long) 0);
+	}
+	
+	public long last_heading() {
+		ArrayList<StateVector> l = last();
+		return (l.size() > 0) ? 
+					((long) l.get(0).heading()) : 
+					((long) 0);
+	}
+	
+	/* VISUALS */
 	
 	public void onPaint(Graphics2D g) {
 		// TODO Auto-generated method stub
