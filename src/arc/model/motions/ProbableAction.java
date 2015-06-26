@@ -11,6 +11,9 @@ import arc.model.motion.MotionType;
 public class ProbableAction extends MotionType {
 	
 	Random random;
+	
+	
+	
 
 	public ProbableAction(TimeCapsule data_source) {
 		super(data_source);
@@ -41,14 +44,42 @@ public class ProbableAction extends MotionType {
 		double[] y = new double[(int) time_forward];
 		long[] t = new long[(int) time_forward];
 		
-		x[0] = tc.last().get(0).x();
-		y[0] = tc.last().get(0).y();
-		t[0] = tc.last_time();
+		TimeCapsule.StateVector state = tc.last().get(0);
+		for(int i = 0; i < time_forward; i++) {
+			x[i] = state.x();
+			y[i] = state.y();
+			t[i] = (long) state.time();
+			
+			state = transition(state);
+		}
 		
 		return new MotionProjection(x, y, t);
 	}
 	
+	public TimeCapsule.StateVector transition(TimeCapsule.StateVector s0) {
+		// defines a transition from an initial state s0 to the returned state s1;
+		TimeCapsule.StateVector s1 = data.sv_create(s0.time()+1, -1, 
+				-1, -1, heading(s0), velocity(s0), x(s0), y(s0));
+		
+		return s1;
+	}
 	
+	public double velocity(TimeCapsule.StateVector s0) {
+		// calculate a new velocity based on the old state
+		return s0.velocity();
+	}
+	public double heading(TimeCapsule.StateVector s0) {
+		// calculate a new heading based on the old state
+		return s0.heading();
+	}
+	public double x(TimeCapsule.StateVector s0) {
+		// calculate a new x based on the old state
+		return s0.x();
+	}
+	public double y(TimeCapsule.StateVector s0) {
+		// calculate a new y based on the old state
+		return s0.y();
+	}
 	
 	
 	
