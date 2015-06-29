@@ -91,14 +91,6 @@ public class ProbableAction extends MotionType {
 		// calculate a new heading based on the old state
 		return transition_map.find(s0, s1, random.nextDouble()).u()+s1.heading();
 	}
-	public double x(TimeCapsule.StateVector s0) {
-		// calculate a new x based on the old state
-		return s0.x();
-	}
-	public double y(TimeCapsule.StateVector s0) {
-		// calculate a new y based on the old state
-		return s0.y();
-	}
 	
 	// UTILITIES
 	
