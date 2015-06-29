@@ -33,7 +33,7 @@ public abstract class TransitionMotionType extends MotionType {
 			t[i] = (long) state1.time();
 			
 			state0 = state1.deepCopy();
-			state1 = transition(state1, state0);
+			state1 = transition(state0, state1);
 		}
 		
 		return new MotionProjection(x, y, t);
