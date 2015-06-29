@@ -2,16 +2,14 @@ package arc.model.motions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Random;
 
 import robocode.AdvancedRobot;
 import robocode.ScannedRobotEvent;
 import arc.model.TimeCapsule;
-import arc.model.motion.MotionProjection;
-import arc.model.motion.MotionType;
+import arc.model.motion.TransitionMotionType;
 
-public class ProbableAction extends MotionType {
+public class ProbableAction extends TransitionMotionType {
 	
 	Random random;
 	
@@ -37,7 +35,7 @@ public class ProbableAction extends MotionType {
 		ArrayList<TimeCapsule.StateVector> datal = data.last(3);
 		include_new_state(datal.get(0), datal.get(1), datal.get(2));
 	}
-	public void include_new_state(TimeCapsule.StateVector s0, TimeCapsule.StateVector s1, TimeCapsule.StateVector s2) {
+	private void include_new_state(TimeCapsule.StateVector s0, TimeCapsule.StateVector s1, TimeCapsule.StateVector s2) {
 		// data from last state
 		int v0 = (int) Math.floor(s1.velocity());
 		int omega0 = (int) Math.floor(s1.heading() - s0.heading());
@@ -51,42 +49,16 @@ public class ProbableAction extends MotionType {
 		transition_map.put(state0, state1);
 	}
 
-	/* PROJECT */
+	/* TRANSITION VARIABLES */
 	
 	@Override
-	public MotionProjection project(TimeCapsule tc, long time_forward) {
-		double[] x = new double[(int) time_forward];
-		double[] y = new double[(int) time_forward];
-		long[] t = new long[(int) time_forward];
-		
-		TimeCapsule.StateVector state1 = tc.last(2).get(1);
-		TimeCapsule.StateVector state0 = tc.last(2).get(0);
-		for(int i = 0; i < time_forward; i++) {
-			x[i] = state1.x();
-			y[i] = state1.y();
-			t[i] = (long) state1.time();
-			
-			state0 = state1.deepCopy();
-			state1 = transition(state1, state0);
-		}
-		
-		return new MotionProjection(x, y, t);
-	}
-	
-	public TimeCapsule.StateVector transition(TimeCapsule.StateVector s0, TimeCapsule.StateVector s1) {
-		// defines a transition from an initial state s0 to the returned state s1;
-		double head2 = heading(s0, s1);
-		double vel2 = velocity(s0, s1);
-		double x = s1.x()+vel2*Math.cos(head2);
-		double y = s1.y()+vel2*Math.sin(head2);
-		return data.sv_create(s1.time()+1, -1, -1, -1, head2, vel2, x, y);
-	}
-	
 	public double velocity(TimeCapsule.StateVector s0, TimeCapsule.StateVector s1) {
 		// calculate a new velocity based on the old state
 		double r_val = random.nextDouble();
 		return transition_map.find(s0, s1, r_val).t();
 	}
+	
+	@Override
 	public double heading(TimeCapsule.StateVector s0, TimeCapsule.StateVector s1) {
 		// calculate a new heading based on the old state
 		return transition_map.find(s0, s1, random.nextDouble()).u()+s1.heading();
@@ -96,7 +68,7 @@ public class ProbableAction extends MotionType {
 	
 	/* TEST Probable Action */
 
-	public static boolean test() {
+	private static boolean test() {
 		return true;
 	}
 	
