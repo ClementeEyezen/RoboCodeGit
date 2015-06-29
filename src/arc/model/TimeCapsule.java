@@ -294,6 +294,9 @@ public class TimeCapsule implements Update {
 			set_x(x);
 			set_y(y);
 		}
+		public StateVector deepCopy() {
+			return new StateVector(time(), energy(), gun_heading(), gun_heat(), heading(), velocity(), x(), y());
+		}
 		public double time() {
 			return state_vec[0];
 		}
