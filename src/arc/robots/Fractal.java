@@ -7,6 +7,7 @@ import java.util.Map;
 
 import arc.model.RobotModel;
 import arc.model.TimeCapsule;
+import arc.model.motion.MotionProjection;
 import robocode.AdvancedRobot;
 import robocode.BattleEndedEvent;
 import robocode.BulletHitBulletEvent;
@@ -87,7 +88,39 @@ public class Fractal extends AdvancedRobot {
 		return new Twist(0.0, 0.0);
 	}
 	
-	public double gunStep() {
+	public double gunStep() { 
+		// TARGETTING
+		if(oneVoneAssumption) {
+			// no heatwave
+			double bulletPower = 1.0;
+			double b_vel = 20 - 3 * bulletPower;
+			double x = this.getX(); 
+			double y = this.getY();
+			
+			MotionProjection future = rm.mm().predict(20).get(0);
+			
+			double e_x = 0, e_y = 0;
+			
+			for(int i = 0; i < 20; i++) {
+				double travel_dist = b_vel*i;
+				MotionProjection.Triple<Double,Double,Long> point = future.get(i);
+				e_x = point.x();
+				e_y = point.y();
+				if(distance(e_x-x, e_y-y) < travel_dist) {
+					// found target point
+					break;
+				}
+			}
+			
+			double new_heading = Math.atan2(e_y-y, e_x-x);
+			double curr_heading = this.getGunHeadingRadians();
+			return new_heading - curr_heading;
+			
+		}
+		else {
+			// HEATWAVE
+			// TODO heatwave
+		}
 		return 0.0;
 	}
 	
@@ -134,6 +167,10 @@ public class Fractal extends AdvancedRobot {
 	{
 		// body, gun, radar, bullet, scan arc
 		this.setColors(c, c, c, c, c);
+	}
+	
+	public double distance(double x, double y) {
+		return Math.sqrt(x*x-y*y);
 	}
 	
 	/*
@@ -211,6 +248,5 @@ public class Fractal extends AdvancedRobot {
 			e.onPaint(g);
 		}
 	}
-	
 	
 }

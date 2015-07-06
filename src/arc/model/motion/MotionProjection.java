@@ -22,6 +22,10 @@ public class MotionProjection {
 		return end_time <= current_time;
 	}
 	
+	public Triple<Double, Double, Long> get(int i) {
+		return forward.get(i);
+	}
+	
 	public class Triple<X, Y, T> {
 		X x;
 		Y y;
@@ -30,6 +34,16 @@ public class MotionProjection {
 			x = one;
 			y = two;
 			t = three;
+		}
+		
+		public X x() {
+			return x;
+		}
+		public Y y() {
+			return y;
+		}
+		public T t() {
+			return t;
 		}
 	}
 	

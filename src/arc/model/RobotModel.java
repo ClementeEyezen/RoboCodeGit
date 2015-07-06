@@ -166,6 +166,9 @@ public class RobotModel implements arc.model.Update {
 	public TargettingModel tm() {
 		return tm;
 	}
+	public MotionModel mm() {
+		return mm;
+	}
 	public String name() {
 		return name;
 	}
