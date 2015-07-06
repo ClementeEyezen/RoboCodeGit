@@ -1,4 +1,4 @@
-package arc.robots;
+package arc.model;
 
 public class Twist {
 	double linear_velocity;
