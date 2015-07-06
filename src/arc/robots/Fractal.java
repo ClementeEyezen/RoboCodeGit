@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import arc.model.RobotModel;
+import arc.model.TargetSolution;
 import arc.model.TimeCapsule;
+import arc.model.Twist;
 import arc.model.motion.MotionProjection;
 import robocode.AdvancedRobot;
 import robocode.BattleEndedEvent;
@@ -29,6 +31,7 @@ public class Fractal extends AdvancedRobot {
 	double time;
 	
 	boolean debug = true;
+	boolean fire_gun = false;
 	
 	boolean oneVoneAssumption = true;
 	
@@ -63,12 +66,17 @@ public class Fractal extends AdvancedRobot {
 		while (true)
 		{
 			// default actions. Overwrite with better ones
-			setTurnLeftRadians(driveStep().angular());
-			setAhead(driveStep().linear());
-			setTurnGunLeftRadians(gunStep());
-			double radarStep = radarStep();
-			System.out.println("radarStep "+radarStep);
-			setTurnRadarLeftRadians(radarStep);
+			Twist cmd_vel = driveStep();
+			setTurnLeftRadians(cmd_vel.angular());
+			setAhead(cmd_vel.linear());
+			TargetSolution ts = gunStep();
+			setTurnGunLeftRadians(ts.heading()-getGunHeadingRadians());
+			
+			setTurnRadarLeftRadians(radarStep());
+			if(fire_gun) {
+				System.out.println("Trying to fire gun...");
+				this.fire(1.0);
+			}
 			setAhead(0.0);
 			
 			rm.update();
@@ -88,7 +96,7 @@ public class Fractal extends AdvancedRobot {
 		return new Twist(0.0, 0.0);
 	}
 	
-	public double gunStep() { 
+	public TargetSolution gunStep() { 
 		// TARGETTING
 		if(oneVoneAssumption) {
 			// no heatwave
@@ -114,14 +122,17 @@ public class Fractal extends AdvancedRobot {
 			
 			double new_heading = Math.atan2(e_y-y, e_x-x);
 			double curr_heading = this.getGunHeadingRadians();
-			return new_heading - curr_heading;
+			if(new_heading - curr_heading < .005) {
+				return new TargetSolution(true, new_heading, bulletPower);
+			}
+			return new TargetSolution(false, new_heading, bulletPower);
 			
 		}
 		else {
 			// HEATWAVE
 			// TODO heatwave
 		}
-		return 0.0;
+		return new TargetSolution(false, 0.0, 1.0);
 	}
 	
 	public double radarStep() {
