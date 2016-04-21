@@ -31,7 +31,10 @@ public class Vis extends AdvancedRobot{
 		boolean oneVoneAssumption = true;
 		
 		// Robot Properties
-		Bot rm;
+		Bot bot;
+		Driver d;
+		Gunner g;
+		Raddar r;
 		
 		// Enemy Robots
 		Map<String, Bot> bots;
@@ -51,27 +54,25 @@ public class Vis extends AdvancedRobot{
 			setTurnRadarRightRadians(Math.PI*2);
 			while(getRadarTurnRemainingRadians() > 0.005) {
 				// While the robot is doing it's initial scan
-				rm.update();
+				bot.update(this);
 				execute();
 			}
 			
 			while (true)
 			{
 				// default actions. Overwrite with better ones
-				Twist cmd_vel = driveStep();
-				setTurnLeftRadians(cmd_vel.angular());
-				setAhead(cmd_vel.linear());
-				TargetSolution ts = gunStep();
-				setTurnGunLeftRadians(ts.heading()-getGunHeadingRadians());
+				setTurnLeftRadians(d.angular());
+				setAhead(d.linear());
 				
-				setTurnRadarLeftRadians(radarStep());
-				if(fire_gun) {
+				setTurnGunLeftRadians(g.angular());
+				
+				setTurnRadarLeftRadians(r.angular());
+				if(r.fire()) {
 					System.out.println("Trying to fire gun...");
 					this.fire(1.0);
 				}
-				setAhead(0.0);
 				
-				rm.update();
+				bot.update(this);
 				
 				execute();
 			}
@@ -83,78 +84,6 @@ public class Vis extends AdvancedRobot{
 		/*
 		 * Step by Step updates
 		 */
-		
-		public Twist driveStep() {
-			return new Twist(0.0, 0.0);
-		}
-		
-		public TargetSolution gunStep() { 
-			// TARGETTING
-			if(oneVoneAssumption) {
-				// no heatwave
-				double bulletPower = 1.0;
-				double b_vel = 20 - 3 * bulletPower;
-				double x = this.getX(); 
-				double y = this.getY();
-				
-				MotionProjection future = rm.mm().predict(20).get(0);
-				
-				double e_x = 0, e_y = 0;
-				
-				for(int i = 0; i < 20; i++) {
-					double travel_dist = b_vel*i;
-					MotionProjection.Triple<Double,Double,Long> point = future.get(i);
-					e_x = point.x();
-					e_y = point.y();
-					if(distance(e_x-x, e_y-y) < travel_dist) {
-						// found target point
-						break;
-					}
-				}
-				
-				double new_heading = Math.atan2(e_y-y, e_x-x);
-				double curr_heading = this.getGunHeadingRadians();
-				if(new_heading - curr_heading < .005) {
-					return new TargetSolution(true, new_heading, bulletPower);
-				}
-				return new TargetSolution(false, new_heading, bulletPower);
-				
-			}
-			else {
-				// HEATWAVE
-				// TODO heatwave
-			}
-			return new TargetSolution(false, 0.0, 1.0);
-		}
-		
-		public double radarStep() {
-			if(oneVoneAssumption) {
-				if(enemy.keySet().size() > 0) {
-					try {
-						RobotModel e = enemy.values().iterator().next();
-						TimeCapsule.StateVector last_observed = e.current_history().last().get(0);
-						
-						double target_x = last_observed.x();
-						double target_y = last_observed.y();
-						double dx = target_x - this.getX();
-						double dy = target_y - this.getY();
-						double target_angle = Math.atan2(dy, dx);
-						double current_angle = RobotModel.correct_angle(this.getRadarHeadingRadians());
-						double delta = RobotModel.minim(target_angle-current_angle);
-						double min = 0.00001;
-						if(delta >= 0.0 && delta < min) {
-							delta = min;
-						}
-						if(delta <= 0.0 && delta > -1 * min) {
-							delta = -1 * min;
-						}
-						return delta;
-					}
-					catch(IndexOutOfBoundsException ioobe){}
-				}
-			}
-			return Math.PI*2;
-		}
 		
 		/*
 		 * Utilities
@@ -188,19 +117,18 @@ public class Vis extends AdvancedRobot{
 				
 			}
 			//when my robot scans another robot
-			if(enemy.containsKey(sre.getName())) {
+			if(bots.containsKey(sre.getName())) {
 				// if the robot is already tracked
 				if (debug) {
 					System.out.println("SCANNED ROBOT: "+sre.getName());
 					System.out.println("sre heading: "+sre.getHeadingRadians());
-					System.out.println("sre corrected: "+RobotModel.correct_angle(sre.getHeadingRadians()));
 				}
-				enemy.get(sre.getName()).update(sre, getHeadingRadians(), getX(), getY());
+				bots.get(sre.getName()).update(this, sre);
 			}
 			else {
 				if (debug) System.out.println("CREATED ROBOT MODEL: " + sre.getName());
-				RobotModel new_scan = new RobotModel(sre, this);
-				enemy.put(sre.getName(), new_scan);
+				Bot new_scan = new Bot(this, sre);
+				bots.put(sre.getName(), new_scan);
 			}
 			//rm.update(sre, getHeadingRadians(), getX(), getY());
 		}
@@ -215,7 +143,7 @@ public class Vis extends AdvancedRobot{
 		}
 		public void onHitByBullet(HitByBulletEvent hbbe) {
 			// when my robot is hit by another bullet
-			rm.update(hbbe);
+			bot.update(this, hbbe);
 		}
 		public void onHitRobot(HitRobotEvent hre) {
 			// when my robot hits another robot
@@ -246,9 +174,5 @@ public class Vis extends AdvancedRobot{
 		public void onPaint(Graphics2D g) {
 			// when my robot is painted
 			System.out.println("Print Robot Model");
-			rm.onPaint(g);
-			for (RobotModel e : enemy.values()) {
-				e.onPaint(g);
-			}
 		}
 }
