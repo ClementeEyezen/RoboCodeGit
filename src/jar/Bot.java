@@ -1,8 +1,10 @@
 package jar;
 
 import robocode.AdvancedRobot;
+import robocode.BulletHitBulletEvent;
 import robocode.BulletHitEvent;
 import robocode.HitByBulletEvent;
+import robocode.HitRobotEvent;
 import robocode.ScannedRobotEvent;
 
 public class Bot {
@@ -75,5 +77,15 @@ public class Bot {
 	public double lastHeading() {
 		// TODO
 		return 0.0;
+	}
+
+	public void update(Vis self, BulletHitBulletEvent bhbe) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void update(Vis self, HitRobotEvent hre) {
+		// TODO Auto-generated method stub
+		
 	}
 }

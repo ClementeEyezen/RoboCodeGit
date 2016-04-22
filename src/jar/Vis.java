@@ -174,7 +174,17 @@ public class Vis extends AdvancedRobot{
 			
 			double myVelocity = myBullet.getVelocity();
 			double otherVelocity = otherBullet.getVelocity();
+			bot.update(this, bhbe);
+			BulletHitBulletEvent flipped = flipBHBE(bhbe);
+			if (bots.containsKey(otherName)) {
+				// simulate a bullet hit bullet event for another robot
+				bots.get(otherName).update(this, flipped);
+			}
 		}
+		private BulletHitBulletEvent flipBHBE(BulletHitBulletEvent bhbe) {
+			return new BulletHitBulletEvent(bhbe.getHitBullet(), bhbe.getBullet());
+		}
+
 		public void onBulletMissed(BulletMissedEvent bme) {
 			// when my bullet hits the wall (misses)
 			Bullet myBullet = bme.getBullet();
@@ -186,10 +196,33 @@ public class Vis extends AdvancedRobot{
 		public void onHitByBullet(HitByBulletEvent hbbe) {
 			// when my robot is hit by another bullet
 			bot.update(this, hbbe);
+			String otherName = hbbe.getName();
+			
+			BulletHitEvent flipped = toBulletHitEvent(hbbe);
+			if (bots.containsKey(otherName)) {
+				bots.get(otherName).update(this, flipped);
+			}
 		}
+		
+		private BulletHitEvent toBulletHitEvent(HitByBulletEvent hbbe) {
+			return new BulletHitEvent(this.getName(), this.getEnergy(), hbbe.getBullet());
+		}
+
 		public void onHitRobot(HitRobotEvent hre) {
 			// when my robot hits another robot
+			bot.update(this, hre);
+			String otherName = hre.getName();
+			
+			HitRobotEvent flipped = flipHRE(hre);
+			if (bots.containsKey(otherName)) {
+				bots.get(otherName).update(this, hre);
+			}
 		}
+		
+		private HitRobotEvent flipHRE(HitRobotEvent hre) {
+			return new HitRobotEvent(this.getName(), hre.getBearingRadians()+Math.PI, this.getEnergy(), !hre.isMyFault());
+		}
+
 		public void onHitWall(HitWallEvent hwe) {
 			// when my robot hits the wall
 		}
