@@ -7,6 +7,7 @@ import java.util.Map;
 
 import robocode.AdvancedRobot;
 import robocode.BattleEndedEvent;
+import robocode.Bullet;
 import robocode.BulletHitBulletEvent;
 import robocode.BulletHitEvent;
 import robocode.BulletMissedEvent;
@@ -45,7 +46,6 @@ public class Vis extends AdvancedRobot{
 			this.setRotateFree();
 			this.setColor(Color.ORANGE);
 			bots = new HashMap<String, Bot>();
-			bots.put("jar.Vis", new Bot("jar.Vis"));
 			
 			// Battle Properties
 			room_width = this.getBattleFieldWidth();
@@ -134,12 +134,54 @@ public class Vis extends AdvancedRobot{
 		}
 		public void onBulletHit(BulletHitEvent bhe) {
 			// when my bullet hits another robot
+			String otherName = bhe.getName();
+			double otherEnergy = bhe.getEnergy();
+			Bullet myBullet = bhe.getBullet();
+			double x = myBullet.getX();
+			double y = myBullet.getY();
+			double heading = myBullet.getHeadingRadians();
+			boolean active = myBullet.isActive();
+			bot.update(this, bhe);
+			
+			HitByBulletEvent other = toHitByBullet(this, bhe);
+			
+			if (bots.containsKey(otherName)) {
+				// send synthesized data to the other Bot model
+				bots.get(otherName).update(other);
+			}
 		}
+		private HitByBulletEvent toHitByBullet(Vis self, BulletHitEvent bhe) {
+			double otherX = self.bots.get(bhe.getName()).lastX();
+			double otherY = self.bots.get(bhe.getName()).lastY();
+			double otherHeading = self.bots.get(bhe.getName()).lastHeading();
+			double bulletX = bhe.getBullet().getX();
+			double bulletY = bhe.getBullet().getY();
+			
+			double bearing = Math.atan2(bulletY-otherY, bulletX-otherX) - otherHeading;
+			return new HitByBulletEvent(bearing, bhe.getBullet());
+		}
+
 		public void onBulletHitBullet(BulletHitBulletEvent bhbe) {
 			// when my bullet hits another bullet
+			Bullet myBullet = bhbe.getBullet();
+			Bullet otherBullet = bhbe.getHitBullet();
+			String otherName = otherBullet.getName();
+			double x = myBullet.getX();
+			double y = myBullet.getY();
+			
+			double myHeading = myBullet.getHeadingRadians();
+			double otherHeading = otherBullet.getHeadingRadians();
+			
+			double myVelocity = myBullet.getVelocity();
+			double otherVelocity = otherBullet.getVelocity();
 		}
 		public void onBulletMissed(BulletMissedEvent bme) {
 			// when my bullet hits the wall (misses)
+			Bullet myBullet = bme.getBullet();
+			double x = myBullet.getX();
+			double y = myBullet.getY();
+			double myHeading = myBullet.getHeadingRadians();
+			double myVelocity = myBullet.getVelocity();
 		}
 		public void onHitByBullet(HitByBulletEvent hbbe) {
 			// when my robot is hit by another bullet

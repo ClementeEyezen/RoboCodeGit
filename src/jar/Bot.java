@@ -1,6 +1,7 @@
 package jar;
 
 import robocode.AdvancedRobot;
+import robocode.BulletHitEvent;
 import robocode.HitByBulletEvent;
 import robocode.ScannedRobotEvent;
 
@@ -48,5 +49,31 @@ public class Bot {
 	// hbbe
 	public void update(AdvancedRobot self, HitByBulletEvent hbbe) {
 		
+	}
+
+	public void update(HitByBulletEvent other) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void update(Vis self, BulletHitEvent bhe) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	/*
+	 * Get info out
+	 */
+	public double lastX() {
+		// TODO
+		return 0.0;
+	}
+	public double lastY() {
+		// TODO
+		return 0.0;
+	}
+	public double lastHeading() {
+		// TODO
+		return 0.0;
 	}
 }
