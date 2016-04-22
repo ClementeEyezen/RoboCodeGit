@@ -20,6 +20,15 @@ import robocode.RoundEndedEvent;
 import robocode.ScannedRobotEvent;
 import robocode.WinEvent;
 
+/*
+ * TODO reorganize methods (Vis, Bot)
+ * TODO check and see if I've implemented all the reverse data events
+ * TODO check and see if I have most/all of the events covered
+ * TODO every bot has an InverseDriver, InverseRaddar, InverseGunner that gets updated when I call bot.update...
+ * TODO 	these are trying to predict what the bot is doing (including my own special case)
+ * TODO then the main advanced robot (my jar.Vis) just runs its own Driver/Raddar/Gunner to actually generate stuff 
+ */
+
 // jar.Vis
 public class Vis extends AdvancedRobot{
 	// Battle Properties
