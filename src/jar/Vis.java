@@ -122,41 +122,35 @@ public class Vis extends AdvancedRobot{
     }
 
     public void onScannedRobot(ScannedRobotEvent sre) {
-        if(oneVoneAssumption) {
-
+        bot.update(this, sre);
+        ScannedRobotEvent flipped = new ScannedRobotEvent(this.getName(), this.getEnergy(), sre.getBearingRadians()+Math.PI, 
+                sre.getDistance(), this.getHeadingRadians(), this.getVelocity(), false);
+        if (!bots.containsKey(sre.getName())) {
+            bots.put(sre.getName(), new Bot(sre.getName()));
         }
-        //when my robot scans another robot
-        if(bots.containsKey(sre.getName())) {
-            // if the robot is already tracked
-            if (debug) {
-                System.out.println("SCANNED ROBOT: "+sre.getName());
-                System.out.println("sre heading: "+sre.getHeadingRadians());
-            }
-            bots.get(sre.getName()).update(this, sre);
-        }
-        else {
-            if (debug) System.out.println("CREATED ROBOT MODEL: " + sre.getName());
-            Bot new_scan = new Bot(this, sre);
-            bots.put(sre.getName(), new_scan);
-        }
-        //rm.update(sre, getHeadingRadians(), getX(), getY());
+        double robocode_heading = sre.getBearingRadians() + this.getHeadingRadians();
+        double true_heading = robocode_heading;
+        double other_x = this.getX() + sre.getDistance()*Math.cos(true_heading);
+        double other_y = this.getY() + sre.getDistance()*Math.sin(true_heading);
+        
+        bots.get(sre.getName()).update(flipped, other_x, other_y, sre.getHeadingRadians());
     }
     public void onBulletHit(BulletHitEvent bhe) {
         // when my bullet hits another robot
         String otherName = bhe.getName();
-        double otherEnergy = bhe.getEnergy();
-        Bullet myBullet = bhe.getBullet();
-        double x = myBullet.getX();
-        double y = myBullet.getY();
-        double heading = myBullet.getHeadingRadians();
-        boolean active = myBullet.isActive();
+//        double otherEnergy = bhe.getEnergy();
+//        Bullet myBullet = bhe.getBullet();
+//        double x = myBullet.getX();
+//        double y = myBullet.getY();
+//        double heading = myBullet.getHeadingRadians();
+//        boolean active = myBullet.isActive();
         bot.update(this, bhe);
 
-        HitByBulletEvent other = toHitByBullet(this, bhe);
+        HitByBulletEvent flipped = toHitByBullet(this, bhe);
 
         if (bots.containsKey(otherName)) {
             // send synthesized data to the other Bot model
-            bots.get(otherName).update(other);
+            bots.get(otherName).update(flipped);
         }
     }
     private HitByBulletEvent toHitByBullet(Vis self, BulletHitEvent bhe) {
