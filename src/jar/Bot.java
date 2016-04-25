@@ -66,6 +66,17 @@ public class Bot {
         // TODO
         return 0.0;
     }
+    
+    public double flip_rotation(double other_heading) {
+        double temp = -other_heading + Math.PI/2;
+        while (temp > Math.PI * 2) {
+            temp = temp - Math.PI * 2;
+        }
+        while (temp < -Math.PI * 2) {
+            temp = temp + Math.PI * 2;
+        }
+        return temp;
+    }
 
 
     /* 
@@ -92,7 +103,7 @@ public class Bot {
          *  other robot was. 
          */
         double robocode_heading = sre.getBearingRadians() + self.getHeadingRadians();
-        double true_heading = robocode_heading;
+        double true_heading = flip_rotation(robocode_heading);
         double distance = sre.getDistance();
         double start_x = self.getX();
         double start_y = self.getY();
@@ -100,7 +111,7 @@ public class Bot {
         double other_x = start_x + distance*Math.cos(true_heading);
         double other_y = start_y + distance*Math.sin(true_heading);
         double other_robocode_heading = sre.getHeadingRadians();
-        double other_true_heading = other_robocode_heading;
+        double other_true_heading = flip_rotation(other_robocode_heading);
         double other_velocity = sre.getVelocity();
         double other_energy = sre.getEnergy();
         
@@ -116,7 +127,7 @@ public class Bot {
     public void update(ScannedRobotEvent synth, double x, double y, double heading) {
         // pass information to another robot's bot about myself aka create a fake scanned robot event and use that to update a bot
         double robocode_heading = synth.getBearingRadians() + heading;
-        double true_heading = robocode_heading;
+        double true_heading = flip_rotation(robocode_heading);
         double distance = synth.getDistance();
         double start_x = x;
         double start_y = y;
@@ -124,7 +135,7 @@ public class Bot {
         double other_x = start_x + distance*Math.cos(true_heading);
         double other_y = start_y + distance*Math.sin(true_heading);
         double other_robocode_heading = synth.getHeadingRadians();
-        double other_true_heading = other_robocode_heading;
+        double other_true_heading = flip_rotation(other_robocode_heading);
         double other_velocity = synth.getVelocity();
         double other_energy = synth.getEnergy();
         

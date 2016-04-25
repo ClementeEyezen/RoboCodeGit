@@ -84,7 +84,7 @@ public class Vis extends AdvancedRobot {
 
             setTurnGunLeftRadians(g.angular());
 
-            setTurnRadarLeftRadians(r.angular());
+            // setTurnRadarLeftRadians(r.angular());
             if(r.fire()) {
                 System.out.println("Trying to fire gun...");
                 this.fire(1.0);
@@ -98,7 +98,7 @@ public class Vis extends AdvancedRobot {
                 // wait
             }
             // System.out.println("End wait ("+millis_test+") @ "+System.nanoTime()/1000000);
-            millis_test += 1;
+            // millis_test += 1;
             
             execute();
         }
@@ -136,6 +136,17 @@ public class Vis extends AdvancedRobot {
     public double distance(double x, double y) {
         return Math.sqrt(x*x-y*y);
     }
+    
+    public double flip_rotation(double other_heading) {
+        double temp = -other_heading + Math.PI/2;
+        while (temp > Math.PI * 2) {
+            temp = temp - Math.PI * 2;
+        }
+        while (temp < -Math.PI * 2) {
+            temp = temp + Math.PI * 2;
+        }
+        return temp;
+    }
 
     /*
      * Event Handlers
@@ -149,18 +160,6 @@ public class Vis extends AdvancedRobot {
         if (printEvents) printEvent(sre);
         
         bot.update(this, sre);
-        
-        if (oneVoneAssumption) {
-            // run a tight laser scan
-            double current_radar = this.getRadarHeadingRadians();
-            
-            double goal_radar = 0.0;
-            
-            double radar_delta = goal_radar - current_radar;
-            if (radar_delta > 0.0 && radar_delta < 0.1) {
-                
-            }
-        }
 
         // simulate a scan data for that robot
         ScannedRobotEvent flipped = new ScannedRobotEvent(this.getName(), this.getEnergy(), sre.getBearingRadians()+Math.PI, 
@@ -169,11 +168,52 @@ public class Vis extends AdvancedRobot {
             bots.put(sre.getName(), new Bot(sre.getName()));
         }
         double robocode_heading = sre.getBearingRadians() + this.getHeadingRadians();
-        double true_heading = robocode_heading;
+        double true_heading = flip_rotation(robocode_heading);
         double other_x = this.getX() + sre.getDistance()*Math.cos(true_heading);
         double other_y = this.getY() + sre.getDistance()*Math.sin(true_heading);
         
         bots.get(sre.getName()).update(flipped, other_x, other_y, sre.getHeadingRadians());
+        
+        if (oneVoneAssumption) {
+            // run a tight laser scan
+            double robocode_current_radar = this.getRadarHeadingRadians();
+            double other_heading = flip_rotation(sre.getHeadingRadians());
+            
+            // I have other_x, other_y
+            double dx = other_x+sre.getVelocity()*Math.cos(other_heading) - this.getX();
+            double dy = other_y+sre.getVelocity()*Math.sin(other_heading) - this.getY();
+            System.out.println("vx, vy | "+(sre.getVelocity()*Math.cos(other_heading))+","+
+                    (sre.getVelocity()*Math.sin(other_heading)));
+            System.out.println("dx, dy | "+dx+","+dy);
+            
+            double goal_radar = Math.atan2(dy, dx);
+            double robocode_goal_radar = flip_rotation(goal_radar);
+            
+            double radar_delta = robocode_goal_radar - robocode_current_radar;
+            System.out.println("delta: "+radar_delta);
+            
+            double scale = 0.00001;
+            
+            while (radar_delta > Math.PI*2) {
+                radar_delta = radar_delta - Math.PI*2;
+            }
+            while (radar_delta < -Math.PI*2) {
+                radar_delta = radar_delta + Math.PI*2;
+            }
+            if (radar_delta > Math.PI) {
+                radar_delta = -Math.PI*2 + radar_delta;
+            }
+            if (radar_delta < -Math.PI) {
+                radar_delta = Math.PI*2 + radar_delta;
+            }
+            
+            if (radar_delta >= 0.0 && radar_delta < scale) {
+                radar_delta = scale;
+            } else if (radar_delta <= 0.0 && radar_delta > -scale) {
+                radar_delta = -scale;
+            }
+            this.setTurnRadarRightRadians(radar_delta);
+        }
     }
 
     public void onBulletHit(BulletHitEvent bhe) {
