@@ -18,6 +18,7 @@ import robocode.HitWallEvent;
 import robocode.RobotDeathEvent;
 import robocode.RoundEndedEvent;
 import robocode.ScannedRobotEvent;
+import robocode.SkippedTurnEvent;
 import robocode.WinEvent;
 
 /*
@@ -27,7 +28,8 @@ import robocode.WinEvent;
  */
 
 // jar.Vis
-public class Vis extends AdvancedRobot{
+public class Vis extends AdvancedRobot {
+    boolean printEvents = true;
     // Battle Properties
     double room_width, room_height;
     double time;
@@ -36,6 +38,10 @@ public class Vis extends AdvancedRobot{
     boolean fire_gun = false;
 
     boolean oneVoneAssumption = true;
+    long millis_test = 1;
+    
+    long run_avg = 67;
+    long min_skip = 36;
 
     // Robot Properties
     Bot bot;
@@ -65,6 +71,7 @@ public class Vis extends AdvancedRobot{
         setTurnRadarRightRadians(Math.PI*2);
         while(getRadarTurnRemainingRadians() > 0.005) {
             // While the robot is doing it's initial scan
+            
             bot.update(this);
             execute();
         }
@@ -85,12 +92,26 @@ public class Vis extends AdvancedRobot{
 
             bot.update(this);
 
+            long start_time = System.nanoTime();
+            // System.out.println("Begin wait ("+millis_test+") @ "+start_time/1000000);
+            while (System.nanoTime() - start_time < 1000000*millis_test && System.nanoTime() - start_time > 0) {
+                // wait
+            }
+            // System.out.println("End wait ("+millis_test+") @ "+System.nanoTime()/1000000);
+            millis_test += 1;
+            
             execute();
         }
         /*
 			setTurnGunLeftRadians(1.0);
 			setTurnLeftRadians(1.0);
          */
+    }
+    /*
+     * Debug printing options
+     */
+    private void printEvent(robocode.Event e) {
+        System.out.println(""+System.nanoTime()+" "+e.getClass());
     }
     /*
      * Step by Step updates
@@ -120,11 +141,26 @@ public class Vis extends AdvancedRobot{
      * Event Handlers
      */
     public void onBattleEnded(BattleEndedEvent bee) {
+        if (printEvents) printEvent(bee);
 
     }
 
     public void onScannedRobot(ScannedRobotEvent sre) {
+        if (printEvents) printEvent(sre);
+        
         bot.update(this, sre);
+        
+        if (oneVoneAssumption) {
+            // run a tight laser scan
+            double current_radar = this.getRadarHeadingRadians();
+            
+            double goal_radar = 0.0;
+            
+            double radar_delta = goal_radar - current_radar;
+            if (radar_delta > 0.0 && radar_delta < 0.1) {
+                
+            }
+        }
 
         // simulate a scan data for that robot
         ScannedRobotEvent flipped = new ScannedRobotEvent(this.getName(), this.getEnergy(), sre.getBearingRadians()+Math.PI, 
@@ -141,6 +177,8 @@ public class Vis extends AdvancedRobot{
     }
 
     public void onBulletHit(BulletHitEvent bhe) {
+        if (printEvents) printEvent(bhe);
+        
         // when my bullet hits another robot
         String otherName = bhe.getName();
 //        double otherEnergy = bhe.getEnergy();
@@ -172,6 +210,8 @@ public class Vis extends AdvancedRobot{
 
     public void onBulletHitBullet(BulletHitBulletEvent bhbe) {
         // when my bullet hits another bullet
+        if (printEvents) printEvent(bhbe);
+
 //        Bullet myBullet = bhbe.getBullet();
         Bullet otherBullet = bhbe.getHitBullet();
         String otherName = otherBullet.getName();
@@ -199,6 +239,8 @@ public class Vis extends AdvancedRobot{
 
     public void onBulletMissed(BulletMissedEvent bme) {
         // when my bullet hits the wall (misses)
+        if (printEvents) printEvent(bme);
+        
         Bullet myBullet = bme.getBullet();
         double x = myBullet.getX();
         double y = myBullet.getY();
@@ -209,6 +251,8 @@ public class Vis extends AdvancedRobot{
     }
     public void onHitByBullet(HitByBulletEvent hbbe) {
         // when my robot is hit by another bullet
+        if (printEvents) printEvent(hbbe);
+        
         bot.update(hbbe);
         String otherName = hbbe.getName();
 
@@ -225,6 +269,8 @@ public class Vis extends AdvancedRobot{
 
     public void onHitRobot(HitRobotEvent hre) {
         // when my robot hits another robot
+        if (printEvents) printEvent(hre);
+        
         bot.update(hre);
         String otherName = hre.getName();
 
@@ -241,26 +287,45 @@ public class Vis extends AdvancedRobot{
 
     public void onHitWall(HitWallEvent hwe) {
         // when my robot hits the wall
+        if (printEvents) printEvent(hwe);
+        
         bot.update(hwe);
     }
 
     /*
      * Game Events
      */
+    public void onSkippedTurn(SkippedTurnEvent ste) {
+        if (printEvents) printEvent(ste);
+        run_avg = (run_avg + millis_test)/2;
+        if (millis_test < min_skip) {
+            min_skip = millis_test;
+        }
+        System.out.println("millis_test: last: "+millis_test+" avg: "+run_avg+" min: "+min_skip);
+        millis_test = millis_test/2;
+    }
     public void onDeath(DeathEvent de) {
         // when my robot dies/loses
+        if (printEvents) printEvent(de);
+        
         bot.update(de);
     }
     public void onWin(WinEvent we) {
         // when my robot wins
+        if (printEvents) printEvent(we);
+        
         bot.update(we);
     }
     public void onRobotDeath(RobotDeathEvent rde) {
         // when another robot dies
+        if (printEvents) printEvent(rde);
+        
         bot.update(rde);
     }
     public void onRoundEnded(RoundEndedEvent ree) {
         // called when a round ends
+        if (printEvents) printEvent(ree);
+        
         bot.update(ree);
     }
 
