@@ -53,6 +53,11 @@ public class Vis extends AdvancedRobot{
         this.setColor(Color.ORANGE);
         bots = new HashMap<String, Bot>();
 
+        bot = new Bot(this);
+        d = new Driver(bot);
+        g = new Gunner(bot);
+        r = new Raddar(bot);
+        
         // Battle Properties
         room_width = this.getBattleFieldWidth();
         room_height = this.getBattleFieldHeight();
