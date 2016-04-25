@@ -9,6 +9,6 @@ public class Gunner extends Actor {
     }
 
     @Override
-    public void update() {}
+    public void update(long nanos) {}
 
 }

@@ -14,7 +14,17 @@ import robocode.RobotDeathEvent;
 import robocode.RoundEndedEvent;
 import robocode.ScannedRobotEvent;
 import robocode.WinEvent;
-
+/*
+ * What does a bot do?
+ *  It collects updates, and saves everything in an efficient searchable store
+ * 
+ * What does an update do?
+ *  First: It saves the data for the robot that it is representing.
+ *      Ex. 1: I call a SRE. It saves the state of the other robot in the scan
+ *      Ex. 2: I synth a SRE and pass it to Bot("bot 2"). It saves that it saw me at a given state. This may later be replaced by a
+ *          RadarInverse generating a SRE. Right now it assumes every radar scan I see, the other robot sees
+ *  Second: It calls update on the Driver
+ */
 public class Bot {
     // model all robots uniformly
     String name;
