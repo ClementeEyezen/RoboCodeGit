@@ -148,10 +148,11 @@ public class Vis extends AdvancedRobot{
 
         HitByBulletEvent flipped = toHitByBullet(this, bhe);
 
-        if (bots.containsKey(otherName)) {
+        if (!bots.containsKey(otherName)) {
             // send synthesized data to the other Bot model
-            bots.get(otherName).update(flipped);
+            bots.put(otherName, new Bot(otherName));
         }
+        bots.get(otherName).update(flipped);
     }
     private HitByBulletEvent toHitByBullet(Vis self, BulletHitEvent bhe) {
         double otherX = self.bots.get(bhe.getName()).lastX();
@@ -166,23 +167,26 @@ public class Vis extends AdvancedRobot{
 
     public void onBulletHitBullet(BulletHitBulletEvent bhbe) {
         // when my bullet hits another bullet
-        Bullet myBullet = bhbe.getBullet();
+//        Bullet myBullet = bhbe.getBullet();
         Bullet otherBullet = bhbe.getHitBullet();
         String otherName = otherBullet.getName();
-        double x = myBullet.getX();
-        double y = myBullet.getY();
-
-        double myHeading = myBullet.getHeadingRadians();
-        double otherHeading = otherBullet.getHeadingRadians();
-
-        double myVelocity = myBullet.getVelocity();
-        double otherVelocity = otherBullet.getVelocity();
+//        double x = myBullet.getX();
+//        double y = myBullet.getY();
+//
+//        double myHeading = myBullet.getHeadingRadians();
+//        double otherHeading = otherBullet.getHeadingRadians();
+//
+//        double myVelocity = myBullet.getVelocity();
+//        double otherVelocity = otherBullet.getVelocity();
+        
         bot.update(this, bhbe);
+        
         BulletHitBulletEvent flipped = flipBHBE(bhbe);
-        if (bots.containsKey(otherName)) {
+        if (!bots.containsKey(otherName)) {
             // simulate a bullet hit bullet event for another robot
-            bots.get(otherName).update(this, flipped);
+            bots.put(otherName, new Bot(otherName));
         }
+        bots.get(otherName).update(this, flipped);
     }
     private BulletHitBulletEvent flipBHBE(BulletHitBulletEvent bhbe) {
         return new BulletHitBulletEvent(bhbe.getHitBullet(), bhbe.getBullet());
@@ -202,9 +206,10 @@ public class Vis extends AdvancedRobot{
         String otherName = hbbe.getName();
 
         BulletHitEvent flipped = toBulletHitEvent(hbbe);
-        if (bots.containsKey(otherName)) {
-            bots.get(otherName).update(this, flipped);
+        if (!bots.containsKey(otherName)) {
+            bots.put(otherName, new Bot(otherName));
         }
+        bots.get(otherName).update(this, flipped);
     }
 
     private BulletHitEvent toBulletHitEvent(HitByBulletEvent hbbe) {
@@ -217,9 +222,10 @@ public class Vis extends AdvancedRobot{
         String otherName = hre.getName();
 
         HitRobotEvent flipped = flipHRE(hre);
-        if (bots.containsKey(otherName)) {
-            bots.get(otherName).update(this, hre);
+        if (!bots.containsKey(otherName)) {
+            bots.put(otherName, new Bot(otherName));
         }
+        bots.get(otherName).update(this, flipped);
     }
 
     private HitRobotEvent flipHRE(HitRobotEvent hre) {
