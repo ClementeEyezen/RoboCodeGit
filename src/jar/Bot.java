@@ -5,9 +5,15 @@ import java.util.HashMap;
 import robocode.AdvancedRobot;
 import robocode.BulletHitBulletEvent;
 import robocode.BulletHitEvent;
+import robocode.BulletMissedEvent;
+import robocode.DeathEvent;
 import robocode.HitByBulletEvent;
 import robocode.HitRobotEvent;
+import robocode.HitWallEvent;
+import robocode.RobotDeathEvent;
+import robocode.RoundEndedEvent;
 import robocode.ScannedRobotEvent;
+import robocode.WinEvent;
 
 public class Bot {
     // model all robots uniformly
@@ -35,14 +41,6 @@ public class Bot {
         this(sre.getName());
     }
 
-    public void update(AdvancedRobot self) {
-        // update self
-        if (!self.getName().equals(name)) {
-            // don't update
-            return;
-        }
-    }
-
     /*
      * Get info out
      */
@@ -63,6 +61,16 @@ public class Bot {
     /* 
      * Evented Update
      */
+    
+    // loop update, spend time calculating
+    public void update(AdvancedRobot self) {
+        // update self
+        if (!self.getName().equals(name)) {
+            // don't update
+            return;
+        }
+    }
+
     // scan - my robot
     public void update(Vis self, ScannedRobotEvent sre) {
         /*
@@ -94,6 +102,7 @@ public class Bot {
         this.data.get(sre.getName()).put(self.getTime(), other);
     }
     
+    // scan - other robot
     public void update(ScannedRobotEvent synth, double x, double y, double heading) {
         // pass information to another robot's bot about myself aka create a fake scanned robot event and use that to update a bot
         double robocode_heading = synth.getBearingRadians() + heading;
@@ -117,30 +126,68 @@ public class Bot {
         this.data.get(synth.getName()).put(synth.getTime(), other);
     }
     
-    // hbbe
-    public void update(AdvancedRobot self, HitByBulletEvent hbbe) {
-
+    // hbbe (hit by bullet event)
+    public void update(HitByBulletEvent hbbe) {
+        // my update? this will only be called on a robot that recieved hbbe
+        //  this will only be called on the bot that got hit
+    }
+    
+    public void update(AdvancedRobot self, HitByBulletEvent synth) {
+        // this is called on another bot
     }
 
-    public void update(HitByBulletEvent other) {
-        // TODO Auto-generated method stub
-
+    // bhe (bullet hit event)
+    public void update(BulletHitEvent bhe) {
+        // this is for updating my bot
+    }
+    
+    public void update(Vis self, BulletHitEvent synth) {
+        // This is the other bot event
     }
 
-    public void update(Vis self, BulletHitEvent bhe) {
-        // TODO Auto-generated method stub
-
+    // BulletHitBullet
+    public void update(BulletHitBulletEvent bhbe) {
+        // this is my bot's event
     }
-
+    
     public void update(Vis self, BulletHitBulletEvent bhbe) {
-        // TODO Auto-generated method stub
-
+        // this is the other bot's update event
     }
 
+    // HitRobotEvent
+    public void update(HitRobotEvent hre) {
+        // my hit robot event
+    }
+    
     public void update(Vis self, HitRobotEvent hre) {
-        // TODO Auto-generated method stub
+        // other hit robot event
 
     }
+
+    public void update(BulletMissedEvent bme) {
+        // when my bullet misses
+    }
+    
+    public void update(Vis self, BulletMissedEvent bme) {
+        // currently not simulating another robot missing events
+    }
+
+    public void update(HitWallEvent hwe) {
+        // my bot hit wall update
+    }
+    
+    public void update(Vis self, HitWallEvent hwe) {
+        // currently not simulating another robot hitting the wall
+    }
+
+    // these are currently unused events
+    public void update(DeathEvent de) {}
+
+    public void update(WinEvent we) {}
+
+    public void update(RobotDeathEvent rde) {}
+
+    public void update(RoundEndedEvent ree) {}
 }
 
 class History {

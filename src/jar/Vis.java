@@ -123,6 +123,8 @@ public class Vis extends AdvancedRobot{
 
     public void onScannedRobot(ScannedRobotEvent sre) {
         bot.update(this, sre);
+
+        // simulate a scan data for that robot
         ScannedRobotEvent flipped = new ScannedRobotEvent(this.getName(), this.getEnergy(), sre.getBearingRadians()+Math.PI, 
                 sre.getDistance(), this.getHeadingRadians(), this.getVelocity(), false);
         if (!bots.containsKey(sre.getName())) {
@@ -135,6 +137,7 @@ public class Vis extends AdvancedRobot{
         
         bots.get(sre.getName()).update(flipped, other_x, other_y, sre.getHeadingRadians());
     }
+
     public void onBulletHit(BulletHitEvent bhe) {
         // when my bullet hits another robot
         String otherName = bhe.getName();
@@ -144,7 +147,7 @@ public class Vis extends AdvancedRobot{
 //        double y = myBullet.getY();
 //        double heading = myBullet.getHeadingRadians();
 //        boolean active = myBullet.isActive();
-        bot.update(this, bhe);
+        bot.update(bhe);
 
         HitByBulletEvent flipped = toHitByBullet(this, bhe);
 
@@ -152,7 +155,7 @@ public class Vis extends AdvancedRobot{
             // send synthesized data to the other Bot model
             bots.put(otherName, new Bot(otherName));
         }
-        bots.get(otherName).update(flipped);
+        bots.get(otherName).update(this, flipped);
     }
     private HitByBulletEvent toHitByBullet(Vis self, BulletHitEvent bhe) {
         double otherX = self.bots.get(bhe.getName()).lastX();
@@ -179,7 +182,7 @@ public class Vis extends AdvancedRobot{
 //        double myVelocity = myBullet.getVelocity();
 //        double otherVelocity = otherBullet.getVelocity();
         
-        bot.update(this, bhbe);
+        bot.update(bhbe);
         
         BulletHitBulletEvent flipped = flipBHBE(bhbe);
         if (!bots.containsKey(otherName)) {
@@ -199,10 +202,12 @@ public class Vis extends AdvancedRobot{
         double y = myBullet.getY();
         double myHeading = myBullet.getHeadingRadians();
         double myVelocity = myBullet.getVelocity();
+        
+        bot.update(bme);
     }
     public void onHitByBullet(HitByBulletEvent hbbe) {
         // when my robot is hit by another bullet
-        bot.update(this, hbbe);
+        bot.update(hbbe);
         String otherName = hbbe.getName();
 
         BulletHitEvent flipped = toBulletHitEvent(hbbe);
@@ -218,7 +223,7 @@ public class Vis extends AdvancedRobot{
 
     public void onHitRobot(HitRobotEvent hre) {
         // when my robot hits another robot
-        bot.update(this, hre);
+        bot.update(hre);
         String otherName = hre.getName();
 
         HitRobotEvent flipped = flipHRE(hre);
@@ -234,6 +239,7 @@ public class Vis extends AdvancedRobot{
 
     public void onHitWall(HitWallEvent hwe) {
         // when my robot hits the wall
+        bot.update(hwe);
     }
 
     /*
@@ -241,15 +247,19 @@ public class Vis extends AdvancedRobot{
      */
     public void onDeath(DeathEvent de) {
         // when my robot dies/loses
+        bot.update(de);
     }
     public void onWin(WinEvent we) {
         // when my robot wins
+        bot.update(we);
     }
     public void onRobotDeath(RobotDeathEvent rde) {
         // when another robot dies
+        bot.update(rde);
     }
     public void onRoundEnded(RoundEndedEvent ree) {
         // called when a round ends
+        bot.update(ree);
     }
 
     /*
