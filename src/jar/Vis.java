@@ -113,9 +113,6 @@ public class Vis extends AdvancedRobot {
     private void printEvent(robocode.Event e) {
         System.out.println(""+System.nanoTime()+" "+e.getClass());
     }
-    /*
-     * Step by Step updates
-     */
 
     /*
      * Utilities
@@ -238,9 +235,9 @@ public class Vis extends AdvancedRobot {
         bots.get(otherName).update(this, flipped);
     }
     private HitByBulletEvent toHitByBullet(Vis self, BulletHitEvent bhe) {
-        double otherX = self.bots.get(bhe.getName()).lastX();
-        double otherY = self.bots.get(bhe.getName()).lastY();
-        double otherHeading = self.bots.get(bhe.getName()).lastHeading();
+        double otherX = self.bot.data.get(bhe.getName()).lastX();
+        double otherY = self.bot.data.get(bhe.getName()).lastY();
+        double otherHeading = self.bot.data.get(bhe.getName()).lastHeading();
         double bulletX = bhe.getBullet().getX();
         double bulletY = bhe.getBullet().getY();
 

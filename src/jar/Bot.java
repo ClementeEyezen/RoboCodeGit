@@ -26,45 +26,34 @@ import robocode.WinEvent;
  *  Second: It calls update on the Driver
  */
 public class Bot {
-    // model all robots uniformly
+    /*
+     * A Bot class encapsulates all of the information that a robot knows about itself and other robots
+     */
     String name;
+    AdvancedRobot reference;
     HashMap<String, History> data;
-    Driver d;
-    Raddar r;
-    Gunner g;
+    DriverInverse di;
+    // Raddar r;
+    GunnerInverse gi;
 
     public Bot(String name) {
         this.name = name;
-        d = new Driver(this);
-        r = new Raddar(this);
-        g = new Gunner(this);
+        di = new DriverInverse(this, gi);
+        // r = new Raddar(this);
+        gi = new GunnerInverse(this, di);
         data = new HashMap<String, History>();
     }
 
     public Bot(AdvancedRobot self) {
         // based on my robot
         this(self.getName());
+        reference = self;
     }
 
     public Bot(AdvancedRobot self, ScannedRobotEvent sre) {
         // other robot
         this(sre.getName());
-    }
-
-    /*
-     * Get info out
-     */
-    public double lastX() {
-        // TODO
-        return 0.0;
-    }
-    public double lastY() {
-        // TODO
-        return 0.0;
-    }
-    public double lastHeading() {
-        // TODO
-        return 0.0;
+        reference = self;
     }
     
     public double flip_rotation(double other_heading) {
@@ -115,7 +104,7 @@ public class Bot {
         double other_velocity = sre.getVelocity();
         double other_energy = sre.getEnergy();
         
-        State other = new State(other_x, other_y, other_true_heading, other_velocity, other_energy);
+        RobotState other = new RobotState(other_x, other_y, other_true_heading, other_velocity, other_energy);
         
         if (!data.containsKey(sre.getName())) {
             data.put(sre.getName(), new History());
@@ -139,7 +128,7 @@ public class Bot {
         double other_velocity = synth.getVelocity();
         double other_energy = synth.getEnergy();
         
-        State other = new State(other_x, other_y, other_true_heading, other_velocity, other_energy);
+        RobotState other = new RobotState(other_x, other_y, other_true_heading, other_velocity, other_energy);
         
         if (!data.containsKey(synth.getName())) {
             data.put(synth.getName(), new History());
@@ -212,24 +201,43 @@ public class Bot {
 }
 
 class History {
-    HashMap<Long, State> save;
+    HashMap<Long, RobotState> save;
+    
+    long latest_data;
+    
     public History() {
-        save = new HashMap<Long, State>();
+        save = new HashMap<Long, RobotState>();
     }
-    public State get_by_time(int time) {
+    public RobotState get_by_time(long time) {
         if (save.containsKey(time)) {
             return save.get(time);
         }
         return null;
     }
-    public void put(long time, State state) {
+    public void put(long time, RobotState state) {
         save.put(time, state);
+        if (time > latest_data) {
+            latest_data = time;
+        }
+    }
+    
+    public double lastX() {
+        return get_by_time(latest_data).x;
+    }
+    public double lastY() {
+        return get_by_time(latest_data).x;
+    }
+    public double lastHeading() {
+        return get_by_time(latest_data).heading;
+    }
+    public RobotState last() {
+        return get_by_time(latest_data);
     }
 }
 
-class State {
+class RobotState {
     double x, y, heading, velocity, energy;
-    public State(double x, double y, double heading, double velocity, double energy) {
+    public RobotState(double x, double y, double heading, double velocity, double energy) {
         this.x = x;
         this.y = y;
         this.heading = heading;
