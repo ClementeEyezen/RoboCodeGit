@@ -235,9 +235,9 @@ public class Vis extends AdvancedRobot {
         bots.get(otherName).update(this, flipped);
     }
     private HitByBulletEvent toHitByBullet(Vis self, BulletHitEvent bhe) {
-        double otherX = self.bot.data.get(bhe.getName()).lastX();
-        double otherY = self.bot.data.get(bhe.getName()).lastY();
-        double otherHeading = self.bot.data.get(bhe.getName()).lastHeading();
+        double otherX = self.bot.data.get(bhe.getName()).last().x;
+        double otherY = self.bot.data.get(bhe.getName()).last().y;
+        double otherHeading = self.bot.data.get(bhe.getName()).last().heading;
         double bulletX = bhe.getBullet().getX();
         double bulletY = bhe.getBullet().getY();
 

@@ -142,6 +142,7 @@ public class Bot {
     public void update(HitByBulletEvent hbbe) {
         // my update? this will only be called on a robot that recieved hbbe
         //  this will only be called on the bot that got hit
+        
     }
     
     public void update(AdvancedRobot self, HitByBulletEvent synth) {
@@ -202,44 +203,45 @@ public class Bot {
     public void update(RoundEndedEvent ree) {}
 }
 
-class History {
-    HashMap<Long, RobotState> save;
+class History<S extends State> {
+    HashMap<Long, S> save;
     
     long latest_data;
     
     public History() {
-        save = new HashMap<Long, RobotState>();
+        save = new HashMap<Long, S>();
     }
-    public RobotState get_by_time(long time) {
+    public S get_by_time(long time) {
         if (save.containsKey(time)) {
             return save.get(time);
         }
         return null;
     }
-    public void put(long time, RobotState state) {
+    public void put(long time, S state) {
         save.put(time, state);
         if (time > latest_data) {
             latest_data = time;
         }
     }
     
-    public double lastX() {
-        return get_by_time(latest_data).x;
-    }
-    public double lastY() {
-        return get_by_time(latest_data).x;
-    }
-    public double lastHeading() {
-        return get_by_time(latest_data).heading;
-    }
-    public RobotState last() {
+    public S last() {
         return get_by_time(latest_data);
     }
 }
-
-class RobotState {
+class State {
     double x, y, heading, velocity, energy;
+}
+class RobotState extends State {
     public RobotState(double x, double y, double heading, double velocity, double energy) {
+        this.x = x;
+        this.y = y;
+        this.heading = heading;
+        this.energy = energy;
+        this.velocity = velocity;
+    }
+}
+class BulletState extends State {
+    public BulletState(double x, double y, double heading, double velocity, double energy) {
         this.x = x;
         this.y = y;
         this.heading = heading;
