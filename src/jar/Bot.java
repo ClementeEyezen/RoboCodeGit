@@ -31,7 +31,7 @@ public class Bot {
      */
     String name;
     AdvancedRobot reference;
-    HashMap<String, History> data;
+    HashMap<String, History<RobotState>> robotData;
     DriverInverse di;
     // Raddar r;
     GunnerInverse gi;
@@ -41,7 +41,7 @@ public class Bot {
         di = new DriverInverse(this, gi);
         // r = new Raddar(this);
         gi = new GunnerInverse(this, di);
-        data = new HashMap<String, History>();
+        robotData = new HashMap<String, History<RobotState>>();
     }
 
     public Bot(AdvancedRobot self) {
@@ -77,10 +77,10 @@ public class Bot {
         RobotState interim = new RobotState(self.getX(), self.getY(), flip_rotation(self.getHeadingRadians()), self.getVelocity(),
                 self.getEnergy());
         long time = self.getTime();
-        if (!data.containsKey(self.getName())) {
-            data.put(self.getName(), new History());
+        if (!robotData.containsKey(self.getName())) {
+            robotData.put(self.getName(), new History<RobotState>());
         }
-        data.get(self.getName()).put(time, interim);
+        robotData.get(self.getName()).put(time, interim);
     }
 
     // scan - my robot
@@ -108,10 +108,10 @@ public class Bot {
         
         RobotState other = new RobotState(other_x, other_y, other_true_heading, other_velocity, other_energy);
         
-        if (!data.containsKey(sre.getName())) {
-            data.put(sre.getName(), new History());
+        if (!robotData.containsKey(sre.getName())) {
+            robotData.put(sre.getName(), new History<RobotState>());
         }
-        this.data.get(sre.getName()).put(self.getTime(), other);
+        this.robotData.get(sre.getName()).put(self.getTime(), other);
     }
     
     // scan - other robot
@@ -132,10 +132,10 @@ public class Bot {
         
         RobotState other = new RobotState(other_x, other_y, other_true_heading, other_velocity, other_energy);
         
-        if (!data.containsKey(synth.getName())) {
-            data.put(synth.getName(), new History());
+        if (!robotData.containsKey(synth.getName())) {
+            robotData.put(synth.getName(), new History<RobotState>());
         }
-        this.data.get(synth.getName()).put(synth.getTime(), other);
+        this.robotData.get(synth.getName()).put(synth.getTime(), other);
     }
     
     // hbbe (hit by bullet event)
