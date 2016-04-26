@@ -3,6 +3,7 @@ package jar;
 import java.util.HashMap;
 
 import robocode.AdvancedRobot;
+import robocode.Bullet;
 import robocode.BulletHitBulletEvent;
 import robocode.BulletHitEvent;
 import robocode.BulletMissedEvent;
@@ -32,6 +33,7 @@ public class Bot {
     String name;
     AdvancedRobot reference;
     HashMap<String, History<RobotState>> robotData;
+    HashMap<String, History<BulletState>> bulletData;
     DriverInverse di;
     // Raddar r;
     GunnerInverse gi;
@@ -42,6 +44,7 @@ public class Bot {
         // r = new Raddar(this);
         gi = new GunnerInverse(this, di);
         robotData = new HashMap<String, History<RobotState>>();
+        bulletData = new HashMap<String, History<BulletState>>();
     }
 
     public Bot(AdvancedRobot self) {
@@ -142,7 +145,12 @@ public class Bot {
     public void update(HitByBulletEvent hbbe) {
         // my update? this will only be called on a robot that recieved hbbe
         //  this will only be called on the bot that got hit
-        
+        Bullet b = hbbe.getBullet();
+        BulletState newb = new BulletState(b.getX(), b.getY(), b.getHeading(), b.getVelocity(), b.getPower());
+        if (!bulletData.containsKey(hbbe.getName())) {
+            bulletData.put(hbbe.getName(), new History<BulletState>());
+        }
+        bulletData.get(hbbe.getName()).put(hbbe.getTime(), newb);
     }
     
     public void update(AdvancedRobot self, HitByBulletEvent synth) {
