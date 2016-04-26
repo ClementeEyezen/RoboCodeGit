@@ -72,13 +72,15 @@ public class Bot {
      * Evented Update
      */
     
-    // loop update, spend time calculating
     public void update(AdvancedRobot self) {
         // update self
-        if (!self.getName().equals(name)) {
-            // don't update
-            return;
+        RobotState interim = new RobotState(self.getX(), self.getY(), flip_rotation(self.getHeadingRadians()), self.getVelocity(),
+                self.getEnergy());
+        long time = self.getTime();
+        if (!data.containsKey(self.getName())) {
+            data.put(self.getName(), new History());
         }
+        data.get(self.getName()).put(time, interim);
     }
 
     // scan - my robot
