@@ -1,6 +1,8 @@
 package jar;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import robocode.AdvancedRobot;
 import robocode.Bullet;
@@ -319,21 +321,31 @@ public class Bot {
 }
 
 class History<S extends State> {
-    HashMap<Long, S> save;
+    HashMap<Long, List<S>> save;
     
     long latest_data;
     
     public History() {
-        save = new HashMap<Long, S>();
+        save = new HashMap<Long, List<S>>();
     }
     public S get_by_time(long time) {
         if (save.containsKey(time)) {
-            return save.get(time);
+            for (S state : save.get(time)) {
+                if (state.scan) {
+                    return state;
+                }
+            }
+            return save.get(time).get(0);
         }
         return null;
     }
     public void put(long time, S state) {
-        save.put(time, state);
+        if (!save.containsKey(time)) {
+            // there is not yet data for this time, add a list
+            save.put(time, new ArrayList<S>());
+        }
+        save.get(time).add(state);
+        
         if (time > latest_data) {
             latest_data = time;
         }
