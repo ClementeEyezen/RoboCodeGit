@@ -173,6 +173,20 @@ public class Bot {
             bulletData.put(b.getName(), new History<BulletState>());
         }
         bulletData.get(b.getName()).put(bhe.getTime(), newb);
+        
+        String otherName = bhe.getName();
+        if (!robotData.containsKey(otherName)) {
+            robotData.put(otherName, new History<RobotState>());
+        }
+        if (!robotData.get(otherName).containsKey(reference.getTime())) {
+            // if there is not already data for the robot at this time
+            double x = b.getX();
+            double y = b.getY();
+            double energy = bhe.getEnergy();
+            RobotState rs = new RobotState(x, y, 0.0, 0.0, energy);
+            rs.setBullet();
+            robotData.get(otherName).put(reference.getTime(), rs);
+        }
     }
     
     public void update(Vis self, BulletHitEvent synth) {
@@ -185,6 +199,20 @@ public class Bot {
             bulletData.put(b.getName(), new History<BulletState>());
         }
         bulletData.get(b.getName()).put(synth.getTime(), newb);
+        
+        String otherName = synth.getName();
+        if (!robotData.containsKey(otherName)) {
+            robotData.put(otherName, new History<RobotState>());
+        }
+        if (!robotData.get(otherName).containsKey(reference.getTime())) {
+            // if there is not already data for the robot at this time
+            double x = b.getX();
+            double y = b.getY();
+            double energy = synth.getEnergy();
+            RobotState rs = new RobotState(x, y, 0.0, 0.0, energy);
+            rs.setBullet();
+            robotData.get(otherName).put(reference.getTime(), rs);
+        }
     }
 
     // BulletHitBullet
@@ -225,7 +253,7 @@ public class Bot {
     // HitRobotEvent
     public void update(HitRobotEvent hre) {
         // my hit robot event
-        // TODO start here
+        
     }
     
     public void update(Vis self, HitRobotEvent hre) {
@@ -279,6 +307,9 @@ class History<S extends State> {
             latest_data = time;
         }
     }
+    public boolean containsKey(long time) {
+        return save.containsKey(time);
+    }
     
     public S last() {
         return get_by_time(latest_data);
@@ -289,18 +320,28 @@ class State {
 }
 class RobotState extends State {
     private boolean robotHitRobot;
+    private boolean bulletInference;
+    
     public RobotState(double x, double y, double heading, double velocity, double energy) {
         this.x = x;
         this.y = y;
         this.heading = heading;
         this.energy = energy;
         this.velocity = velocity;
+        robotHitRobot = false;
+        bulletInference = false;
     }
     public void setHit() {
         robotHitRobot = true;
     }
+    public void setBullet() {
+        bulletInference = true;
+    }
     public boolean collision() {
         return robotHitRobot;
+    }
+    public boolean bullet() {
+        return bulletInference;
     }
 }
 class BulletState extends State {
