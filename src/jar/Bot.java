@@ -296,21 +296,12 @@ public class Bot {
     }
     
     public void update(Vis self, BulletMissedEvent bme) {
-        // currently not simulating another robot missing events
-        // TODO
-    }
-
-    public void update(HitWallEvent hwe) {
-        // my bot hit wall update
-        // TODO
-    }
-    
-    public void update(Vis self, HitWallEvent hwe) {
-        // currently not simulating another robot hitting the wall
-        // TODO
+        // currently not simulating another robot bullet missing events
     }
 
     // these are currently unused events
+    public void update(HitWallEvent hwe) {}
+    
     public void update(DeathEvent de) {}
 
     public void update(WinEvent we) {}
