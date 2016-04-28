@@ -154,16 +154,37 @@ public class Bot {
     }
     
     public void update(AdvancedRobot self, HitByBulletEvent synth) {
-        // this is called on another bot
+        // this is called on another robot's representative bot
+        Bullet b = synth.getBullet();
+        BulletState newb = new BulletState(b.getX(), b.getY(), b.getHeading(), b.getVelocity(), b.getPower());
+        if (!bulletData.containsKey(synth.getName())) {
+            bulletData.put(synth.getName(), new History<BulletState>());
+        }
+        bulletData.get(synth.getName()).put(synth.getTime(), newb);
     }
 
     // bhe (bullet hit event)
     public void update(BulletHitEvent bhe) {
         // this is for updating my bot
+        Bullet b = bhe.getBullet();
+        BulletState newb = new BulletState(b.getX(), b.getY(), b.getHeading(), b.getVelocity(), b.getPower());
+        if (!bulletData.containsKey(reference.getName())) {
+            // this is my bullet we're talking about here
+            bulletData.put(reference.getName(), new History<BulletState>());
+        }
+        bulletData.get(reference.getName()).put(bhe.getTime(), newb);
     }
     
-    public void update(Vis self, BulletHitEvent synth) {
+    public void update(Vis self, BulletHitEvent synth, String otherName) {
         // This is the other bot event
+        Bullet b = synth.getBullet();
+        BulletState newb = new BulletState(b.getX(), b.getY(), b.getHeading(), b.getVelocity(), b.getPower());
+        // I need to get the other robot's name
+        if (!bulletData.containsKey(otherName)) {
+            // this is my bullet we're talking about here
+            bulletData.put(otherName, new History<BulletState>());
+        }
+        bulletData.get(otherName).put(synth.getTime(), newb);
     }
 
     // BulletHitBullet

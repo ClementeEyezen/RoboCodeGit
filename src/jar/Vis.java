@@ -297,7 +297,7 @@ public class Vis extends AdvancedRobot {
         if (!bots.containsKey(otherName)) {
             bots.put(otherName, new Bot(otherName));
         }
-        bots.get(otherName).update(this, flipped);
+        bots.get(otherName).update(this, flipped, otherName);
     }
 
     private BulletHitEvent toBulletHitEvent(HitByBulletEvent hbbe) {
