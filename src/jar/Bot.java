@@ -146,7 +146,7 @@ public class Bot {
         // my update? this will only be called on a robot that recieved hbbe
         //  this will only be called on the bot that got hit
         Bullet b = hbbe.getBullet();
-        BulletState newb = new BulletState(b.getX(), b.getY(), b.getHeading(), b.getVelocity(), b.getPower());
+        BulletState newb = new BulletState(b);
         if (!bulletData.containsKey(hbbe.getName())) {
             bulletData.put(hbbe.getName(), new History<BulletState>());
         }
@@ -156,7 +156,7 @@ public class Bot {
     public void update(AdvancedRobot self, HitByBulletEvent synth) {
         // this is called on another robot's representative bot
         Bullet b = synth.getBullet();
-        BulletState newb = new BulletState(b.getX(), b.getY(), b.getHeading(), b.getVelocity(), b.getPower());
+        BulletState newb = new BulletState(b);
         if (!bulletData.containsKey(synth.getName())) {
             bulletData.put(synth.getName(), new History<BulletState>());
         }
@@ -167,7 +167,7 @@ public class Bot {
     public void update(BulletHitEvent bhe) {
         // this is for updating my bot
         Bullet b = bhe.getBullet();
-        BulletState newb = new BulletState(b.getX(), b.getY(), b.getHeading(), b.getVelocity(), b.getPower());
+        BulletState newb = new BulletState(b);
         if (!bulletData.containsKey(b.getName())) {
             // this is my bullet we're talking about here
             bulletData.put(b.getName(), new History<BulletState>());
@@ -192,7 +192,7 @@ public class Bot {
     public void update(Vis self, BulletHitEvent synth) {
         // This is the other bot event
         Bullet b = synth.getBullet();
-        BulletState newb = new BulletState(b.getX(), b.getY(), b.getHeading(), b.getVelocity(), b.getPower());
+        BulletState newb = new BulletState(b);
         // I need to get the other robot's name
         if (!bulletData.containsKey(b.getName())) {
             // this is my bullet we're talking about here
@@ -219,10 +219,9 @@ public class Bot {
     public void update(BulletHitBulletEvent bhbe) {
         // this is my bot's event
         Bullet myB = bhbe.getBullet();
-        BulletState myNewb = new BulletState(myB.getX(), myB.getY(), myB.getHeading(), myB.getVelocity(), myB.getPower());
+        BulletState myNewb = new BulletState(myB);
         Bullet otherB = bhbe.getHitBullet();
-        BulletState otherNewb = new BulletState(otherB.getX(), otherB.getY(), otherB.getHeading(), 
-                otherB.getVelocity(), otherB.getPower());
+        BulletState otherNewb = new BulletState(otherB);
         if (!bulletData.containsKey(myB.getName())) {
             bulletData.put(myB.getName(), new History<BulletState>());
         }
@@ -237,9 +236,8 @@ public class Bot {
         // this is the other bot's update event
         Bullet myB = bhbe.getHitBullet();
         Bullet otherB = bhbe.getBullet();
-        BulletState myNewb = new BulletState(myB.getX(), myB.getY(), myB.getHeading(), myB.getVelocity(), myB.getPower());
-        BulletState otherNewb = new BulletState(otherB.getX(), otherB.getY(), otherB.getHeading(), 
-                otherB.getVelocity(), otherB.getPower());
+        BulletState myNewb = new BulletState(myB);
+        BulletState otherNewb = new BulletState(otherB);
         if (!bulletData.containsKey(myB.getName())) {
             bulletData.put(myB.getName(), new History<BulletState>());
         }
@@ -285,7 +283,14 @@ public class Bot {
 
     public void update(BulletMissedEvent bme) {
         // when my bullet misses
-        // TODO
+        Bullet b = bme.getBullet();
+        String myName = b.getName();
+        
+        if (!bulletData.containsKey(myName)) {
+            bulletData.put(myName, new History<BulletState>());
+        }
+        
+        bulletData.get(myName).put(bme.getTime(), new BulletState(b));
     }
     
     public void update(Vis self, BulletMissedEvent bme) {
@@ -343,6 +348,7 @@ class History<S extends State> {
 }
 class State {
     double x, y, heading, velocity, energy;
+    boolean scan = true;
 }
 class RobotState extends State {
     private boolean robotHitRobot;
@@ -359,9 +365,11 @@ class RobotState extends State {
     }
     public void setHit() {
         robotHitRobot = true;
+        scan = false;
     }
     public void setBullet() {
         bulletInference = true;
+        scan = false;
     }
     public boolean collision() {
         return robotHitRobot;
@@ -371,6 +379,9 @@ class RobotState extends State {
     }
 }
 class BulletState extends State {
+    public BulletState(Bullet b) {
+        this(b.getX(), b.getY(), b.getHeadingRadians(), b.getVelocity(), b.getPower());
+    }
     public BulletState(double x, double y, double heading, double velocity, double energy) {
         this.x = x;
         this.y = y;
