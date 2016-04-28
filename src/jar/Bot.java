@@ -168,32 +168,58 @@ public class Bot {
         // this is for updating my bot
         Bullet b = bhe.getBullet();
         BulletState newb = new BulletState(b.getX(), b.getY(), b.getHeading(), b.getVelocity(), b.getPower());
-        if (!bulletData.containsKey(reference.getName())) {
+        if (!bulletData.containsKey(b.getName())) {
             // this is my bullet we're talking about here
-            bulletData.put(reference.getName(), new History<BulletState>());
+            bulletData.put(b.getName(), new History<BulletState>());
         }
-        bulletData.get(reference.getName()).put(bhe.getTime(), newb);
+        bulletData.get(b.getName()).put(bhe.getTime(), newb);
     }
     
-    public void update(Vis self, BulletHitEvent synth, String otherName) {
+    public void update(Vis self, BulletHitEvent synth) {
         // This is the other bot event
         Bullet b = synth.getBullet();
         BulletState newb = new BulletState(b.getX(), b.getY(), b.getHeading(), b.getVelocity(), b.getPower());
         // I need to get the other robot's name
-        if (!bulletData.containsKey(otherName)) {
+        if (!bulletData.containsKey(b.getName())) {
             // this is my bullet we're talking about here
-            bulletData.put(otherName, new History<BulletState>());
+            bulletData.put(b.getName(), new History<BulletState>());
         }
-        bulletData.get(otherName).put(synth.getTime(), newb);
+        bulletData.get(b.getName()).put(synth.getTime(), newb);
     }
 
     // BulletHitBullet
     public void update(BulletHitBulletEvent bhbe) {
         // this is my bot's event
+        Bullet myB = bhbe.getBullet();
+        BulletState myNewb = new BulletState(myB.getX(), myB.getY(), myB.getHeading(), myB.getVelocity(), myB.getPower());
+        Bullet otherB = bhbe.getHitBullet();
+        BulletState otherNewb = new BulletState(otherB.getX(), otherB.getY(), otherB.getHeading(), 
+                otherB.getVelocity(), otherB.getPower());
+        if (!bulletData.containsKey(myB.getName())) {
+            bulletData.put(myB.getName(), new History<BulletState>());
+        }
+        bulletData.get(myB.getName()).put(bhbe.getTime(), myNewb);
+        if (!bulletData.containsKey(otherB.getName())) {
+            bulletData.put(otherB.getName(), new History<BulletState>());
+        }
+        bulletData.get(otherB.getName()).put(bhbe.getTime(), otherNewb);
     }
     
     public void update(Vis self, BulletHitBulletEvent bhbe) {
         // this is the other bot's update event
+        Bullet myB = bhbe.getHitBullet();
+        Bullet otherB = bhbe.getBullet();
+        BulletState myNewb = new BulletState(myB.getX(), myB.getY(), myB.getHeading(), myB.getVelocity(), myB.getPower());
+        BulletState otherNewb = new BulletState(otherB.getX(), otherB.getY(), otherB.getHeading(), 
+                otherB.getVelocity(), otherB.getPower());
+        if (!bulletData.containsKey(myB.getName())) {
+            bulletData.put(myB.getName(), new History<BulletState>());
+        }
+        bulletData.get(myB.getName()).put(bhbe.getTime(), myNewb);
+        if (!bulletData.containsKey(otherB.getName())) {
+            bulletData.put(otherB.getName(), new History<BulletState>());
+        }
+        bulletData.get(otherB.getName()).put(bhbe.getTime(), otherNewb);
     }
 
     // HitRobotEvent
