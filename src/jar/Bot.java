@@ -225,11 +225,12 @@ public class Bot {
     // HitRobotEvent
     public void update(HitRobotEvent hre) {
         // my hit robot event
+        // TODO start here
     }
     
     public void update(Vis self, HitRobotEvent hre) {
         // other hit robot event
-
+        
     }
 
     public void update(BulletMissedEvent bme) {
@@ -287,12 +288,19 @@ class State {
     double x, y, heading, velocity, energy;
 }
 class RobotState extends State {
+    private boolean robotHitRobot;
     public RobotState(double x, double y, double heading, double velocity, double energy) {
         this.x = x;
         this.y = y;
         this.heading = heading;
         this.energy = energy;
         this.velocity = velocity;
+    }
+    public void setHit() {
+        robotHitRobot = true;
+    }
+    public boolean collision() {
+        return robotHitRobot;
     }
 }
 class BulletState extends State {
@@ -302,5 +310,12 @@ class BulletState extends State {
         this.heading = heading;
         this.energy = energy;
         this.velocity = velocity;
+    }
+    
+    public BulletState atTime(long dt) {
+        // TODO(buckbaskin): implement this
+        // at time 0, return a clone of this
+        // at time -1, return one timestep back, etc.
+        return this;
     }
 }
