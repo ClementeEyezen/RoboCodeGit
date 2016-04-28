@@ -253,12 +253,34 @@ public class Bot {
     // HitRobotEvent
     public void update(HitRobotEvent hre) {
         // my hit robot event
-        // TODO
+        String otherName = hre.getName();
+        if (!robotData.containsKey(otherName)) {
+            robotData.put(otherName, new History<RobotState>());
+        }
+        double dist = 36;
+        double robocode_bearing = hre.getBearingRadians();
+        double true_bearing = flip_rotation(robocode_bearing);
+        double x = reference.getX() + dist*Math.cos(true_bearing);
+        double y = reference.getY() + dist*Math.sin(true_bearing);
+        double energy = hre.getEnergy();
+        
+        double heading = robocode_bearing + Math.PI;
+        
+        RobotState rs = new RobotState(x, y, heading, 0.0, energy);
+        rs.setHit();
+        robotData.get(otherName).put(hre.getTime(), rs);
     }
     
     public void update(Vis self, HitRobotEvent hre) {
         // other hit robot event
-        // TODO
+        String otherName = hre.getName();
+        if (!robotData.containsKey(otherName)) {
+            robotData.put(otherName, new History<RobotState>());
+        }
+
+        RobotState rs = new RobotState(self.getX(), self.getY(), self.getHeadingRadians(), self.getVelocity(), self.getEnergy());
+        rs.setHit();
+        robotData.get(otherName).put(hre.getTime(), rs);
     }
 
     public void update(BulletMissedEvent bme) {
