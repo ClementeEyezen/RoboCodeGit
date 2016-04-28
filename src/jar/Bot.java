@@ -253,28 +253,32 @@ public class Bot {
     // HitRobotEvent
     public void update(HitRobotEvent hre) {
         // my hit robot event
-        
+        // TODO
     }
     
     public void update(Vis self, HitRobotEvent hre) {
         // other hit robot event
-        
+        // TODO
     }
 
     public void update(BulletMissedEvent bme) {
         // when my bullet misses
+        // TODO
     }
     
     public void update(Vis self, BulletMissedEvent bme) {
         // currently not simulating another robot missing events
+        // TODO
     }
 
     public void update(HitWallEvent hwe) {
         // my bot hit wall update
+        // TODO
     }
     
     public void update(Vis self, HitWallEvent hwe) {
         // currently not simulating another robot hitting the wall
+        // TODO
     }
 
     // these are currently unused events
