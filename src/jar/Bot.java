@@ -32,7 +32,7 @@ public class Bot {
     /*
      * A Bot class encapsulates all of the information that a robot knows about itself and other robots
      */
-    String name;
+    public String name;
     AdvancedRobot reference;
     HashMap<String, History<RobotState>> robotData;
     HashMap<String, History<BulletState>> bulletData;
@@ -77,7 +77,7 @@ public class Bot {
      * Evented Update
      */
     
-    public void update(AdvancedRobot self) {
+    public void update(Vis self) {
         // update self
         RobotState interim = new RobotState(self.getX(), self.getY(), flip_rotation(self.getHeadingRadians()), self.getVelocity(),
                 self.getEnergy());
@@ -86,6 +86,10 @@ public class Bot {
             robotData.put(self.getName(), new History<RobotState>());
         }
         robotData.get(self.getName()).put(time, interim);
+        
+        di.update(15000000);
+        gi.update(15000000);
+        // ri.update(15000000);
     }
 
     // scan - my robot
@@ -349,7 +353,7 @@ class History<S extends State> {
         return get_by_time(latest_data);
     }
 }
-class State {
+abstract class State {
     double x, y, heading, velocity, energy;
     boolean scan = true;
 }
