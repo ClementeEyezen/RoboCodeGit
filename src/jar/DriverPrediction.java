@@ -20,15 +20,20 @@ public class DriverPrediction extends Prediction {
         dimensional[0] = first;
         nondim_x[0] = 0.0;
         nondim_y[0] = 0.0;
+        
+        base_x = dimensional[0].x;
+        base_y = dimensional[0].y;
+        axis_x = Math.cos(dimensional[0].heading);
+        axis_y = Math.sin(dimensional[0].heading);
     }
     
     public static void main(String[] args) {
         RobotState first = new RobotState(100.0, 100.0, 0.0, 0.0, 0.0);
         DriverPrediction dp = new DriverPrediction(first);
-        RobotState second = new RobotState(100.0, 100.0, 0.0, 0.0, 0.0);
-        RobotState third = new RobotState(100.0, 100.0, 0.0, 0.0, 0.0);
-        RobotState fourth = new RobotState(100.0, 100.0, 0.0, 0.0, 0.0);
-        RobotState fifth = new RobotState(100.0, 100.0, 0.0, 0.0, 0.0);
+        RobotState second = new RobotState(108.0, 100.0, 0.0, 0.0, 0.0);
+        RobotState third = new RobotState(108.0, 108.0, 0.0, 0.0, 0.0);
+        RobotState fourth = new RobotState(108.0, 100.0, 0.0, 0.0, 0.0);
+        RobotState fifth = new RobotState(108.0, 92.0, 0.0, 0.0, 0.0);
         
         dp.push(second);
         dp.push(third);
@@ -46,9 +51,6 @@ public class DriverPrediction extends Prediction {
         for (int ii = 1; ii < size; ii++){
             if (dimensional[ii] == null) {
                 dimensional[ii] = next;
-                if (ii == 1) {
-                    _setup_nondimensional();
-                }
                 _calculate_nondimensional(ii);
                 break;
             }
@@ -65,41 +67,46 @@ public class DriverPrediction extends Prediction {
         return result;
     }
     private void _calculate_nondimensional(int index) {
-        if (index <= 1 || index >= size) {
+        if (index <= 0 || index >= size) {
             return;
         }
         
         double dx = dimensional[index].x - dimensional[0].x;
         double dy = dimensional[index].y - dimensional[0].y;
         
+        if (Double.isNaN(dx) || Double.isNaN(dy)) {
+            System.out.println(index+": dx/dy Nan");
+            return;
+        }
+        if (Double.isNaN(axis_x) || Double.isNaN(axis_y)) {
+            System.out.println(index+": axis_x/axis_y Nan");
+            return;
+        }
+        
         double dot_product = dx*axis_x + dy*axis_y; // distance along x axis
+        
+        if (Double.isNaN(dot_product)) {
+            System.out.println(index+": dot product is Nan");
+            return;
+        }
         
         double along_x = axis_x * dot_product;
         double along_y = axis_y * dot_product;
         
+        if (Double.isNaN(along_x) || Double.isNaN(along_y)) {
+            System.out.println(index+": along x/y is Nan");
+            return;
+        }
+        
         double y_dimension = Math.sqrt(Math.pow(dx-along_x, 2)+Math.pow(dy-along_y, 2));
+        
+        if (Double.isNaN(y_dimension)) {
+            System.out.println(index+": y_dimension is Nan");
+            return;
+        }
         
         nondim_x[index] = dot_product;
         nondim_y[index] = y_dimension;
-    }
-    
-    private void _setup_nondimensional() {
-        base_x = dimensional[0].x;
-        base_y = dimensional[0].y;
-        double next_x = dimensional[1].x;
-        double next_y = dimensional[1].y;
-        
-        axis_x = next_x - base_x;
-        axis_y = next_y - base_y;
-        
-        double distance = Math.sqrt(axis_x*axis_x+axis_y*axis_y);
-        axis_x = axis_x / distance;
-        axis_y = axis_y / distance;
-        
-        nondim_x[1] = distance;
-        nondim_y[1] = 0.0;
-        
-        setup = true;
     }
     
     
