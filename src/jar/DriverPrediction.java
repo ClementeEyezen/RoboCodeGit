@@ -6,22 +6,27 @@ public class DriverPrediction extends Prediction {
 
     private int size = 5;
     
-    private double base_x, base_y, axis_x, axis_y; 
+    private double base_x, base_y, base_heading, axis_x, axis_y; 
     
     RobotState[] dimensional;
     double[] nondim_x;
     double[] nondim_y;
+    double[] nondim_theta;
     
     public DriverPrediction(RobotState first) {
         dimensional = new RobotState[size];
         nondim_x = new double[size];
         nondim_y = new double[size];
+        nondim_theta = new double[size];
+        
         dimensional[0] = first;
         nondim_x[0] = 0.0;
         nondim_y[0] = 0.0;
+        nondim_theta[0] = 0.0;
         
         base_x = dimensional[0].x;
         base_y = dimensional[0].y;
+        base_heading = dimensional[0].heading;
         axis_x = Math.cos(dimensional[0].heading);
         axis_y = Math.sin(dimensional[0].heading);
     }
@@ -42,8 +47,9 @@ public class DriverPrediction extends Prediction {
         double[][] nondim = dp.get_nondimensional();
         double[] nondim_x = nondim[0];
         double[] nondim_y = nondim[1];
+        double[] nondim_h = nondim[2];
         
-        System.out.println("nondims:\n x: "+Arrays.toString(nondim_x)+"\n y: "+Arrays.toString(nondim_y)+"");
+        System.out.println("nondims:\n x: "+Arrays.toString(nondim_x)+"\n y: "+Arrays.toString(nondim_y)+"\n h: "+Arrays.toString(nondim_h));
     }
     
     public void push(RobotState next) {
@@ -60,9 +66,10 @@ public class DriverPrediction extends Prediction {
     }
     
     public double[][] get_nondimensional() {
-        double[][] result = new double[2][size];
+        double[][] result = new double[3][size];
         result[0] = nondim_x;
         result[1] = nondim_y;
+        result[2] = nondim_theta;
         return result;
     }
     private void _calculate_nondimensional(int index) {
@@ -112,6 +119,7 @@ public class DriverPrediction extends Prediction {
         } else {
             nondim_y[index] = -y_dimension;
         }
+        nondim_theta[index] = dimensional[index].heading - base_heading;
     }
     
     
