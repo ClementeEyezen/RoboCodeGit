@@ -5,7 +5,6 @@ import java.util.Arrays;
 public class DriverPrediction extends Prediction {
 
     private int size = 5;
-    private boolean setup = false;
     
     private double base_x, base_y, axis_x, axis_y; 
     
@@ -28,7 +27,7 @@ public class DriverPrediction extends Prediction {
     }
     
     public static void main(String[] args) {
-        RobotState first = new RobotState(100.0, 100.0, 0.0, 0.0, 0.0);
+        RobotState first = new RobotState(100.0, 100.0, Math.PI/2.0, 0.0, 0.0);
         DriverPrediction dp = new DriverPrediction(first);
         RobotState second = new RobotState(108.0, 100.0, 0.0, 0.0, 0.0);
         RobotState third = new RobotState(108.0, 108.0, 0.0, 0.0, 0.0);
@@ -71,8 +70,8 @@ public class DriverPrediction extends Prediction {
             return;
         }
         
-        double dx = dimensional[index].x - dimensional[0].x;
-        double dy = dimensional[index].y - dimensional[0].y;
+        double dx = dimensional[index].x - base_x;
+        double dy = dimensional[index].y - base_y;
         
         if (Double.isNaN(dx) || Double.isNaN(dy)) {
             System.out.println(index+": dx/dy Nan");
@@ -100,13 +99,19 @@ public class DriverPrediction extends Prediction {
         
         double y_dimension = Math.sqrt(Math.pow(dx-along_x, 2)+Math.pow(dy-along_y, 2));
         
+        double sign_of_y_dim = axis_x*(dy - along_y) - axis_y*(dx - along_x);
+        
         if (Double.isNaN(y_dimension)) {
             System.out.println(index+": y_dimension is Nan");
             return;
         }
         
         nondim_x[index] = dot_product;
-        nondim_y[index] = y_dimension;
+        if (sign_of_y_dim >= 0) {
+            nondim_y[index] = y_dimension;
+        } else {
+            nondim_y[index] = -y_dimension;
+        }
     }
     
     
