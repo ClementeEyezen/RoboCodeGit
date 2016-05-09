@@ -19,6 +19,108 @@ public class KDTree {
         level = new LinkedList<KDNode>();
     }
     
+    public static void main(String[] args) {
+        KDTree kdt = new KDTree();
+        KDNode[] nodes = new KDNode[30];
+        RobotState[] observations = new RobotState[30];
+        
+        for (int ii = 0; ii < observations.length; ii++) {
+            observations[ii] = new RobotState(ii*2.0+(Math.random() - 0.5), 0.0+(Math.random() - 0.5), 0.0, 2.0, 100.0);
+            
+            nodes[ii] = new KDNode(observations[ii]);
+            
+            for (int jj = ii-4; jj < ii; jj++) {
+                if (jj < 0 || jj > nodes.length) {
+                    continue;
+                }
+                nodes[jj].push(observations[ii]);
+            }
+        }
+        
+        for (KDNode kdn : nodes) {
+            kdt.add_node(kdn);
+        }
+        
+        for (int ii = 0; ii < nodes.length; ii++) {
+            KDNode kdn = kdt.find_nearest(nodes[ii]);
+            System.out.println("kdn pair: ");
+            System.out.println("old: ("+nodes[ii].nondim_x[1]+","+nodes[ii].nondim_y[1]+","+nodes[ii].nondim_theta[2]+") ");
+            System.out.println("new: ("+kdn.nondim_x[1]+","+kdn.nondim_y[1]+","+kdn.nondim_theta[2]+")");
+        }
+    }
+    
+    public KDNode find_nearest(KDNode kdNode) {
+        return find_nearest_down(kdNode, 0);
+    }
+    public KDNode find_nearest(KDNode other, int dimension) {
+        KDNode nearest = find_nearest_down(other, dimension);
+        return nearest;
+    }
+    public KDNode find_nearest_down(KDNode other, int dimension) {
+        if (!treed && level != null) {
+            // search level
+            double min_distance = Double.MAX_VALUE;
+            KDNode min_node = null;
+            
+            for (KDNode kdn : level) {
+                if (kdn.distance(other) < min_distance) {
+                    min_node = kdn;
+                }
+            }
+            return min_node;
+        } else {
+            // search tree
+            if (dimension % 3 == 0) {
+                if (other.nondim_x[dimension/3] >= root.nondim_x[dimension/3]) {
+                    // right
+                    if (other.nondim_y[(dimension+1)/3] >= y[1].nondim_y[(dimension+1)/3]) {
+                        // right right
+                        if (other.nondim_theta[(dimension+2)/3] >= h[3].nondim_theta[(dimension+2)/3]) {
+                            // right right right
+                            return children[7].find_nearest(other, dimension+3);
+                        } else {
+                            // right right left
+                            return children[6].find_nearest(other, dimension+3);
+                        }
+                    } else {
+                        // right left
+                        if (other.nondim_theta[(dimension+2)/3] >= h[2].nondim_theta[(dimension+2)/3]) {
+                            // right left right
+                            return children[5].find_nearest(other, dimension+3);
+                        } else {
+                            // right left left
+                            return children[4].find_nearest(other, dimension+3);
+                        }
+                    }
+                } else {
+                    // left
+                    if (other.nondim_y[(dimension+1)/3] >= y[0].nondim_y[(dimension+1)/3]) {
+                        // left right
+                        if (other.nondim_theta[(dimension+2)/3] >= h[1].nondim_theta[(dimension+2)/3]) {
+                            // left right right
+                            return children[3].find_nearest(other, dimension+3);
+                        } else {
+                            // left right left
+                            return children[2].find_nearest(other, dimension+3);
+                        }
+                    } else {
+                        // left left
+                        if (other.nondim_theta[(dimension+2)/3] >= h[0].nondim_theta[(dimension+2)/3]) {
+                            // left left right
+                            return children[1].find_nearest(other, dimension+3);
+                        } else {
+                            // left left left
+                            return children[0].find_nearest(other, dimension+3);
+                        }
+                    }
+                }
+            } else {
+                // error!
+                return null;
+            }
+        }
+    }
+
     public void add_node(KDNode kdn) {
         if (treed || level == null) {
             // add the kdn to a child
@@ -211,6 +313,25 @@ class KDNode implements Comparable<KDNode> {
         }
     }
 
+    public double distance(KDNode other) {
+        double accum = 0.0;
+        double dx, dy, dtheta;
+        for (int ii = 0; ii < this.size; ii++) {
+            dx = other.nondim_x[ii] - nondim_x[ii];
+            dy = other.nondim_y[ii] - nondim_y[ii];
+            accum += Math.sqrt(dx*dx + dy*dy);
+
+            dtheta = other.nondim_theta[ii] - nondim_theta[ii];
+            while (dtheta > 2*Math.PI) { dtheta += -2*Math.PI; }
+            while (dtheta < -2*Math.PI) { dtheta += 2*Math.PI; }
+            if (dtheta > Math.PI) { dtheta = -2*Math.PI + dtheta; }
+            if (dtheta < -Math.PI) { dtheta = 2*Math.PI + dtheta; }
+            
+            accum += Math.abs(dtheta) * 1.0;
+        }
+        return accum;
+    }
+    
     @Override
     public int compareTo(KDNode o) {
         if (dimension % 3 == 0) {
