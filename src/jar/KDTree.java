@@ -53,17 +53,18 @@ public class KDTree {
             return new KDNode[1];
         }
         
-        KDNode[] result = new KDNode[num_candidates];
-        result = find_nearest_down(other, result);
-        result = find_nearest_up(result[0], result);
+        KDNode nearest = find_nearest_down(other);
+        KDNode[] result = find_nearest_up(other, nearest, num_candidates);
         return result;
     }
 
-    private KDNode[] find_nearest_down(KDNode other, KDNode[] candidates) {
-        return candidates;
+    private KDNode find_nearest_down(KDNode other) {
+        // TODO
+        return root;
     }
-    private KDNode[] find_nearest_up(KDNode start, KDNode[] candidates) {
-        return candidates;
+    private KDNode[] find_nearest_up(KDNode other, KDNode start, int num_candidates) {
+        // TODO
+        return new KDNode[num_candidates];
     }
 
     public void add_node(KDNode kdn) {
@@ -71,7 +72,7 @@ public class KDTree {
     }
 }
 
-class KDNode implements Comparable<KDNode> {
+class KDNode {
 
     public int dimension = 0;
     
@@ -83,6 +84,8 @@ class KDNode implements Comparable<KDNode> {
     double[] nondim_x;
     double[] nondim_y;
     double[] nondim_theta;
+    
+    KDNode parent, left, right;
     
     public KDNode(RobotState first) {
         dimensional = new RobotState[size];
@@ -102,6 +105,7 @@ class KDNode implements Comparable<KDNode> {
         axis_y = Math.sin(dimensional[0].heading);
     }
     
+    /*
     public static void main(String[] args) {
         RobotState first = new RobotState(100.0, 100.0, Math.PI/2.0, 0.0, 0.0);
         KDNode dp = new KDNode(first);
@@ -122,7 +126,47 @@ class KDNode implements Comparable<KDNode> {
         
         System.out.println("nondims:\n x: "+Arrays.toString(nondim_x)+"\n y: "+Arrays.toString(nondim_y)+"\n h: "+Arrays.toString(nondim_h));
     }
+    */
     
+    public void add_node(KDNode kdn) {
+        add_node(kdn, 0);
+    }
+    
+    private void add_node(KDNode kdn, int depth) {
+        double[] my_data, other_data;
+        if (depth % 3 == 0) {
+            my_data = nondim_x;
+            other_data = kdn.nondim_x;
+        } else if (depth % 3 == 1) {
+            my_data = nondim_y;
+            other_data = kdn.nondim_y;
+        } else {
+            my_data = nondim_theta;
+            other_data = kdn.nondim_theta;
+        }
+        
+        int index = depth / 3;
+        
+        if (other_data[index] >= my_data[index]) {
+            // right
+            if (right == null) {
+                right = kdn;
+                right.parent = this;
+            } else {
+                right.add_node(kdn, depth+1);
+            }
+        } else {
+            // left
+         // right
+            if (left == null) {
+                left = kdn;
+                left.parent = this;
+            } else {
+                left.add_node(kdn, depth+1);
+            }
+        }
+    }
+
     public void push(RobotState next) {
         for (int ii = 1; ii < size; ii++){
             if (dimensional[ii] == null) {
@@ -143,6 +187,7 @@ class KDNode implements Comparable<KDNode> {
         result[2] = nondim_theta;
         return result;
     }
+    
     private void _calculate_nondimensional(int index) {
         if (index <= 0 || index >= size) {
             return;
@@ -191,62 +236,5 @@ class KDNode implements Comparable<KDNode> {
             nondim_y[index] = -y_dimension;
         }
         nondim_theta[index] = dimensional[index].heading - base_heading;
-    }
-    
-    
-    class Pair {
-        public double x, y;
-        public Pair(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-    }
-
-    public double distance(KDNode other) {
-        double accum = 0.0;
-        double dx, dy, dtheta;
-        for (int ii = 0; ii < this.size; ii++) {
-            dx = other.nondim_x[ii] - nondim_x[ii];
-            dy = other.nondim_y[ii] - nondim_y[ii];
-            accum += Math.sqrt(dx*dx + dy*dy);
-
-            dtheta = other.nondim_theta[ii] - nondim_theta[ii];
-            while (dtheta > 2*Math.PI) { dtheta += -2*Math.PI; }
-            while (dtheta < -2*Math.PI) { dtheta += 2*Math.PI; }
-            if (dtheta > Math.PI) { dtheta = -2*Math.PI + dtheta; }
-            if (dtheta < -Math.PI) { dtheta = 2*Math.PI + dtheta; }
-            
-            accum += Math.abs(dtheta) * 1.0;
-        }
-        return accum;
-    }
-    
-    @Override
-    public int compareTo(KDNode o) {
-        if (dimension % 3 == 0) {
-            if (nondim_x[dimension/3] == o.nondim_x[dimension/3]) {
-                return 0;
-            } else if (nondim_x[dimension/3] > o.nondim_x[dimension/3]) {
-                return 1;
-            } else {
-                return -1;
-            }
-        } else if (dimension % 3 == 1) {
-            if (nondim_y[dimension/3] == o.nondim_y[dimension/3]) {
-                return 0;
-            } else if (nondim_y[dimension/3] > o.nondim_y[dimension/3]) {
-                return 1;
-            } else {
-                return -1;
-            }
-        } else {
-            if (nondim_theta[dimension/3] == o.nondim_theta[dimension/3]) {
-                return 0;
-            } else if (nondim_theta[dimension/3] > o.nondim_theta[dimension/3]) {
-                return 1;
-            } else {
-                return -1;
-            }
-        }
     }
 }
