@@ -1,12 +1,5 @@
 package jar;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-
 public class KDTree {
     // make it a simple KDTree. Each node has a parent and children
     KDNode root;
@@ -59,8 +52,7 @@ public class KDTree {
     }
 
     private KDNode find_nearest_down(KDNode other) {
-        // TODO
-        return root;
+        return root.find_nearest_down(other, 0);
     }
     private KDNode[] find_nearest_up(KDNode other, KDNode start, int num_candidates) {
         // TODO
@@ -128,6 +120,11 @@ class KDNode {
     }
     */
     
+    public KDNode find_nearest_down(KDNode other, int depth) {
+        // TODO START HERE
+        return this;
+    }
+
     public void add_node(KDNode kdn) {
         add_node(kdn, 0);
     }
@@ -157,7 +154,6 @@ class KDNode {
             }
         } else {
             // left
-         // right
             if (left == null) {
                 left = kdn;
                 left.parent = this;
