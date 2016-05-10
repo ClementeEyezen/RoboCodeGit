@@ -8,19 +8,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class KDTree {
-    boolean treed = false;
-    List<KDNode> level;
+    // make it a simple KDTree. Each node has a parent and children
     KDNode root;
-    KDNode[] y;
-    KDNode[] h;
-    KDTree[] children;
-    
-    public KDTree() {
-        level = new LinkedList<KDNode>();
+    public KDTree(KDNode root) {
+        this.root = root;
     }
     
     public static void main(String[] args) {
-        KDTree kdt = new KDTree();
         KDNode[] nodes = new KDNode[30];
         RobotState[] observations = new RobotState[30];
         
@@ -36,6 +30,7 @@ public class KDTree {
                 nodes[jj].push(observations[ii]);
             }
         }
+        KDTree kdt = new KDTree(nodes[0]);
         
         for (KDNode kdn : nodes) {
             kdt.add_node(kdn);
@@ -49,136 +44,30 @@ public class KDTree {
         }
     }
     
-    public KDNode find_nearest(KDNode kdNode) {
-        return find_nearest_down(kdNode, 0);
+    public KDNode find_nearest(KDNode other) {
+        return find_nearest(other, 1)[0];
     }
-    public KDNode find_nearest(KDNode other, int dimension) {
-        KDNode nearest = find_nearest_down(other, dimension);
-        return nearest;
-    }
-    public KDNode find_nearest_down(KDNode other, int dimension) {
-        if (!treed && level != null) {
-            // search level
-            double min_distance = Double.MAX_VALUE;
-            KDNode min_node = null;
-            
-            for (KDNode kdn : level) {
-                if (kdn.distance(other) < min_distance) {
-                    min_node = kdn;
-                }
-            }
-            return min_node;
-        } else {
-            // search tree
-            if (dimension % 3 == 0) {
-                if (other.nondim_x[dimension/3] >= root.nondim_x[dimension/3]) {
-                    // right
-                    if (other.nondim_y[(dimension+1)/3] >= y[1].nondim_y[(dimension+1)/3]) {
-                        // right right
-                        if (other.nondim_theta[(dimension+2)/3] >= h[3].nondim_theta[(dimension+2)/3]) {
-                            // right right right
-                            return children[7].find_nearest(other, dimension+3);
-                        } else {
-                            // right right left
-                            return children[6].find_nearest(other, dimension+3);
-                        }
-                    } else {
-                        // right left
-                        if (other.nondim_theta[(dimension+2)/3] >= h[2].nondim_theta[(dimension+2)/3]) {
-                            // right left right
-                            return children[5].find_nearest(other, dimension+3);
-                        } else {
-                            // right left left
-                            return children[4].find_nearest(other, dimension+3);
-                        }
-                    }
-                } else {
-                    // left
-                    if (other.nondim_y[(dimension+1)/3] >= y[0].nondim_y[(dimension+1)/3]) {
-                        // left right
-                        if (other.nondim_theta[(dimension+2)/3] >= h[1].nondim_theta[(dimension+2)/3]) {
-                            // left right right
-                            return children[3].find_nearest(other, dimension+3);
-                        } else {
-                            // left right left
-                            return children[2].find_nearest(other, dimension+3);
-                        }
-                    } else {
-                        // left left
-                        if (other.nondim_theta[(dimension+2)/3] >= h[0].nondim_theta[(dimension+2)/3]) {
-                            // left left right
-                            return children[1].find_nearest(other, dimension+3);
-                        } else {
-                            // left left left
-                            return children[0].find_nearest(other, dimension+3);
-                        }
-                    }
-                }
-            } else {
-                // error!
-                return null;
-            }
+    
+    public KDNode[] find_nearest(KDNode other, int num_candidates) {
+        if (num_candidates < 0) {
+            return new KDNode[1];
         }
+        
+        KDNode[] result = new KDNode[num_candidates];
+        result = find_nearest_down(other, result);
+        result = find_nearest_up(result[0], result);
+        return result;
+    }
+
+    private KDNode[] find_nearest_down(KDNode other, KDNode[] candidates) {
+        return candidates;
+    }
+    private KDNode[] find_nearest_up(KDNode start, KDNode[] candidates) {
+        return candidates;
     }
 
     public void add_node(KDNode kdn) {
-        if (treed || level == null) {
-            // add the kdn to a child
-            add_to_child(kdn);
-        } else {
-            level.add(kdn);
-            if (level.size() >= 6) {
-                treeify();
-            }
-        }
-    }
-    private void add_to_child(KDNode kdn) {
-        // add the node to one of the children of the tree
-    }
-    private void treeify() {
-        treed = true;
-        
-        Collections.sort(level, new Comparator<KDNode>() {
-            @Override
-            public int compare(KDNode o1, KDNode o2) {
-                return o1.compareTo(o2);
-            }
-        });
-        root = level.get(3);
-        
-        for (KDNode kdn : level) {
-            kdn.dimension++;
-        }
-        List<KDNode> lefts = level.subList(0, 2);
-        List<KDNode> rights = level.subList(4, 6);
-        
-        Collections.sort(lefts, new Comparator<KDNode>() {
-            @Override
-            public int compare(KDNode o1, KDNode o2) {
-                return o1.compareTo(o2);
-            }
-        });
-        Collections.sort(rights, new Comparator<KDNode>() {
-            @Override
-            public int compare(KDNode o1, KDNode o2) {
-                return o1.compareTo(o2);
-            }
-        });
-        
-        y[0] = lefts.get(1);
-        y[1] = rights.get(1);
-        
-        h[0] = lefts.get(0);
-        h[1] = lefts.get(2);
-        h[2] = rights.get(0);
-        h[3] = rights.get(2);
-        
-        if (level.size() > 7) {
-            for (int ii = 7; ii < level.size(); ii++) {
-                add_node(level.get(ii));
-            }
-        }
-        level = null;
+        root.add_node(kdn);
     }
 }
 
