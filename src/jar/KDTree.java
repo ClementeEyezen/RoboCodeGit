@@ -121,8 +121,34 @@ class KDNode {
     */
     
     public KDNode find_nearest_down(KDNode other, int depth) {
-        // TODO START HERE
-        return this;
+        double[] my_data, other_data;
+        if (depth % 3 == 0) {
+            my_data = nondim_x;
+            other_data = other.nondim_x;
+        } else if (depth % 3 == 1) {
+            my_data = nondim_y;
+            other_data = other.nondim_y;
+        } else {
+            my_data = nondim_theta;
+            other_data = other.nondim_theta;
+        }
+        int index = depth / 3;
+        
+        if (other_data[index] >= my_data[index]) {
+            // right
+            if (right == null) {
+                return this;
+            } else {
+                return right.find_nearest_down(other, depth+1);
+            }
+        } else {
+            // left
+            if (left == null) {
+                return this;
+            } else {
+                return left.find_nearest_down(other, depth+1);
+            }
+        }
     }
 
     public void add_node(KDNode kdn) {
