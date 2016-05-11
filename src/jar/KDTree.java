@@ -8,6 +8,8 @@ public class KDTree {
     KDNode root;
     public KDTree(KDNode root) {
         this.root = root;
+        this.root.depth = 0;
+        this.root.parent = null;
     }
 
     public static void main(String[] args) {
@@ -78,21 +80,61 @@ public class KDTree {
         });
 
         // start...
+        double max_distance = Double.MAX_VALUE;
         
         while (start != null) {
-            candidates.add(start);
+            candidates = add_tree(other, start, candidates, max_distance);
             if (candidates.size() > num_candidates) {
                 while(candidates.size() > num_candidates) {
                     candidates.poll();
                 }
                 KDNode furthest = candidates.peek(); // look at the (num_candidates) furthest item
-                // TODO start here
+                max_distance = other.distance(furthest);
             }
             start = start.parent;
         }
         return (KDNode[]) candidates.toArray();
     }
 
+    private PriorityQueue<KDNode> add_tree(KDNode other, KDNode start, PriorityQueue<KDNode> queue, double max_distance) {
+        if (start == null) {
+            return queue;
+        }
+        int depth = start.depth;
+        double[] my_data, other_data;
+        
+        // choose axis
+        if (depth % 3 == 0) {
+            my_data = start.nondim_x;
+            other_data = other.nondim_x;
+        } else if (depth % 3 == 1) {
+            my_data = start.nondim_y;
+            other_data = other.nondim_y;
+        } else {
+            my_data = start.nondim_theta;
+            other_data = other.nondim_theta;
+        }
+        int index = depth / 3;
+        double dist_to_axis = other_data[index] - my_data[index];
+        
+        if (Math.abs(dist_to_axis) > max_distance) {
+            // no children from the other side can be closer
+            return queue;
+        } else {
+            if (other.distance(start) < max_distance) {
+                queue.add(start);
+            }
+            if (dist_to_axis >= 0.0) {
+                // was right, now look at left
+                queue = add_tree(other, start.left, queue, max_distance);
+            } else {
+                // was left, now look at right
+                queue = add_tree(other, start.right, queue, max_distance);
+            }
+        }
+        return queue;
+    }
+    
     public void add_node(KDNode kdn) {
         root.add_node(kdn);
     }
@@ -112,6 +154,7 @@ class KDNode {
     double[] nondim_theta;
 
     KDNode parent, left, right;
+    int depth;
 
     public KDNode(RobotState first) {
         dimensional = new RobotState[size];
@@ -209,6 +252,7 @@ class KDNode {
             if (right == null) {
                 right = kdn;
                 right.parent = this;
+                right.depth = this.depth+1;
             } else {
                 right.add_node(kdn, depth+1);
             }
@@ -217,6 +261,7 @@ class KDNode {
             if (left == null) {
                 left = kdn;
                 left.parent = this;
+                left.depth = this.depth+1;
             } else {
                 left.add_node(kdn, depth+1);
             }
