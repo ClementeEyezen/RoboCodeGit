@@ -2,13 +2,19 @@ package jar;
 
 public class Gunner extends Actor {
 
-    public Gunner(Bot b) {}
+    Bot me;
+    
+    public Gunner(Bot b) {
+        me = b;
+    }
 
     public double angular() {
         return 0.0;
     }
 
     @Override
-    public void update(long nanos) {}
+    public void update(long nanos) {
+        DriverPrediction fix = me.di.predict(10L);
+    }
 
 }

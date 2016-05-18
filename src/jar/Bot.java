@@ -352,7 +352,37 @@ class History<S extends State> {
     public S last() {
         return get_by_time(latest_data);
     }
+    
+    @SuppressWarnings("unchecked")
+    public S[] since(long last_update) {
+        if (latest_data <= last_update) {
+            return null;
+        }
+        int counter = 0;
+        for (long ii = last_update; ii <= latest_data; ii++) {
+            if (save.containsKey(ii)) {
+                counter++;
+            }
+        }
+        if (counter <= 0) {
+            return null;
+        }
+        
+        ArrayList<S> data = new ArrayList<S>();
+        counter = 0;
+        for (long ii = last_update; ii <= latest_data; ii++) {
+            if (save.containsKey(ii)) {
+                
+                data.add(save.get(ii).get(0));
+                
+                counter++;
+            }
+        }
+        
+        return (S[]) data.toArray();
+    }
 }
+
 abstract class State {
     double x, y, heading, velocity, energy;
     boolean scan = true;
