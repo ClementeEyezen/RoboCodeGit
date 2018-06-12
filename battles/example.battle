@@ -1,6 +1,5 @@
 #Battle Properties
-#Tue Jun 12 00:53:08 EDT 2018
-robocode.battle.sentryBorderSize=100
+#Tue Jun 12 01:42:38 EDT 2018
 robocode.battle.numRounds=1
 robocode.battle.gunCoolingRate=0.1
 robocode.battleField.width=800
