@@ -1,0 +1,10 @@
+#Battle Properties
+#Tue Jun 12 00:53:08 EDT 2018
+robocode.battle.sentryBorderSize=100
+robocode.battle.numRounds=1
+robocode.battle.gunCoolingRate=0.1
+robocode.battleField.width=800
+robocode.battle.selectedRobots=sample.Fire,icky.IAmAMess*
+robocode.battle.rules.inactivityTime=450
+robocode.battle.hideEnemyNames=true
+robocode.battleField.height=600
