@@ -20,6 +20,9 @@ public class IAmAMess extends AdvancedRobot {
     private Predictor pred;
     private Dodger dodge;
 
+    private double selectedX, selectedY;
+    private double corrected_heading, myHeading;
+
     public void run() {
         setAdjustGunForRobotTurn(true);
         setAdjustRadarForGunTurn(true);
@@ -32,11 +35,7 @@ public class IAmAMess extends AdvancedRobot {
             pred.updatePrediction();
             dodge.updateDodge();
 
-            // Drive in a circle at max velocity
-
-            setAhead(10);
-            setTurnLeftRadians(1);
-            // setTurnGunRightRadians(6);
+            drive(dodge);
 
             if (!scanned) {
                 if (radarRate >= 0) {
@@ -97,6 +96,13 @@ public class IAmAMess extends AdvancedRobot {
 
         // Where I want to be
         dodge.onPaint(g);
+
+        // Driver paint
+        g.setColor(Color.ORANGE);
+        // TODO(buckbaskin): Start here
+        // Draw selected point
+        // Draw current heading
+        // Draw desired heading
     }
 
     private void setup() {
@@ -108,6 +114,146 @@ public class IAmAMess extends AdvancedRobot {
     }
     private void loop_reset() {
         scanned = false;
+    }
+
+    private void drive(Dodger d) {
+        long cTime = getTime();
+        if (d.plans.size() < 1) {
+            // if there is no plan, drive in a circle
+            setAhead(10);
+            setTurnLeftRadians(1);
+        } else {
+            Plan p = d.plans.get(0);
+            ArrayList<Integer> reachable_bins = new ArrayList<>();
+
+            int max_hits = 1;
+
+            for (int i = -p.max_avoid_bins; i <= p.max_avoid_bins; i++) {
+                double maybeX = p.baseX + p.dodgeX * 5 * i;
+                double maybeY = p.baseY + p.dodgeY * 5 * i;
+
+                double X = getX();
+                double Y = getY();
+
+                double dx = X - maybeX;
+                double dy = Y - maybeY;
+
+                double distance = Math.sqrt(dx*dx + dy*dy);
+                long usable_time = p.goalTime - cTime;
+                double usable_distance = usable_time * 8;
+                if (distance - usable_distance < 20) {
+                    // can reach that circle
+                    reachable_bins.add(i);
+                    max_hits = Math.max(max_hits, dodge.strikes.get(i));
+                }
+            }
+            // Now I have a list of reachable bins, and through strikes, their
+            //  hit rate
+            HashMap<Integer, Integer> flipped_strikes = new HashMap<>();
+            for (int i = 0; i < reachable_bins.size(); i++) {
+                int binId = reachable_bins.get(i);
+                int flipped_strike = max_hits + 1 - dodge.strikes.get(binId);
+                flipped_strikes.put(binId, flipped_strike);
+            }
+            long large_rando = 37 + 19 * (getTime() + 11);
+
+            int reachIdx = 0;
+            while (large_rando > 0) {
+                int binId = reachable_bins.get(reachIdx);
+                large_rando -= flipped_strikes.get(binId);
+                if (large_rando <= 0) {
+                    // we have a winner! use this bin
+                    break;
+                }
+
+                reachIdx += 1;
+                reachIdx = reachIdx % reachable_bins.size();
+            }
+
+            int selectedBin = reachable_bins.get(reachIdx);
+            selectedX = p.baseX + p.dodgeX * 5 * selectedBin;
+            selectedY = p.baseY + p.dodgeY * 5 * selectedBin;
+
+            double myX = getX();
+            double myY = getY();
+            double myHeading = getHeadingRadians();
+            double myVel = getVelocity();
+            double max_turn_deg = 10 - (0.75 * Math.abs(myVel));
+            double max_turn_rad = max_turn_deg / 180 * pi;
+
+
+            // double myMaxVel = 8;
+            // double myMinVel = -8;
+            // if (myVel > 0) {
+            //     myMaxVel = Math.min(myMaxVel, myVel + 1);
+            //     myMinVel = Math.max(myMinVel, myVel - 2);
+            // } else if (myVel < 0){
+            //     myMaxVel = Math.min(myMaxVel, myVel + 2);
+            //     myMinVel = Math.max(myMinVel, myVel - 1);
+            // } else {
+            //     myMaxVel = 1;
+            //     myMinVel = 1;
+            // }
+
+            // Now, determine if point is ahead or behind robot
+            double frontX = myX + 8 * Math.sin(myHeading);
+            double frontY = myY + 8 * Math.cos(myHeading);
+
+            double dx = frontX - selectedX;
+            double dy = frontY - selectedY;
+
+            double frontDist = Math.sqrt(dx*dx + dy*dy);
+
+            double backX = myX - 8 * Math.sin(myHeading);
+            double backY = myY - 8 * Math.cos(myHeading);
+
+            dx = backX - selectedX;
+            dy = backY - selectedY;
+
+            double backDist = Math.sqrt(dx*dx + dy*dy);
+
+            if (frontDist - backDist > 0) {
+                dx = myX - selectedX;
+                dy = myY - selectedY;
+                double desired_heading = Math.atan2(dy, dx); // In normal world coordinates, radians
+                double corrected_heading = -desired_heading + pi/2; // In robocode coordinates, radians
+
+                double heading_err = corrected_heading - myHeading;
+                if (heading_err > pi) {
+                    heading_err = -2*pi + heading_err;
+                } else if (heading_err < pi) {
+                    heading_err = 2*pi - heading_err;
+                }
+
+                double travel_left = Math.sqrt(dx*dx + dy*dy);
+                setAhead(travel_left + 1);
+                setTurnLeftRadians(heading_err);
+
+            } else if (frontDist - backDist < 0) {
+                // TODO(buckbaskin): do the math on how to move backwards
+                dx = myX - selectedX;
+                dy = myY - selectedY;
+
+                double desired_heading = Math.atan2(dy, dx) + pi; // In normal world coordinates, radians
+                double corrected_heading = -desired_heading + pi/2; // In robocode coordinates, radians
+
+                double heading_err = corrected_heading - myHeading;
+                if (heading_err > pi) {
+                    heading_err = -2*pi + heading_err;
+                } else if (heading_err < pi) {
+                    heading_err = 2*pi - heading_err;
+                }
+
+                double travel_left = Math.sqrt(dx*dx + dy*dy);
+                setAhead(-(travel_left + 1));
+                setTurnLeftRadians(heading_err);
+
+            } else {
+                setAhead(0);
+                // TODO(buckbaskin): choose left or right turn based on sign
+                out.println("I don't know what to do!!!");
+            }
+        }
     }
 }
 
@@ -148,26 +294,26 @@ class History {
     }
 }
 
-class Dodger {
-    class Plan {
-        public double baseX;
-        public double baseY;
-        public double dodgeX;
-        public double dodgeY;
+class Plan {
+    public double baseX;
+    public double baseY;
+    public double dodgeX;
+    public double dodgeY;
 
-        public long goalTime;
-        public int max_avoid_bins;
+    public long goalTime;
+    public int max_avoid_bins;
 
-        public Plan(double bx, double by, double dx, double dy, long time, int bins) {
-            baseX = bx;
-            baseY = by;
-            dodgeX = dx;
-            dodgeY = dy;
-            goalTime = time;
-            max_avoid_bins = bins;
-        }
+    public Plan(double bx, double by, double dx, double dy, long time, int bins) {
+        baseX = bx;
+        baseY = by;
+        dodgeX = dx;
+        dodgeY = dy;
+        goalTime = time;
+        max_avoid_bins = bins;
     }
+}
 
+class Dodger {
     private AdvancedRobot self;
     private History h;
 
@@ -175,7 +321,9 @@ class Dodger {
     public ArrayList<Double> goalY = new ArrayList<>();
     public ArrayList<Double> goalT = new ArrayList<>();
 
-    private HashMap<Integer, Integer> strikes = new HashMap<Integer, Integer>();
+    public ArrayList<Plan> plans = new ArrayList<>();
+
+    public HashMap<Integer, Integer> strikes = new HashMap<Integer, Integer>();
     private int total_strikes = 0;
 
     public Dodger(AdvancedRobot self, History h) {
@@ -193,7 +341,7 @@ class Dodger {
         total_strikes += 10;
     }
 
-    public void updateDodge() {
+    private void checkForNewPlan() {
         if (h.eTime.size() >= 2) {
             int lastIdx = h.eNRG.size() - 1;
             double energyDrop = h.eNRG.get(lastIdx) - h.eNRG.get(lastIdx - 1);
@@ -232,9 +380,59 @@ class Dodger {
                     }
                 }
                 // set up a plan here
-                // TODO(buckbaskin): start here
+                plans.add(new Plan(
+                    self.getX(), self.getY(), dodgeX, dodgeY,
+                    self.getTime() + (long)time, max_avoid_bins
+                    ));
+                out.println("Added Plan to list for "+self.getTime() + (long)time);
             }
         }
+    }
+
+    private void filterPlans() {
+        long cTime = self.getTime();
+        // Filter out past times
+        while (plans.size() > 0) {
+            if (plans.get(0).goalTime <= cTime) {
+                plans.remove(0);
+            } else {
+                break;
+            }
+        }
+        // Filter out unreachable plans
+        while (plans.size() > 0) {
+            Plan p = plans.get(0);
+            int reachable_bins = 0;
+            for (int i = -p.max_avoid_bins; i <= p.max_avoid_bins; i++) {
+                double maybeX = p.baseX + p.dodgeX * 5 * i;
+                double maybeY = p.baseY + p.dodgeY * 5 * i;
+
+                double X = self.getX();
+                double Y = self.getY();
+
+                double dx = X - maybeX;
+                double dy = Y - maybeY;
+
+                double distance = Math.sqrt(dx*dx + dy*dy);
+                long usable_time = p.goalTime - cTime;
+                double usable_distance = usable_time * 8;
+                if (distance - usable_distance < 20) {
+                    // can reach that circle
+                    reachable_bins += 1;
+                    break;
+                }
+            }
+            if (reachable_bins > 0) {
+                break;
+            } else {
+                plans.remove(0);
+            }
+        }
+    }
+
+    public void updateDodge() {
+        checkForNewPlan();
+        filterPlans();
         // Driver takes the plan for the next point in time
         // for each avoid bin available at the time of shooting, check if its
         //  reachable now.
