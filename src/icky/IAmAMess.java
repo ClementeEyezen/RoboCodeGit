@@ -30,6 +30,7 @@ public class IAmAMess extends AdvancedRobot {
 
         while(true) {
             pred.updatePrediction();
+            dodge.updateDodge();
 
             // Drive in a circle at max velocity
 
@@ -148,17 +149,104 @@ class History {
 }
 
 class Dodger {
+    class Plan {
+        public double baseX;
+        public double baseY;
+        public double dodgeX;
+        public double dodgeY;
+
+        public long goalTime;
+        public int max_avoid_bins;
+
+        public Plan(double bx, double by, double dx, double dy, long time, int bins) {
+            baseX = bx;
+            baseY = by;
+            dodgeX = dx;
+            dodgeY = dy;
+            goalTime = time;
+            max_avoid_bins = bins;
+        }
+    }
+
     private AdvancedRobot self;
     private History h;
+
+    public ArrayList<Double> goalX = new ArrayList<>();
+    public ArrayList<Double> goalY = new ArrayList<>();
+    public ArrayList<Double> goalT = new ArrayList<>();
+
+    private HashMap<Integer, Integer> strikes = new HashMap<Integer, Integer>();
+    private int total_strikes = 0;
 
     public Dodger(AdvancedRobot self, History h) {
         this.self = self;
         this.h = h;
+
+        for (int i = -10; i <= 10; i++) {
+            if (i == 0) {
+                continue;
+            }
+            strikes.put(i, 1);
+            total_strikes += 1;
+        }
+        strikes.put(0, 10);
+        total_strikes += 10;
+    }
+
+    public void updateDodge() {
+        if (h.eTime.size() >= 2) {
+            int lastIdx = h.eNRG.size() - 1;
+            double energyDrop = h.eNRG.get(lastIdx) - h.eNRG.get(lastIdx - 1);
+            if (energyDrop < 0.001) {
+                double velocity = bulletVel(energyDrop);
+
+                double eX = h.eX.get(h.eX.size() - 1);
+                double eY = h.eY.get(h.eY.size() - 1);
+
+                double X = self.getX();
+                double Y = self.getY();
+
+                double fireX = X - eX;
+                double fireY = Y - eY;
+
+                double dodgeX = -fireY;
+                double dodgeY = fireX;
+
+                double norm = Math.sqrt(dodgeX*dodgeX + dodgeY*dodgeY);
+                dodgeX = dodgeX / norm * 8;
+                dodgeY = dodgeY / norm * 8;
+
+                double distance = Math.sqrt(fireX*fireX + fireY*fireY);
+
+                double time = distance/velocity;
+                double max_avoid_dist = time * 8; // not entirely accurate, depends on robot vel
+
+                int max_avoid_bins = (int)(Math.floor(max_avoid_dist / 40));
+                if (max_avoid_bins < 1) {
+                    // use some special edge case to turn diagonally away from the robot and make space
+                }
+                for (int i = -max_avoid_bins; i <= max_avoid_bins; i++) {
+                    if (!strikes.containsKey(i)) {
+                        strikes.put(i, 1);
+                        total_strikes += 1;
+                    }
+                }
+                // set up a plan here
+                // TODO(buckbaskin): start here
+            }
+        }
+        // Driver takes the plan for the next point in time
+        // for each avoid bin available at the time of shooting, check if its
+        //  reachable now.
+        // if it is, note its current value in the strikes map.
+        // among reachable values, track the maximum
+        // Then, pick an available value at random, with lower priority for the 
+        //  pieces with higher strikes
+        // Set that as the movement goal
     }
 
     public void onPaint(Graphics2D g) {
         // Draw bins
-        g.setColor(new Color((float)0.0, (float)1.0, (float)1.0, (float)0.5));
         if (h.eTime.size() > 1) {
             double eX = h.eX.get(h.eX.size() - 1);
             double eY = h.eY.get(h.eY.size() - 1);
@@ -177,18 +265,30 @@ class Dodger {
             dodgeY = dodgeY / norm * 8;
 
             double distance = Math.sqrt(fireX*fireX + fireY*fireY);
-            out.println("dist "+distance);
             double max_vel = bulletVel(0);
             double min_vel = bulletVel(3);
-            out.println("vel "+min_vel);
             double max_time = Math.floor(distance / min_vel);
             double min_time = Math.floor(distance / max_vel);
 
             for (int i = -(int)max_time; i <= (int)max_time; i++) {
                 if ((i * 8) % 40 == 0) {
+                    
                     double centX = X + i * dodgeX;
                     double centY = Y + i * dodgeY;
+                    g.setColor(new Color((float)0.0, (float)1.0, (float)1.0, (float)0.5));
                     g.drawOval((int)(centX - 20), (int)(centY - 20), 40, 40);
+
+                    if (!strikes.containsKey(i / 5)) {
+                        strikes.put(i / 5, 1);
+                        total_strikes += 1;
+                    }
+                    float local_strike = (float)(strikes.get(i/5));
+                    float fill_percent = local_strike / total_strikes * 4;
+                    if (fill_percent > 1.0) {
+                        fill_percent = 1.0f;
+                    }
+                    g.setColor(new Color((float)0.0, (float)1.0, (float)1.0, fill_percent));
+                    g.fillOval((int)(centX - 20), (int)(centY - 20), 40, 40);
                 }
             }
         }
