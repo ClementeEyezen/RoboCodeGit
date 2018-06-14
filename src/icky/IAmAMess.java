@@ -18,6 +18,7 @@ public class IAmAMess extends AdvancedRobot {
 
     private History hist;
     private Predictor pred;
+    private Dodger dodge;
 
     public void run() {
         setAdjustGunForRobotTurn(true);
@@ -92,6 +93,9 @@ public class IAmAMess extends AdvancedRobot {
 
         // Where the other robot will be
         pred.onPaint(g);
+
+        // Where I want to be
+        dodge.onPaint(g);
     }
 
     private void setup() {
@@ -99,6 +103,7 @@ public class IAmAMess extends AdvancedRobot {
 
         hist = new History(this);
         pred = new Predictor(this, hist);
+        dodge = new Dodger(this, hist);
     }
     private void loop_reset() {
         scanned = false;
@@ -112,6 +117,7 @@ class History {
     public ArrayList<Long> eTime = new ArrayList<>();
     public ArrayList<Double> eX = new ArrayList<>();
     public ArrayList<Double> eY = new ArrayList<>();
+    public ArrayList<Double> eNRG = new ArrayList<>();
 
     public History(AdvancedRobot parent) {
         this.self = parent;
@@ -125,6 +131,7 @@ class History {
         eTime.add(e.getTime());
         eX.add(scanX);
         eY.add(scanY);
+        eNRG.add(e.getEnergy());
     }
 
     public void onPaint(Graphics2D g) {
@@ -138,6 +145,60 @@ class History {
             g.fillRect((int)pastX - 20, (int)pastY - 20, 40, 40);
         }
     }
+}
+
+class Dodger {
+    private AdvancedRobot self;
+    private History h;
+
+    public Dodger(AdvancedRobot self, History h) {
+        this.self = self;
+        this.h = h;
+    }
+
+    public void onPaint(Graphics2D g) {
+        // Draw bins
+        g.setColor(new Color((float)0.0, (float)1.0, (float)1.0, (float)0.5));
+        if (h.eTime.size() > 1) {
+            double eX = h.eX.get(h.eX.size() - 1);
+            double eY = h.eY.get(h.eY.size() - 1);
+
+            double X = self.getX();
+            double Y = self.getY();
+
+            double fireX = X - eX;
+            double fireY = Y - eY;
+
+            double dodgeX = -fireY;
+            double dodgeY = fireX;
+
+            double norm = Math.sqrt(dodgeX*dodgeX + dodgeY*dodgeY);
+            dodgeX = dodgeX / norm * 8;
+            dodgeY = dodgeY / norm * 8;
+
+            double distance = Math.sqrt(fireX*fireX + fireY*fireY);
+            out.println("dist "+distance);
+            double max_vel = bulletVel(0);
+            double min_vel = bulletVel(3);
+            out.println("vel "+min_vel);
+            double max_time = Math.floor(distance / min_vel);
+            double min_time = Math.floor(distance / max_vel);
+
+            for (int i = -(int)max_time; i <= (int)max_time; i++) {
+                if ((i * 8) % 40 == 0) {
+                    double centX = X + i * dodgeX;
+                    double centY = Y + i * dodgeY;
+                    g.drawOval((int)(centX - 20), (int)(centY - 20), 40, 40);
+                }
+            }
+        }
+    }
+
+    private double bulletVel(double power) {
+        double bullet_vel = 20 - 3 * power;
+        return bullet_vel;
+    }
+
 }
 
 class Predictor {
