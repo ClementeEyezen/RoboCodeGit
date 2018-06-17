@@ -99,10 +99,17 @@ public class IAmAMess extends AdvancedRobot {
 
         // Driver paint
         g.setColor(Color.ORANGE);
-        // TODO(buckbaskin): Start here
         // Draw selected point
+        g.fillRect((int)(selectedX-5), (int)(selectedY-5), 10, 10);
         // Draw current heading
+        double hX = getX() + 40 * Math.sin(myHeading);
+        double hY = getY() + 40 * Math.cos(myHeading);
+        g.drawLine((int)getX(), (int)getY(), (int)hX, (int)hY);
         // Draw desired heading
+        g.setColor(Color.RED);
+        hX = getX() + 40 * Math.sin(corrected_heading);
+        hY = getY() + 40 * Math.cos(corrected_heading);
+        g.drawLine((int)getX(), (int)getY(), (int)hX, (int)hY);
     }
 
     private void setup() {
@@ -176,7 +183,7 @@ public class IAmAMess extends AdvancedRobot {
 
             double myX = getX();
             double myY = getY();
-            double myHeading = getHeadingRadians();
+            myHeading = getHeadingRadians();
             double myVel = getVelocity();
             double max_turn_deg = 10 - (0.75 * Math.abs(myVel));
             double max_turn_rad = max_turn_deg / 180 * pi;
@@ -216,7 +223,7 @@ public class IAmAMess extends AdvancedRobot {
                 dx = myX - selectedX;
                 dy = myY - selectedY;
                 double desired_heading = Math.atan2(dy, dx); // In normal world coordinates, radians
-                double corrected_heading = -desired_heading + pi/2; // In robocode coordinates, radians
+                corrected_heading = -desired_heading + pi/2; // In robocode coordinates, radians
 
                 double heading_err = corrected_heading - myHeading;
                 if (heading_err > pi) {
@@ -227,7 +234,7 @@ public class IAmAMess extends AdvancedRobot {
 
                 double travel_left = Math.sqrt(dx*dx + dy*dy);
                 setAhead(travel_left + 1);
-                setTurnLeftRadians(heading_err);
+                setTurnRightRadians(heading_err);
 
             } else if (frontDist - backDist < 0) {
                 // TODO(buckbaskin): do the math on how to move backwards
@@ -235,7 +242,7 @@ public class IAmAMess extends AdvancedRobot {
                 dy = myY - selectedY;
 
                 double desired_heading = Math.atan2(dy, dx) + pi; // In normal world coordinates, radians
-                double corrected_heading = -desired_heading + pi/2; // In robocode coordinates, radians
+                corrected_heading = -desired_heading + pi/2; // In robocode coordinates, radians
 
                 double heading_err = corrected_heading - myHeading;
                 if (heading_err > pi) {
@@ -246,7 +253,7 @@ public class IAmAMess extends AdvancedRobot {
 
                 double travel_left = Math.sqrt(dx*dx + dy*dy);
                 setAhead(-(travel_left + 1));
-                setTurnLeftRadians(heading_err);
+                setTurnRightRadians(heading_err);
 
             } else {
                 setAhead(0);
