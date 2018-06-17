@@ -1,3 +1,3 @@
 sh compile.sh && \
 echo "Running Robocode" && \
-sh ../robocode/installed/robocode.sh
+sh ~/robocode/robocode.sh
