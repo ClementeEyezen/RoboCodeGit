@@ -98,15 +98,17 @@ public class IAmAMess extends AdvancedRobot {
         dodge.onPaint(g);
 
         // Driver paint
-        g.setColor(Color.ORANGE);
-        // Draw selected point
-        g.fillRect((int)(selectedX-5), (int)(selectedY-5), 10, 10);
         // Draw current heading
+        g.setColor(Color.RED);
+        myHeading = getHeadingRadians();
         double hX = getX() + 40 * Math.sin(myHeading);
         double hY = getY() + 40 * Math.cos(myHeading);
         g.drawLine((int)getX(), (int)getY(), (int)hX, (int)hY);
+
+        // Draw selected point
+        g.setColor(Color.ORANGE);
+        g.fillRect((int)(selectedX-5), (int)(selectedY-5), 10, 10);
         // Draw desired heading
-        g.setColor(Color.RED);
         hX = getX() + 40 * Math.sin(corrected_heading);
         hY = getY() + 40 * Math.cos(corrected_heading);
         g.drawLine((int)getX(), (int)getY(), (int)hX, (int)hY);
@@ -188,7 +190,6 @@ public class IAmAMess extends AdvancedRobot {
             double max_turn_deg = 10 - (0.75 * Math.abs(myVel));
             double max_turn_rad = max_turn_deg / 180 * pi;
 
-
             // double myMaxVel = 8;
             // double myMinVel = -8;
             // if (myVel > 0) {
@@ -209,6 +210,8 @@ public class IAmAMess extends AdvancedRobot {
             double dx = frontX - selectedX;
             double dy = frontY - selectedY;
 
+            // TODO(buckbaskin): fix the front/back selection
+
             double frontDist = Math.sqrt(dx*dx + dy*dy);
 
             double backX = myX - 8 * Math.sin(myHeading);
@@ -219,40 +222,45 @@ public class IAmAMess extends AdvancedRobot {
 
             double backDist = Math.sqrt(dx*dx + dy*dy);
 
-            if (frontDist - backDist > 0) {
-                dx = myX - selectedX;
-                dy = myY - selectedY;
-                double desired_heading = Math.atan2(dy, dx); // In normal world coordinates, radians
-                corrected_heading = -desired_heading + pi/2; // In robocode coordinates, radians
+            dx = myX - selectedX;
+            dy = myY - selectedY;
+            double desired_heading = Math.atan2(dy, dx); // In normal world coordinates, radians
+            corrected_heading = -desired_heading + pi/2; // In robocode coordinates, radians
+            if (frontDist - backDist < 0) {
+                out.println("Point in front");
+                corrected_heading += -pi;
 
                 double heading_err = corrected_heading - myHeading;
-                if (heading_err > pi) {
+                while (heading_err > pi) {
+                    out.println("before "+heading_err);
                     heading_err = -2*pi + heading_err;
-                } else if (heading_err < pi) {
-                    heading_err = 2*pi - heading_err;
+                    out.println("after "+heading_err);
+                }
+                while (heading_err < -pi) {
+                    out.println("before "+heading_err);
+                    heading_err = 2*pi + heading_err;
+                    out.println("after "+heading_err);
                 }
 
                 double travel_left = Math.sqrt(dx*dx + dy*dy);
                 setAhead(travel_left + 1);
+                out.println("Turning right "+ (heading_err / pi * 180));
                 setTurnRightRadians(heading_err);
 
-            } else if (frontDist - backDist < 0) {
+            } else if (frontDist - backDist > 0) {
+                out.println("Point in back");
                 // TODO(buckbaskin): do the math on how to move backwards
-                dx = myX - selectedX;
-                dy = myY - selectedY;
-
-                double desired_heading = Math.atan2(dy, dx) + pi; // In normal world coordinates, radians
-                corrected_heading = -desired_heading + pi/2; // In robocode coordinates, radians
-
                 double heading_err = corrected_heading - myHeading;
-                if (heading_err > pi) {
+                while (heading_err > pi) {
                     heading_err = -2*pi + heading_err;
-                } else if (heading_err < pi) {
-                    heading_err = 2*pi - heading_err;
+                }
+                while (heading_err < -pi) {
+                    heading_err = 2*pi + heading_err;
                 }
 
                 double travel_left = Math.sqrt(dx*dx + dy*dy);
                 setAhead(-(travel_left + 1));
+                out.println("Turning right "+ (heading_err / pi * 180));
                 setTurnRightRadians(heading_err);
 
             } else {
@@ -351,8 +359,11 @@ class Dodger {
     private void checkForNewPlan() {
         if (h.eTime.size() >= 2) {
             int lastIdx = h.eNRG.size() - 1;
-            double energyDrop = h.eNRG.get(lastIdx) - h.eNRG.get(lastIdx - 1);
-            if (energyDrop < 0.001) {
+            double ending_energy = h.eNRG.get(lastIdx);
+            double starting_energy = h.eNRG.get(lastIdx - 1);
+            double energyDrop = starting_energy - ending_energy;
+            out.println("NRG: " + starting_energy + " - " + ending_energy);
+            if (energyDrop > 0.001) {
                 double velocity = bulletVel(energyDrop);
 
                 double eX = h.eX.get(h.eX.size() - 1);
@@ -386,12 +397,14 @@ class Dodger {
                         total_strikes += 1;
                     }
                 }
+                // only do this when shots fired
                 // set up a plan here
                 plans.add(new Plan(
                     self.getX(), self.getY(), dodgeX, dodgeY,
                     self.getTime() + (long)time, max_avoid_bins
                     ));
-                out.println("Added Plan to list for "+self.getTime() + (long)time);
+                out.println("Added Plan to list for " +
+                    (self.getTime() + (long)time) + " at time " + self.getTime());
             }
         }
     }
