@@ -22,6 +22,7 @@ public class IAmAMess extends AdvancedRobot {
 
     private double selectedX, selectedY;
     private double corrected_heading, myHeading;
+    private double frontX, frontY, backX, backY;
 
     public void run() {
         setAdjustGunForRobotTurn(true);
@@ -101,17 +102,24 @@ public class IAmAMess extends AdvancedRobot {
         // Draw current heading
         g.setColor(Color.RED);
         myHeading = getHeadingRadians();
-        double hX = getX() + 40 * Math.sin(myHeading);
-        double hY = getY() + 40 * Math.cos(myHeading);
+        double hX = getX() + 50 * Math.sin(myHeading);
+        double hY = getY() + 50 * Math.cos(myHeading);
         g.drawLine((int)getX(), (int)getY(), (int)hX, (int)hY);
 
         // Draw selected point
-        g.setColor(Color.ORANGE);
+        g.setColor(Color.PINK);
         g.fillRect((int)(selectedX-5), (int)(selectedY-5), 10, 10);
         // Draw desired heading
-        hX = getX() + 40 * Math.sin(corrected_heading);
-        hY = getY() + 40 * Math.cos(corrected_heading);
+        g.setColor(Color.ORANGE);
+        hX = getX() + 50 * Math.sin(corrected_heading);
+        hY = getY() + 50 * Math.cos(corrected_heading);
         g.drawLine((int)getX(), (int)getY(), (int)hX, (int)hY);
+
+        // Draw front and back points
+        g.setColor(Color.GREEN);
+        g.fillRect((int)(frontX-2), (int)(frontY-2), 4, 4);
+        g.setColor(Color.YELLOW);
+        g.fillRect((int)(backX-2), (int)(backY-2), 4, 4);
     }
 
     private void setup() {
@@ -204,8 +212,8 @@ public class IAmAMess extends AdvancedRobot {
             // }
 
             // Now, determine if point is ahead or behind robot
-            double frontX = myX + 8 * Math.sin(myHeading);
-            double frontY = myY + 8 * Math.cos(myHeading);
+            frontX = myX + 16 * Math.sin(myHeading);
+            frontY = myY + 16 * Math.cos(myHeading);
 
             double dx = frontX - selectedX;
             double dy = frontY - selectedY;
@@ -214,13 +222,15 @@ public class IAmAMess extends AdvancedRobot {
 
             double frontDist = Math.sqrt(dx*dx + dy*dy);
 
-            double backX = myX - 8 * Math.sin(myHeading);
-            double backY = myY - 8 * Math.cos(myHeading);
+            backX = myX - 16 * Math.sin(myHeading);
+            backY = myY - 16 * Math.cos(myHeading);
 
             dx = backX - selectedX;
             dy = backY - selectedY;
 
             double backDist = Math.sqrt(dx*dx + dy*dy);
+
+            out.println("front: " + frontDist + " vs. back: " + backDist);
 
             dx = myX - selectedX;
             dy = myY - selectedY;
@@ -427,6 +437,12 @@ class Dodger {
                 double maybeX = p.baseX + p.dodgeX * 5 * i;
                 double maybeY = p.baseY + p.dodgeY * 5 * i;
 
+                if (maybeX <= 20 || maybeY < 20) {
+                    continue;
+                } else if (maybeX > getBattleFieldWidth() - 20 || maybeY > getBattleFieldHeigh() - 20) {
+                    continue;
+                }
+
                 double X = self.getX();
                 double Y = self.getY();
 
@@ -436,7 +452,7 @@ class Dodger {
                 double distance = Math.sqrt(dx*dx + dy*dy);
                 long usable_time = p.goalTime - cTime;
                 double usable_distance = usable_time * 8;
-                if (distance - usable_distance < 20) {
+                if (distance - usable_distance < 0) {
                     // can reach that circle
                     reachable_bins += 1;
                     break;
