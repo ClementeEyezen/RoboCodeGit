@@ -24,6 +24,8 @@ public class IAmAMess extends AdvancedRobot {
     private double corrected_heading, myHeading;
     private double frontX, frontY, backX, backY;
 
+    private long current_driving_time = 0;
+
     public void run() {
         setAdjustGunForRobotTurn(true);
         setAdjustRadarForGunTurn(true);
@@ -33,6 +35,7 @@ public class IAmAMess extends AdvancedRobot {
         setup();
 
         while(true) {
+            out.println("--- "+getTime()+"---");
             pred.updatePrediction();
             dodge.updateDodge();
 
@@ -89,6 +92,17 @@ public class IAmAMess extends AdvancedRobot {
 
 
     public void onPaint(Graphics2D g) {
+        g.setColor(Color.MAGENTA);
+        int x = 100;
+        while (x < getBattleFieldWidth()) {
+            g.drawLine(x, 0, x, (int)getBattleFieldHeight());
+            x += 100;
+        }
+        int y = 100;
+        while (y < getBattleFieldHeight()) {
+            g.drawLine(0, y, (int)getBattleFieldWidth(), y);
+            y += 100;
+        }
         // Where the other robot has been
         hist.onPaint(g);
 
@@ -108,6 +122,9 @@ public class IAmAMess extends AdvancedRobot {
 
         // Draw selected point
         g.setColor(Color.PINK);
+        if (selectedX != 0 && selectedY != 0) {
+            out.println("paint sel x: "+(int)selectedX + " y: " + (int)selectedY);
+        }
         g.fillRect((int)(selectedX-5), (int)(selectedY-5), 10, 10);
         // Draw desired heading
         g.setColor(Color.ORANGE);
@@ -149,6 +166,13 @@ public class IAmAMess extends AdvancedRobot {
                 double maybeX = p.baseX + p.dodgeX * 5 * i;
                 double maybeY = p.baseY + p.dodgeY * 5 * i;
 
+                if (maybeX <= 20 || maybeY <= 20) {
+                    continue;
+                } else if (maybeX >= getBattleFieldWidth() - 20 ||
+                    maybeY >= getBattleFieldHeight() - 20) {
+                    continue;
+                }
+
                 double X = getX();
                 double Y = getY();
 
@@ -166,30 +190,36 @@ public class IAmAMess extends AdvancedRobot {
             }
             // Now I have a list of reachable bins, and through strikes, their
             //  hit rate
-            HashMap<Integer, Integer> flipped_strikes = new HashMap<>();
-            for (int i = 0; i < reachable_bins.size(); i++) {
-                int binId = reachable_bins.get(i);
-                int flipped_strike = max_hits + 1 - dodge.strikes.get(binId);
-                flipped_strikes.put(binId, flipped_strike);
-            }
-            long large_rando = 37 + 19 * (getTime() + 11);
 
-            int reachIdx = 0;
-            while (large_rando > 0) {
-                int binId = reachable_bins.get(reachIdx);
-                large_rando -= flipped_strikes.get(binId);
-                if (large_rando <= 0) {
-                    // we have a winner! use this bin
-                    break;
+            boolean reselect_xy = true;
+            // TODO(buckbaskin): don't recalculate until reached the desired goal, or won't reach existing plan
+            if (reselect_xy) {
+                HashMap<Integer, Integer> flipped_strikes = new HashMap<>();
+                for (int i = 0; i < reachable_bins.size(); i++) {
+                    int binId = reachable_bins.get(i);
+                    int flipped_strike = max_hits + 1 - dodge.strikes.get(binId);
+                    flipped_strikes.put(binId, flipped_strike);
+                }
+                long large_rando = 37 + 19 * (getTime() + 11);
+
+                int reachIdx = 0;
+                while (large_rando > 0) {
+                    int binId = reachable_bins.get(reachIdx);
+                    large_rando -= flipped_strikes.get(binId);
+                    if (large_rando <= 0) {
+                        // we have a winner! use this bin
+                        break;
+                    }
+
+                    reachIdx += 1;
+                    reachIdx = reachIdx % reachable_bins.size();
                 }
 
-                reachIdx += 1;
-                reachIdx = reachIdx % reachable_bins.size();
+                int selectedBin = reachable_bins.get(reachIdx);
+                selectedX = p.baseX + p.dodgeX * 5 * selectedBin;
+                selectedY = p.baseY + p.dodgeY * 5 * selectedBin;
+                out.println("sel x: "+(int)selectedX + " y: " + (int)selectedY);
             }
-
-            int selectedBin = reachable_bins.get(reachIdx);
-            selectedX = p.baseX + p.dodgeX * 5 * selectedBin;
-            selectedY = p.baseY + p.dodgeY * 5 * selectedBin;
 
             double myX = getX();
             double myY = getY();
@@ -437,9 +467,10 @@ class Dodger {
                 double maybeX = p.baseX + p.dodgeX * 5 * i;
                 double maybeY = p.baseY + p.dodgeY * 5 * i;
 
-                if (maybeX <= 20 || maybeY < 20) {
+                if (maybeX <= 20 || maybeY <= 20) {
                     continue;
-                } else if (maybeX > getBattleFieldWidth() - 20 || maybeY > getBattleFieldHeigh() - 20) {
+                } else if (maybeX >= self.getBattleFieldWidth() - 20 ||
+                    maybeY >= self.getBattleFieldHeight() - 20) {
                     continue;
                 }
 
