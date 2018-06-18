@@ -161,6 +161,22 @@ public class IAmAMess extends AdvancedRobot {
         if (d.plans.size() < 1) {
             // if there is no plan, drive in a circle
             out.println("No plans in queue.");
+            // TODO(buckbaskin): try and maintain a constant distance from
+            //  another robot while circling instead of leaving the opportunity
+            //  to get rammed. Check if enemy position is available, and then
+            //  circle either positive, 0 or negative moving to some desired 
+            //  point on a distance circle.
+
+            // TODO(buckbaskin): This might be a targeting point of view, but
+            //  there is probably a distance that I want to stay away from
+            //  other robots. This should be generally maintained in the plan
+            //  base x/y. I noticed that against corners, the robot gets pushed
+            //  back into the opposite corner, reducing its dodging ability.
+
+            // TODO(buckbaskin): Gun power can change based on speed and
+            //  confidence; however, to start I think it makes sense to pick
+            //  a speed where it will shoot faster at longer distance to lessen
+            //  the number of prediction steps required.
             setAhead(10);
             setTurnLeftRadians(1);
         } else {
@@ -209,6 +225,9 @@ public class IAmAMess extends AdvancedRobot {
                 Plan current_plan = dodge.plans.get(0);
                 if (getTime() < current_driving_time) {
                     hold_bin = true;
+                }
+                if (current_driving_time < current_plan.goalTime) {
+                    hold_bin = false;
                 }
             }
             boolean reselect_xy = !hold_bin && (startup_plan || (dist_to_select <= 10));
@@ -414,6 +433,37 @@ class Dodger {
         total_strikes += 10;
     }
 
+    private double max_dist(double current_vel, long time_steps, boolean positive) {
+        double accum = 0;
+        if (positive) {
+            for (long t = 0; t < time_steps; t++) {
+                if (current_vel < 0) {
+                    current_vel += 2;
+                } else {
+                    current_vel += 1;
+                }
+                if (current_vel > 8) {
+                    current_vel = 8;
+                }
+                accum += current_vel;
+            }
+            return accum;
+        } else {
+            for (long t = 0; t < time_steps; t++) {
+                if (current_vel > 0) {
+                    current_vel -= 2;
+                } else {
+                    current_vel -= 1;
+                }
+                if (current_vel < -8) {
+                    current_vel = -8;
+                }
+                accum += current_vel;
+            }
+            return accum;
+        }
+    }
+
     private void checkForNewPlan() {
         if (h.eTime.size() >= 2) {
             int lastIdx = h.eNRG.size() - 1;
@@ -443,7 +493,9 @@ class Dodger {
                 double distance = Math.sqrt(fireX*fireX + fireY*fireY);
 
                 double time = distance/velocity;
-                double max_avoid_dist = time * 8; // not entirely accurate, depends on robot vel
+                double max_avoid_dist = Math.min(
+                    max_dist(getVelocity(), (long)time, true),
+                    max_dist(getVelocity(), (long)time, false)); // not entirely accurate, depends on robot vel
 
                 int max_avoid_bins = (int)(Math.floor(max_avoid_dist / 40));
                 if (max_avoid_bins < 1) {
