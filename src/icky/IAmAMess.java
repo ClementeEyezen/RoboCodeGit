@@ -25,6 +25,7 @@ public class IAmAMess extends AdvancedRobot {
     private double frontX, frontY, backX, backY;
 
     private long current_driving_time = 0;
+    private boolean startup_plan = true;
 
     public void run() {
         setAdjustGunForRobotTurn(true);
@@ -148,6 +149,8 @@ public class IAmAMess extends AdvancedRobot {
         hist = new History(this);
         pred = new Predictor(this, hist);
         dodge = new Dodger(this, hist);
+
+        startup_plan = true;
     }
     private void loop_reset() {
         scanned = false;
@@ -157,6 +160,7 @@ public class IAmAMess extends AdvancedRobot {
         long cTime = getTime();
         if (d.plans.size() < 1) {
             // if there is no plan, drive in a circle
+            out.println("No plans in queue.");
             setAhead(10);
             setTurnLeftRadians(1);
         } else {
@@ -194,9 +198,12 @@ public class IAmAMess extends AdvancedRobot {
             // Now I have a list of reachable bins, and through strikes, their
             //  hit rate
 
-            boolean reselect_xy = true;
-            // TODO(buckbaskin): start here
-            // TODO(buckbaskin): don't recalculate until reached the desired goal, or won't reach existing plan
+            double dist_to_select = Math.sqrt(
+                Math.pow(getX() - selectedX, 2) +
+                Math.pow(getY() - selectedY, 2));
+            startup_plan =  selectedX == 0 && selectedY == 0;
+            // TODO(buckbaskin): sit on the desired point oscillating until plan time runs out
+            boolean reselect_xy = startup_plan || (dist_to_select <= 10);
             if (reselect_xy) {
                 HashMap<Integer, Integer> flipped_strikes = new HashMap<>();
                 for (int i = 0; i < reachable_bins.size(); i++) {
@@ -223,6 +230,9 @@ public class IAmAMess extends AdvancedRobot {
                 selectedX = p.baseX + p.dodgeX * 5 * selectedBin;
                 selectedY = p.baseY + p.dodgeY * 5 * selectedBin;
                 out.println("sel x: "+(int)selectedX + " y: " + (int)selectedY);
+                startup_plan = false;
+            } else {
+                out.println("Preserving selection "+selectedX+", "+selectedY);
             }
 
             double myX = getX();
@@ -351,10 +361,8 @@ class History {
 }
 
 class Plan {
-    public double baseX;
-    public double baseY;
-    public double dodgeX;
-    public double dodgeY;
+    public double baseX, baseY;
+    public double dodgeX, dodgeY;
 
     public long goalTime;
     public int max_avoid_bins;
@@ -512,8 +520,28 @@ class Dodger {
     }
 
     public void onPaint(Graphics2D g) {
+        if (plans.size() >= 1) {
+            // Draw plan bins
+            Plan p = plans.get(0);
+            double X = p.baseX;
+            double Y = p.baseY;
+
+            double dodgeX = p.dodgeX;
+            double dodgeY = p.dodgeY;
+            double norm = Math.sqrt(dodgeX*dodgeX + dodgeY*dodgeY);
+            dodgeX = dodgeX / norm * 40;
+            dodgeY = dodgeY / norm * 40;
+
+            int bin_count = p.max_avoid_bins;
+            for (int i = -bin_count; i <= bin_count; i++) {}
+        } else {
+            double X = self.getX();
+            double Y = self.getY();
+            g.setColor(Color.RED);
+            g.drawOval((int)(X - 20), (int)(Y - 20), 40, 40);
+        }
         // Draw bins
-        if (h.eTime.size() > 1) {
+        if (false && h.eTime.size() > 1) {
             double eX = h.eX.get(h.eX.size() - 1);
             double eY = h.eY.get(h.eY.size() - 1);
 
