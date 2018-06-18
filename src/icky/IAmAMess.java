@@ -125,11 +125,11 @@ public class IAmAMess extends AdvancedRobot {
         g.drawLine((int)getX(), (int)getY(), (int)hX, (int)hY);
 
         // Draw selected point
-        g.setColor(Color.PINK);
-        if (selectedX != 0 && selectedY != 0) {
+        if (dodge.plans.size() > 0) {
+            g.setColor(Color.PINK);
             out.println("paint sel x: "+(int)selectedX + " y: " + (int)selectedY);
+            g.fillRect((int)(selectedX-5), (int)(selectedY-5), 10, 10);
         }
-        g.fillRect((int)(selectedX-5), (int)(selectedY-5), 10, 10);
         // Draw desired heading
         g.setColor(Color.ORANGE);
         hX = getX() + 50 * Math.sin(corrected_heading);
@@ -137,10 +137,10 @@ public class IAmAMess extends AdvancedRobot {
         g.drawLine((int)getX(), (int)getY(), (int)hX, (int)hY);
 
         // Draw front and back points
-        g.setColor(Color.GREEN);
-        g.fillRect((int)(frontX-2), (int)(frontY-2), 4, 4);
-        g.setColor(Color.YELLOW);
-        g.fillRect((int)(backX-2), (int)(backY-2), 4, 4);
+        // g.setColor(Color.GREEN);
+        // g.fillRect((int)(frontX-2), (int)(frontY-2), 4, 4);
+        // g.setColor(Color.YELLOW);
+        // g.fillRect((int)(backX-2), (int)(backY-2), 4, 4);
     }
 
     private void setup() {
@@ -201,9 +201,17 @@ public class IAmAMess extends AdvancedRobot {
             double dist_to_select = Math.sqrt(
                 Math.pow(getX() - selectedX, 2) +
                 Math.pow(getY() - selectedY, 2));
-            startup_plan =  selectedX == 0 && selectedY == 0;
+            startup_plan = selectedX == 0 && selectedY == 0;
+
             // TODO(buckbaskin): sit on the desired point oscillating until plan time runs out
-            boolean reselect_xy = startup_plan || (dist_to_select <= 10);
+            boolean hold_bin = false;
+            if (dodge.plans.size() > 0) {
+                Plan current_plan = dodge.plans.get(0);
+                if (getTime() < current_driving_time) {
+                    hold_bin = true;
+                }
+            }
+            boolean reselect_xy = !hold_bin && (startup_plan || (dist_to_select <= 10));
             if (reselect_xy) {
                 HashMap<Integer, Integer> flipped_strikes = new HashMap<>();
                 for (int i = 0; i < reachable_bins.size(); i++) {
@@ -231,6 +239,7 @@ public class IAmAMess extends AdvancedRobot {
                 selectedY = p.baseY + p.dodgeY * 5 * selectedBin;
                 out.println("sel x: "+(int)selectedX + " y: " + (int)selectedY);
                 startup_plan = false;
+                current_driving_time = p.goalTime;
             } else {
                 out.println("Preserving selection "+selectedX+", "+selectedY);
             }
@@ -533,7 +542,23 @@ class Dodger {
             dodgeY = dodgeY / norm * 40;
 
             int bin_count = p.max_avoid_bins;
-            for (int i = -bin_count; i <= bin_count; i++) {}
+            for (int i = -bin_count; i <= bin_count; i++) {
+                double centX = X + i * dodgeX;
+                double centY = Y + i * dodgeY;
+                g.setColor(new Color((float)0.0, (float)1.0, (float)1.0, (float)0.5));
+                g.drawOval((int)(centX - 20), (int)(centY - 20), 40, 40);
+                if (!strikes.containsKey(i)) {
+                    strikes.put(i, 1);
+                    total_strikes += 1;
+                }
+                float local_strike = (float)(strikes.get(i));
+                float fill_percent = local_strike / total_strikes * 4;
+                if (fill_percent > 1.0) {
+                    fill_percent = 1.0f;
+                }
+                g.setColor(new Color((float)0.0, (float)1.0, (float)1.0, fill_percent));
+                g.fillOval((int)(centX - 20), (int)(centY - 20), 40, 40);
+            }
         } else {
             double X = self.getX();
             double Y = self.getY();
