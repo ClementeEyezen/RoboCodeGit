@@ -60,7 +60,10 @@ public class IAmAMess extends AdvancedRobot {
     public void onBulletHitBullet(BulletHitBulletEvent e) {}
     public void onBulletMissed(BulletMissedEvent e) {}
     public void onDeath(DeathEvent e) {}
-    public void onHitByBullet(HitByBulletEvent e) {}
+    public void onHitByBullet(HitByBulletEvent e) {
+        // TODO(buckbaskin): start updating the histogram
+        // TODO(buckbaskin): don't render the robot histogram, render the currently selected histogram
+    }
     public void onHitRobot(HitRobotEvent e) {}
     public void onHitWall(HitWallEvent e) {}
     public void onRobotDeath(RobotDeathEvent e) {}
@@ -192,6 +195,7 @@ public class IAmAMess extends AdvancedRobot {
             //  hit rate
 
             boolean reselect_xy = true;
+            // TODO(buckbaskin): start here
             // TODO(buckbaskin): don't recalculate until reached the desired goal, or won't reach existing plan
             if (reselect_xy) {
                 HashMap<Integer, Integer> flipped_strikes = new HashMap<>();
@@ -248,8 +252,6 @@ public class IAmAMess extends AdvancedRobot {
             double dx = frontX - selectedX;
             double dy = frontY - selectedY;
 
-            // TODO(buckbaskin): fix the front/back selection
-
             double frontDist = Math.sqrt(dx*dx + dy*dy);
 
             backX = myX - 16 * Math.sin(myHeading);
@@ -289,7 +291,6 @@ public class IAmAMess extends AdvancedRobot {
 
             } else if (frontDist - backDist > 0) {
                 out.println("Point in back");
-                // TODO(buckbaskin): do the math on how to move backwards
                 double heading_err = corrected_heading - myHeading;
                 while (heading_err > pi) {
                     heading_err = -2*pi + heading_err;
