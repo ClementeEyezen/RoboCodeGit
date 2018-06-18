@@ -63,7 +63,6 @@ public class IAmAMess extends AdvancedRobot {
     public void onDeath(DeathEvent e) {}
     public void onHitByBullet(HitByBulletEvent e) {
         // TODO(buckbaskin): start updating the histogram
-        // TODO(buckbaskin): don't render the robot histogram, render the currently selected histogram
     }
     public void onHitRobot(HitRobotEvent e) {}
     public void onHitWall(HitWallEvent e) {}
@@ -161,17 +160,25 @@ public class IAmAMess extends AdvancedRobot {
         if (d.plans.size() < 1) {
             // if there is no plan, drive in a circle
             out.println("No plans in queue.");
+            // TODO(buckbaskin): start here
             // TODO(buckbaskin): try and maintain a constant distance from
             //  another robot while circling instead of leaving the opportunity
             //  to get rammed. Check if enemy position is available, and then
             //  circle either positive, 0 or negative moving to some desired 
             //  point on a distance circle.
-
-            // TODO(buckbaskin): This might be a targeting point of view, but
+            //  This might be a targeting point of view, but
             //  there is probably a distance that I want to stay away from
             //  other robots. This should be generally maintained in the plan
             //  base x/y. I noticed that against corners, the robot gets pushed
             //  back into the opposite corner, reducing its dodging ability.
+            //  When circling away from other robots, attempt to maintain
+            //  spacing away from walls (or towards center? on radius from
+            //  center?) relative to other robot to maximize dodging potential.
+            // What I'm thinking is: draw line between enemy and map center.
+            //  Note 2 points 300 pixels from enemy robot. Pick point closer to
+            //  center. Pick nearest one when enemy robot is at center.
+            // While dodging, move base slightly towards or away from enemy robot
+            //  based on maintaining above distance.
 
             // TODO(buckbaskin): Gun power can change based on speed and
             //  confidence; however, to start I think it makes sense to pick
@@ -219,7 +226,6 @@ public class IAmAMess extends AdvancedRobot {
                 Math.pow(getY() - selectedY, 2));
             startup_plan = selectedX == 0 && selectedY == 0;
 
-            // TODO(buckbaskin): sit on the desired point oscillating until plan time runs out
             boolean hold_bin = false;
             if (dodge.plans.size() > 0) {
                 Plan current_plan = dodge.plans.get(0);
@@ -389,18 +395,23 @@ class History {
 }
 
 class Plan {
+    // TODO(buckbaskin): plot waves based on most recent plan
     public double baseX, baseY;
     public double dodgeX, dodgeY;
+    public double energy;
 
-    public long goalTime;
+    public long startTime, goalTime;
     public int max_avoid_bins;
 
-    public Plan(double bx, double by, double dx, double dy, long time, int bins) {
+    public Plan(double bx, double by, double dx, double dy,
+        long start, long time, int bins, double energy) {
         baseX = bx;
         baseY = by;
         dodgeX = dx;
         dodgeY = dy;
         goalTime = time;
+        startTime = start;
+        energy = energy;
         max_avoid_bins = bins;
     }
 }
@@ -511,8 +522,8 @@ class Dodger {
                 // set up a plan here
                 plans.add(new Plan(
                     self.getX(), self.getY(), dodgeX, dodgeY,
-                    self.getTime() + (long)time, max_avoid_bins
-                    ));
+                    self.getTime(), self.getTime() + (long)time, max_avoid_bins
+                    energyDrop));
                 out.println("Added Plan to list for " +
                     (self.getTime() + (long)time) + " at time " + self.getTime());
             }
